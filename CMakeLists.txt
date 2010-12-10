@@ -3,10 +3,12 @@
 #
 cmake_minimum_required(VERSION 2.6.2)  # this is jaunty's version
 
-#set_property(GLOBAL 
-#  PROPERTY
-#  GLOBAL_DEPENDS_DEBUG_MODE TRUE
-#  )
+execute_process(COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/convert.py
+  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+  )
+
+message(FATAL_ERROR "exiting")
+  
 
 if("$ENV{ROS_ROOT}" STREQUAL "")
   set(ENV{ROS_ROOT} ${CMAKE_CURRENT_SOURCE_DIR})
