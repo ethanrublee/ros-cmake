@@ -1,0 +1,18 @@
+- git:
+    uri: git@github.com:straszheim/ros-cmake.git
+    local-name: cmake
+
+- svn:
+    uri: https://code.ros.org/svn/ros/stacks/ros/tags/cturtle
+    local-name: ros
+ 
+- svn:
+    uri: https://code.ros.org/svn/ros/stacks/common/tags/cturtle
+    local-name: common
+ 
+- svn:
+    uri: https://code.ros.org/svn/ros/stacks/geometry/tags/cturtle
+    local-name: geometry
+
+
+ 
