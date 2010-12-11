@@ -78,6 +78,7 @@ def sanitize(index):
         cf = ''
         lf = ''
         if 'export' in v:
+            exp = v['export']
             if 'cpp' in v['export']:
                 if 'cflags' in v['export']['cpp']:
                     cf = v['export']['cpp']['cflags']
@@ -86,32 +87,30 @@ def sanitize(index):
                     lf = v['export']['cpp']['lflags']
                     lf = expand_cmdline(lf, v['srcdir'], v)
 
-        v['include_dirs'] = []
-        v['lib_dirs'] = []
-        v['libs'] = []
-        v['rpaths'] = []
+            exp['include_dirs'] = []
+            exp['lib_dirs'] = []
+            exp['libs'] = []
+            exp['rpaths'] = []
 
-        pattern = r'(-D|-I|-L|-Wl,-rpath,|-l)\s*([^\s]+)'
+            pattern = r'(-D|-I|-L|-Wl,-rpath,|-l)\s*([^\s]+)'
     
-        flagmap = { u'-I' : 'include_dirs', 
-                    u'-L' : 'lib_dirs',
-                    u'-Wl,-rpath,' : 'rpaths',
-                    u'-l' : 'libs', 
-                    u'-D' : 'defines' 
-                    }
+            flagmap = { u'-I' : 'include_dirs', 
+                        u'-L' : 'lib_dirs',
+                        u'-Wl,-rpath,' : 'rpaths',
+                        u'-l' : 'libs', 
+                        u'-D' : 'defines' 
+                        }
     
-        def handle(t, value, v=v):
-            key = flagmap[t]
-            #a = t[flagmap[t]]
-            if key not in v:
-                v[key] = []
-            v[key] += [value]
-            # print ">>>>>>>>>>", t, value
+            def handle(t, value, v=v):
+                key = flagmap[t]
+                if key not in v:
+                    v['export'][key] = []
+                v['export'][key] += [value]
     
-        for m in re.finditer(pattern, cf):
-            handle(*m.groups())
-        for m in re.finditer(pattern, lf):
-            handle(*m.groups())
+            for m in re.finditer(pattern, cf):
+                handle(*m.groups())
+            for m in re.finditer(pattern, lf):
+                handle(*m.groups())
     
 
 
