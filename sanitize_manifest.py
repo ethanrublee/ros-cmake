@@ -86,6 +86,9 @@ def sanitize(index):
                 if 'lflags' in v['export']['cpp']:
                     lf = v['export']['cpp']['lflags']
                     lf = expand_cmdline(lf, v['srcdir'], v)
+            if 'roslang' in v['export']:
+                cmake = v['export']['roslang']['cmake']
+                index[('__langs',None)][k[0]] = expand_cmdline(cmake, v['srcdir'], v)
 
             exp['include_dirs'] = []
             exp['lib_dirs'] = []
@@ -116,6 +119,9 @@ def sanitize(index):
 
 ifile = open(sys.argv[1])
 index = pickle.load(ifile)
+
+index[('__langs', None)] = {}
+
 sanitize(index)
 pprint(index)
 ifile.close()

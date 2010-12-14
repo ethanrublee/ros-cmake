@@ -36,7 +36,7 @@ def load_manifest(path, main_index):
     obj = lxml.objectify.fromstring(s)
     # print lxml.objectify.dump(obj)
     pkgname = os.path.basename(path)
-    version = 'NA'
+    version = None
 
     key = (pkgname, version)
     
@@ -58,7 +58,7 @@ def load_manifest(path, main_index):
     if 'export' in obj.__dict__:
         export = {}
         entry['export'] = export
-        for x in ['cpp', 'python']:
+        for x in ['cpp', 'python', 'roslang', 'rosdep']:
             if x in obj.export.__dict__:
                 export[x] = {}
                 for attr in obj.export.__dict__[x].attrib:
