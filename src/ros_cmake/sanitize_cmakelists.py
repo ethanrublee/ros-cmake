@@ -69,8 +69,18 @@ def sanitize(index):
             if line[0] == 'macrocall':
                 if line[1][0] == 'cmake_minimum_required':
                     continue
-                if line[1][0] == 'set':
-                    if line[1][1] == 'ROS_BUILD_TYPE':
+                if line[1][0] == 'rosbuild_init':
+                    continue
+
+                if line[1][0] in ['set', 'Set', 'SET']:
+                    if line[1][1] in ['ROS_BUILD_TYPE', 
+                                      'EXECUTABLE_OUTPUT_PATH',
+                                      'LIBRARY_OUTPUT_PATH',
+                                      'CMAKE_BUILD_TYPE',
+                                      'CMAKE_INSTALL_RPATH',
+                                      'CMAKE_INSTALL_RPATH_USE_LINK_PATH',
+                                      'CMAKE_BUILD_WITH_INSTALL_RPATH',
+                                      'CMAKE_SKIP_BUILD_RPATH']:
                         continue
                 if line[1][0] == 'include':
                     if line[1][1] == '$ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake':
@@ -80,7 +90,7 @@ def sanitize(index):
                 print >>oslist, line[1]
 
         oslist.close()
-        print "wrote to", v['srcdir'] + '/CMakeLists.txt.fixed'
+        print "wrote to", v['srcdir'] + '/CMakeLists.txt'
 
 index = pickle.load(open(sys.argv[1]))
 sanitize(index)
