@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -e
 
 PTHS=/ssd/sg/cmake/work/ros:/ssd/wg/cmake/work/geometry:/ssd/wg/cmake/work/common:/ssd/wg/cmake/work/ros_comm:/ssd/wg/cmake/work/cmake
 
