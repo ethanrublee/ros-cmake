@@ -4,6 +4,10 @@ import os, os.path, sys, pprint, pickle
 
 print "\nConverting stacks in sys.argv[2] to rosbuild2\n"
 
+if len(sys.argv) == 1:
+    print "usage: %s indexfile_name ros_package_path"
+    sys.exit(1)
+
 def get_package_dirs(p):
     pkgs = []
     def visit(arg, dirname, names):

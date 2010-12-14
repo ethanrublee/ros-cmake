@@ -118,3 +118,11 @@ ifile = open(sys.argv[1])
 index = pickle.load(ifile)
 sanitize(index)
 pprint(index)
+ifile.close()
+ofile = open(sys.argv[1], 'w')
+pickle.dump(index, ofile)
+ofile.close()
+
+# -rw-r--r-- 1 troy troy 13876 2010-12-13 22:39 index.pickle
+# -rw-r--r-- 1 troy troy 17193 2010-12-13 22:39 index.pickle
+

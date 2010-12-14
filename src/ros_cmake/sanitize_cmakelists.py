@@ -31,22 +31,19 @@ import sys, pickle, re, os, fileinput
 from pprint import pprint
 from pyPEG import parse, keyword, _and, _not
 import pyPEG
-pyPEG.print_trace = True
-
-def envvar():
-    return 'ENV{', [dereference, re.compile(r'[\w\d_]+')], '}'
-
-def dereference():
-    return '$', [envvar, ('{', re.compile(r'[\w\d_]+'), '}')]
+# pyPEG.print_trace = True
 
 def identifier(): 
-    return [dereference, re.compile(r'[^\s\(\)]+')]
+    return 
+
+def arglist():
+    return '(', -1, re.compile(r'[^\s\(\)]+'), ')'
 
 def macrocall():
-    return identifier, '(', -1, identifier, ')'
+    return re.compile(r'[^\s\(\)]+'), '(', -1, re.compile(r'[^\s\(\)]+'), ')'
 
 def cmake():
-    return -2, macrocall
+    return -2, [comment, macrocall]
 
 def comment():
     return re.compile(r'#.*')
@@ -56,26 +53,35 @@ def sanitize(index):
         print v['srcdir']
         if not os.path.isfile(v['srcdir'] + '/CMakeLists.txt'):
             continue
+        os.chdir(v['srcdir'])
+        os.popen('svn revert CMakeLists.txt').read()
         inlists = v['srcdir'] + '/CMakeLists.txt'
-        oslist = open(v['srcdir'] + '/CMakeLists.txt.fixed', 'w')
-        
-        print inlists
-        #groups = re.findall(r'([^\(]+)\s*\(([^\)]*)\)\s*', inlists, re.MULTILINE)
-        #print groups[0]
-        #print groups[1]
-        #print
+        # print inlists
+        itext = open(inlists).read()
+        # print '\n\n\n', itext, '\n\n\n' 
         finput = fileinput.FileInput([inlists])
-        ast = parse(cmake(), finput, True, comment)
-        pprint(ast)
+        ast = parse(cmake(), finput, True)
+        # pprint(ast)
 
-        #call = groups[0]
-        #args = groups[1].split()
-        #print call, args
+        oslist = open(v['srcdir'] + '/CMakeLists.txt', 'w')
+        
+        for line in ast:
+            if line[0] == 'macrocall':
+                if line[1][0] == 'cmake_minimum_required':
+                    continue
+                if line[1][0] == 'set':
+                    if line[1][1] == 'ROS_BUILD_TYPE':
+                        continue
+                if line[1][0] == 'include':
+                    if line[1][1] == '$ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake':
+                        continue
+                print >>oslist, "%s(%s)" % (line[1][0], ' '.join(line[1][1:]))
+            if line[0] == 'comment':
+                print >>oslist, line[1]
 
         oslist.close()
-        sys.exit(0)
+        print "wrote to", v['srcdir'] + '/CMakeLists.txt.fixed'
 
 index = pickle.load(open(sys.argv[1]))
 sanitize(index)
-
 
