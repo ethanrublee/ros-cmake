@@ -50,6 +50,8 @@ def comment():
 
 def sanitize(index):
     for k, v in index.iteritems():
+        if k == ('__langs', None):
+            continue
         print v['srcdir']
         if not os.path.isfile(v['srcdir'] + '/CMakeLists.txt'):
             continue
@@ -65,6 +67,9 @@ def sanitize(index):
 
         oslist = open(v['srcdir'] + '/CMakeLists.txt', 'w')
         
+        print >>oslist, 'message( ._. %s ._.)' % k[0]
+        print >>oslist, ("include(${CMAKE_CURRENT_BINARY_DIR}/package.cmake)")
+
         for line in ast:
             if line[0] == 'macrocall':
                 if line[1][0] == 'cmake_minimum_required':

@@ -40,4 +40,66 @@ for j in langs:
     print >>out, '  gensrv_%s()' % j[3:]
 print >>out, 'endmacro(_rosbuild_gensrv_impl)'
 
+del index[('__langs', None)]
 
+
+def write_project_cmake(name, d):
+    print ">>>", name
+    bindir = sys.argv[2] + '/' + name
+    os.mkdir(bindir)
+    ofile = open(bindir + '/package.cmake', 'w')
+    print >>ofile, 'message(STATUS "^^-- %s")' % name
+    subdir(d['srcdir'], name)
+
+def dump(index, written = set([])):
+
+    for (pkgname, version), d in index.iteritems():
+        print pkgname
+
+    leaves = []
+    for k, v in d['depend']:
+        if len(written.difference(set(v))) == 0 and k not in written:
+            leaves += [k]
+    
+    for l in leaves:
+        print ">>>", l
+
+
+def build_depgraph(index, depgraph = {}):
+    for (pkg, version), d in index.iteritems():
+        if 'depend' in d:
+            depgraph[pkg] = set(d['depend'])
+        else:
+            depgraph[pkg] = set([])
+    return depgraph
+
+
+depgraph = build_depgraph(index)
+written = set([])
+
+notfound = set([])
+unsatisfied = set([])
+for pkg, deps in depgraph.iteritems():
+    for dep in deps:
+        if dep not in depgraph:
+            notfound.add(dep)
+            unsatisfied.add(pkg)
+
+
+if len(notfound) > 0:
+    print "The following packages have unsatisfied dependencies:"
+    print ">>> ", ' '.join(unsatisfied)
+    print "The missing packages are:"
+    print ">>> ", ' '.join(notfound)
+    sys.exit(0)
+
+while len(depgraph) > 0:
+    for pkg, deps in depgraph.iteritems():
+        deps.difference_update(written)
+
+        if len(deps) == 0 and pkg not in written:
+            write_project_cmake(pkg, index[(pkg, None)])
+            written.add(pkg)
+    for pkg in written:
+        if pkg in depgraph:
+            del depgraph[pkg]
