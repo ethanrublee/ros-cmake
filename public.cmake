@@ -819,6 +819,7 @@ macro(rosbuild_genmsg)
 endmacro(rosbuild_genmsg)
 
 macro(rosbuild_add_boost_directories)
+if (False)
   set(_sysroot "--sysroot=${CMAKE_FIND_ROOT_PATH}") 
   execute_process(COMMAND ${ROSBUILD_SUBSHELL} ${ROSBOOST_CFG} ${_sysroot} "--include_dirs"
                   OUTPUT_VARIABLE BOOST_INCLUDE_DIRS
@@ -843,9 +844,11 @@ macro(rosbuild_add_boost_directories)
   add_definitions(-DBOOST_CB_DISABLE_DEBUG)
   include_directories(${BOOST_INCLUDE_DIRS})
   link_directories(${BOOST_LIB_DIRS})
+endif()
 endmacro(rosbuild_add_boost_directories)
 
 macro(rosbuild_link_boost target)
+if (False)
   set(_libs "")
   set(_first 1)
   foreach(arg ${ARGN})
@@ -871,6 +874,7 @@ macro(rosbuild_link_boost target)
   separate_arguments(BOOST_LIBS)
 
   target_link_libraries(${target} ${BOOST_LIBS})
+endif()
 endmacro(rosbuild_link_boost)
 
 # Macro to download data on the tests target

@@ -67,14 +67,17 @@ def sanitize(index):
 
         oslist = open(v['srcdir'] + '/CMakeLists.txt', 'w')
         
-        print >>oslist, 'message( ._. %s ._.)' % k[0]
+        print >>oslist, 'message("%s ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}")' % k[0]
         print >>oslist, ("include(${CMAKE_CURRENT_BINARY_DIR}/package.cmake)")
 
         for line in ast:
             if line[0] == 'macrocall':
-                if line[1][0] == 'cmake_minimum_required':
-                    continue
-                if line[1][0] == 'rosbuild_init':
+                if line[1][0] in ['cmake_minimum_required',
+                                  'rosbuild_init',
+                                  'rosbuild_genmsg',
+                                  'rosbuild_gensrv',
+                                  'rosbuild_add_boost_directories',
+                                  'rosbuild_link_boost']:
                     continue
 
                 if line[1][0] in ['set', 'Set', 'SET']:

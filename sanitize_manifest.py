@@ -115,8 +115,6 @@ def sanitize(index):
             for m in re.finditer(pattern, lf):
                 handle(*m.groups())
     
-
-
 ifile = open(sys.argv[1])
 index = pickle.load(ifile)
 

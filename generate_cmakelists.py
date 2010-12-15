@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import os, os.path, sys, pprint, pickle
+import os, os.path, sys, pprint, pickle, glob
 
 print "\nIndex@ sys.argv[1]:\n"
 
@@ -30,15 +30,15 @@ msg("Enabled lanaguages (ROSBUILD_LANGS) = ${ROSBUILD_LANGS}")
 print >>out, "set(ROSBUILD_GEN_TARGETS\n  ", \
     ' '.join(["%s_msggen %s_srvgen" % (x,x) for x in langs]), ')'
 
-print >>out, 'macro(_rosbuild_genmsg_impl)'
+print >>out, 'macro(rosbuild_msgs)'
 for j in langs:
-    print >>out, '  genmsg_%s()' % j[3:]
-print >>out, 'endmacro(_rosbuild_genmsg_impl)'
+    print >>out, '  genmsg_%s(${ARGV})' % j[3:]
+print >>out, 'endmacro()'
 
-print >>out, 'macro(_rosbuild_gensrv_impl)'
+print >>out, 'macro(rosbuild_srvs)'
 for j in langs:
-    print >>out, '  gensrv_%s()' % j[3:]
-print >>out, 'endmacro(_rosbuild_gensrv_impl)'
+    print >>out, '  gensrv_%s(${ARGV})' % j[3:]
+print >>out, 'endmacro()'
 
 del index[('__langs', None)]
 
@@ -49,6 +49,8 @@ def write_project_cmake(name, d):
     os.mkdir(bindir)
     ofile = open(bindir + '/package.cmake', 'w')
     print >>ofile, 'message(STATUS "^^-- %s")' % name
+    print >>ofile, 'rosbuild_msgs(%s)' % ' '.join(d['msgs'])
+    print >>ofile, 'rosbuild_srvs(%s)' % ' '.join(d['srvs'])
     subdir(d['srcdir'], name)
 
 def dump(index, written = set([])):
@@ -72,7 +74,6 @@ def build_depgraph(index, depgraph = {}):
         else:
             depgraph[pkg] = set([])
     return depgraph
-
 
 depgraph = build_depgraph(index)
 written = set([])

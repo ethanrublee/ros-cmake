@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import os, os.path, sys, pprint, pickle
+import os, os.path, sys, pprint, pickle, glob
 
 print "\nConverting stacks in sys.argv[2] to rosbuild2\n"
 
@@ -29,6 +29,16 @@ print pkgdirs
 
 import lxml.objectify
 
+def get_msgs(srcdir):
+    msgs = glob.glob(srcdir + "/msg/*.msg")
+    short_msgs = [x[len(srcdir)+1:] for x in msgs]
+    return short_msgs
+
+def get_srvs(srcdir):
+    srvs = glob.glob(srcdir + "/srv/*.srv")
+    short_srvs = [x[len(srcdir)+1:] for x in srvs]
+    return short_srvs
+
 def load_manifest(path, main_index):
     manifest_path = path + '/manifest.xml'
     f = open(manifest_path)
@@ -44,6 +54,12 @@ def load_manifest(path, main_index):
     entry['srcdir'] = path
     main_index[key] = entry
     
+    msgs = get_msgs(path)
+    entry['msgs'] = msgs
+
+    srvs = get_srvs(path)
+    entry['srvs'] = srvs
+
     for x in 'author', 'license', 'url':
         if x in obj.__dict__:
             entry[x] = obj.__dict__[x].text
