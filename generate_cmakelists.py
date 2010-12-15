@@ -56,6 +56,9 @@ def write_project_cmake(name, d):
     print >>ofile, 'message(STATUS "^^-- %s")' % name
     print >>ofile, 'rosbuild_msgs(%s)' % ' '.join(d['msgs'])
     print >>ofile, 'rosbuild_srvs(%s)' % ' '.join(d['srvs'])
+    if 'export' in d \
+            and 'include_dirs' in d['export']:
+        print >>ofile, 'include_directories(%s)' % ' '.join(d['export']['include_dirs'])
     subdir(d['srcdir'], name)
 
 def dump(index, written = set([])):
