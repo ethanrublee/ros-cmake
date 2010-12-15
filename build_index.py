@@ -69,12 +69,13 @@ def load_manifest(path, main_index):
             entry['brief'] = obj.description.attrib['brief']
 
     if 'depend' in obj.__dict__:
+        print ">>>", [x.attrib for x in obj.depend]
         entry['depend'] = [x.attrib['package'] for x in obj.depend]
 
     if 'export' in obj.__dict__:
         export = {}
         entry['export'] = export
-        for x in ['cpp', 'python', 'roslang', 'rosdep']:
+        for x in ['cpp', 'python', 'roslang', 'rosdep', 'swig']:
             if x in obj.export.__dict__:
                 export[x] = {}
                 for attr in obj.export.__dict__[x].attrib:
