@@ -42,12 +42,17 @@ print >>out, 'endmacro()'
 
 del index[('__langs', None)]
 
+print >>out, '#\n#\n#'
+
+for (pkgname, version), d in index.iteritems():
+    print >>out, "set(%s_PACKAGE_PATH %s)" % (pkgname, d['srcdir'])
 
 def write_project_cmake(name, d):
     print ">>>", name
     bindir = sys.argv[2] + '/' + name
     os.mkdir(bindir)
     ofile = open(bindir + '/package.cmake', 'w')
+    print >>ofile, 'project(%s)' % name
     print >>ofile, 'message(STATUS "^^-- %s")' % name
     print >>ofile, 'rosbuild_msgs(%s)' % ' '.join(d['msgs'])
     print >>ofile, 'rosbuild_srvs(%s)' % ' '.join(d['srvs'])

@@ -10,6 +10,7 @@ include(CheckFunctionExists)
 
 # Find a ros package. 
 macro(rosbuild_find_ros_package pkgname) 
+  if (False)
   # catch the error output to suppress it 
   execute_process( 
     COMMAND ${ROSBUILD_SUBSHELL} ${ROSPACK_EXE} find ${pkgname} 
@@ -22,6 +23,7 @@ macro(rosbuild_find_ros_package pkgname)
     message(FATAL_ERROR "ROSPACK FAILED WITH \"${__rospack_err}\"")
   endif()
   set(${pkgname}_PACKAGE_PATH ${__pkg_dir}) 
+  endif()
 endmacro(rosbuild_find_ros_package) 
 
 # Retrieve the current COMPILE_FLAGS for the given target, append the new
