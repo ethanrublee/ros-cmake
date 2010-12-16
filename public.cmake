@@ -822,62 +822,18 @@ macro(rosbuild_genmsg)
 endmacro(rosbuild_genmsg)
 
 macro(rosbuild_add_boost_directories)
-if (False)
-  set(_sysroot "--sysroot=${CMAKE_FIND_ROOT_PATH}") 
-  execute_process(COMMAND ${ROSBUILD_SUBSHELL} ${ROSBOOST_CFG} ${_sysroot} "--include_dirs"
-                  OUTPUT_VARIABLE BOOST_INCLUDE_DIRS
-                  RESULT_VARIABLE _boostcfg_failed
-                  OUTPUT_STRIP_TRAILING_WHITESPACE)
-                  
-  if (_boostcfg_failed)
-    message(FATAL_ERROR "rosboost_cfg.py --include_dirs failed")
-  endif()
-  
-  set(_sysroot "--sysroot=${CMAKE_FIND_ROOT_PATH}") 
-  execute_process(COMMAND ${ROSBUILD_SUBSHELL} 
-    ${ROSBOOST_CFG} ${_sysroot} "--lib_dirs"
-    OUTPUT_VARIABLE BOOST_LIB_DIRS
-    RESULT_VARIABLE _boostcfg_failed
-    OUTPUT_STRIP_TRAILING_WHITESPACE)
-                  
-  if (_boostcfg_failed)
-    message(FATAL_ERROR "rosboost_cfg.py --lib_dirs failed")
-  endif()
-  
   add_definitions(-DBOOST_CB_DISABLE_DEBUG)
-  include_directories(${BOOST_INCLUDE_DIRS})
-  link_directories(${BOOST_LIB_DIRS})
-endif()
+  include_directories(${BOOST_INCLUDE_DIR})
 endmacro(rosbuild_add_boost_directories)
 
 macro(rosbuild_link_boost target)
-if (False)
-  set(_libs "")
-  set(_first 1)
+
   foreach(arg ${ARGN})
-    if (_first)
-      set(_first 0)
-      set(_libs "${arg}")
-    else()
-      set(_libs "${_libs},${arg}")
-    endif()
-  endforeach(arg)
-  set(_sysroot "--sysroot=${CMAKE_FIND_ROOT_PATH}") 
-  execute_process(COMMAND ${ROSBUILD_SUBSHELL}
-    ${ROSBOOST_CFG} ${_sysroot} "--libs" ${_libs}
-    OUTPUT_VARIABLE BOOST_LIBS
-    ERROR_VARIABLE _boostcfg_error
-    RESULT_VARIABLE _boostcfg_failed
-    OUTPUT_STRIP_TRAILING_WHITESPACE)
-  
-  if (_boostcfg_failed)
-    message(FATAL_ERROR "[rosboost-cfg --libs ${_libs}] failed with error: ${_boostcfg_error}")
-  endif()
+    string(TOUPPER ${arg} ARG)
+    message("LINKING ${Boost_${ARG}_LIBRARY}")
+    target_link_libraries(${target} ${Boost_${ARG}_LIBRARY})
+  endforeach()
 
-  separate_arguments(BOOST_LIBS)
-
-  target_link_libraries(${target} ${BOOST_LIBS})
-endif()
 endmacro(rosbuild_link_boost)
 
 # Macro to download data on the tests target

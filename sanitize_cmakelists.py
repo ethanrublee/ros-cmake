@@ -75,9 +75,7 @@ def sanitize(index):
                 if line[1][0] in ['cmake_minimum_required',
                                   'rosbuild_init',
                                   'rosbuild_genmsg',
-                                  'rosbuild_gensrv',
-                                  'rosbuild_add_boost_directories',
-                                  'rosbuild_link_boost']:
+                                  'rosbuild_gensrv']:
                     continue
 
                 if line[1][0] in ['set', 'Set', 'SET']:
