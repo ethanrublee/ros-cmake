@@ -722,21 +722,6 @@ macro(rosbuild_add_generated_msgs)
   list(APPEND _ROSBUILD_GENERATED_MSG_FILES ${ARGV})
 endmacro(rosbuild_add_generated_msgs)
 
-# Return a list of all msg/.msg files
-macro(rosbuild_get_msgs msgvar)
-  file(GLOB _msg_files RELATIVE "${PROJECT_SOURCE_DIR}/msg" "${PROJECT_SOURCE_DIR}/msg/*.msg")
-  set(${msgvar} ${_ROSBUILD_GENERATED_MSG_FILES})
-  # Loop over each .msg file, establishing a rule to compile it
-  foreach(_msg ${_msg_files})
-    # Make sure we didn't get a bogus match (e.g., .#Foo.msg, which Emacs
-    # might create as a temporary file).  the file()
-    # command doesn't take a regular expression, unfortunately.
-    if(${_msg} MATCHES "^[^\\.].*\\.msg$")
-      list(APPEND ${msgvar} ${_msg})
-    endif()
-  endforeach(_msg)
-endmacro(rosbuild_get_msgs)
-
 set(_ROSBUILD_GENERATED_SRV_FILES "")
 macro(rosbuild_add_generated_srvs)
   if(ROSBUILD_init_called)
@@ -744,21 +729,6 @@ macro(rosbuild_add_generated_srvs)
   endif()
   list(APPEND _ROSBUILD_GENERATED_SRV_FILES ${ARGV})
 endmacro(rosbuild_add_generated_srvs)
-
-# Return a list of all srv/.srv files
-macro(rosbuild_get_srvs srvvar)
-  file(GLOB _srv_files RELATIVE "${PROJECT_SOURCE_DIR}/srv" "${PROJECT_SOURCE_DIR}/srv/*.srv")
-  set(${srvvar} ${_ROSBUILD_GENERATED_SRV_FILES})
-  # Loop over each .srv file, establishing a rule to compile it
-  foreach(_srv ${_srv_files})
-    # Make sure we didn't get a bogus match (e.g., .#Foo.srv, which Emacs
-    # might create as a temporary file).  the file()
-    # command doesn't take a regular expression, unfortunately.
-    if(${_srv} MATCHES "^[^\\.].*\\.srv$")
-      list(APPEND ${srvvar} ${_srv})
-    endif()
-  endforeach(_srv)
-endmacro(rosbuild_get_srvs)
 
 # Compute msg/srv depenendency list, with simple caching
 macro(rosbuild_gendeps _pkg _msgfile)

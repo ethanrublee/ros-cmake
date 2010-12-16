@@ -48,7 +48,7 @@ echo CMAKESTART
 echo
 cmake -DROS_BUILD_SHARED_LIBS=TRUE $WORK/
 
-make VERBOSE=1
+# make VERBOSE=1
 
 #cd $WORK/build/eigen/3rdparty
 #make
