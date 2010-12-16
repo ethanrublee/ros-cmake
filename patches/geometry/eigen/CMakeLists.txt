@@ -1,5 +1,5 @@
 project(eigen)
 
-if(NOT EXISTS include/Eigen/Eigen)
+if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/include/Eigen/Eigen)
   rosbuild_3rdparty(eigen include/Eigen/Eigen)
 endif()
