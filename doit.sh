@@ -3,7 +3,7 @@
 WORK=$(dirname $(dirname $(readlink -f $0)))
 echo "WORK=$WORK"
 PTHS=$WORK/ros:$WORK/geometry:$WORK/common:$WORK/ros_comm:$WORK/common_msgs
-
+export ROS_PACKAGE_PATH=$PTHS
 cd $WORK
 # chmod 000 ros/core/rosbuild
 
@@ -33,8 +33,9 @@ fi
 
 rsync -va $WORK/cmake/patches/ $WORK/
 
-rm -rf $WORK/build/
-mkdir $WORK/build/
+#rm -rf $WORK/build/
+#mkdir $WORK/build/
+rm -f $WORK/build/CMakeCache.txt
 
 ./cmake/generate_cmakelists.py index.pkl build/
 
@@ -48,7 +49,7 @@ echo CMAKESTART
 echo
 cmake -DROS_BUILD_SHARED_LIBS=TRUE $WORK/
 
-# make VERBOSE=1
+make VERBOSE=1 tf_codegen
 
 #cd $WORK/build/eigen/3rdparty
 #make

@@ -50,10 +50,13 @@ for (pkgname, version), d in index.iteritems():
 def write_project_cmake(name, d, index=index):
     print ">>>", name
     bindir = sys.argv[2] + '/' + name
-    os.mkdir(bindir)
+    if not os.path.isdir(bindir):
+        os.mkdir(bindir)
     ofile = open(bindir + '/package.cmake', 'w')
     print >>ofile, 'project(%s)' % name
     print >>ofile, 'message(STATUS "^^-- %s")' % name
+    print >>ofile, 'message("***** %s_codegen ******")' % name
+    print >>ofile, 'add_custom_target(%s_codegen)' % name
     print >>ofile, 'rosbuild_msgs(%s)' % ' '.join(d['msgs'])
     print >>ofile, 'rosbuild_srvs(%s)' % ' '.join(d['srvs'])
     if 'export' in d \
@@ -73,6 +76,7 @@ def write_project_cmake(name, d, index=index):
     if len(libs_i_need) > 0:
         print >>ofile, 'set(EXPORTED_TO_ME_LIBRARIES %s)' % ' '.join(libs_i_need)
     subdir(d['srcdir'], name)
+
 
 def dump(index, written = set([])):
 

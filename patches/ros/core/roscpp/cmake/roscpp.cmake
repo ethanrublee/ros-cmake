@@ -1,7 +1,7 @@
 rosbuild_find_ros_package(roscpp)
 
-set(genmsg_cpp_exe ${CMAKE_SOURCE_DIR}/core/roscpp/scripts/genmsg_cpp.py)
-set(gensrv_cpp_exe ${CMAKE_SOURCE_DIR}/core/roscpp/scripts/gensrv_cpp.py)
+set(genmsg_cpp_exe ${CMAKE_SOURCE_DIR}/ros/core/roscpp/scripts/genmsg_cpp.py)
+set(gensrv_cpp_exe ${CMAKE_SOURCE_DIR}/ros/core/roscpp/scripts/gensrv_cpp.py)
 
 # Message-generation support.
 macro(genmsg_cpp)
@@ -40,6 +40,7 @@ endmacro(genmsg_cpp)
 
 # Service-generation support.
 macro(gensrv_cpp)
+if (FALSE)
   rosbuild_get_srvs(_srvlist)
   set(_autogen "")
   foreach(_srv ${_srvlist})
@@ -74,5 +75,6 @@ macro(gensrv_cpp)
     add_custom_target(${PROJECT_NAME}_roscpp_srvgen ALL DEPENDS ${_autogen})
     add_dependencies(${PROJECT_NAME}_codegen ${PROJECT_NAME}_roscpp_srvgen)
   endif()
+endif()
 endmacro(gensrv_cpp)
 

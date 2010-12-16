@@ -1,5 +1,12 @@
 message(STATUS "--- main.cmake ---")
 
+set(ROS_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/ros)
+set(ROS_SETUP ${CMAKE_CURRENT_BINARY_DIR}/setup)
+set(ROSBUILD_SUBSHELL ${CMAKE_CURRENT_BINARY_DIR}/env.sh)
+set(ROS_PACKAGE_PATH $ENV{ROS_PACKAGE_PATH})
+set(ROSBUILD_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
+file(MAKE_DIRECTORY ${ROSBUILD_GEN_DIR})
+
 #
 # Globally unique targets.  Wtf. 
 #
@@ -43,7 +50,14 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/public.cmake)
 
 include(${CMAKE_CURRENT_BINARY_DIR}/toplevel.cmake)
 
-
-
+foreach(setupfile
+    setup.sh
+    setup.csh
+    env.sh)
+  configure_file(
+    ${CMAKE_CURRENT_SOURCE_DIR}/cmake/${setupfile}.buildspace.in
+    ${CMAKE_CURRENT_BINARY_DIR}/${setupfile}
+    @ONLY)
+endforeach()
 
 
