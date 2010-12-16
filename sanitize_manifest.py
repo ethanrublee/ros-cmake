@@ -73,7 +73,7 @@ def expand_cmdline(s, d, i):
     
 def sanitize(index):
     for k,v in index.iteritems():
-        # print k, v
+        print '$$$', k, v
 
         cf = ''
         lf = ''
@@ -92,23 +92,23 @@ def sanitize(index):
                 cmake = v['export']['roslang']['cmake']
                 index[('__langs',None)][k[0]] = expand_cmdline(cmake, v['srcdir'], v)
 
-            exp['include_dirs'] = []
-            exp['lib_dirs'] = []
-            exp['libs'] = []
-            exp['rpaths'] = []
+            #exp['include_dirs'] = []
+            #exp['lib_dirs'] = []
+            #exp['libs'] = []
+            #exp['rpaths'] = []
 
             pattern = r'(-D|-I|-L|-Wl,-rpath,|-l)\s*([^\s]+)'
     
-            flagmap = { u'-I' : 'include_dirs', 
-                        u'-L' : 'lib_dirs',
-                        u'-Wl,-rpath,' : 'rpaths',
-                        u'-l' : 'libs', 
-                        u'-D' : 'defines' 
-                        }
-    
             def handle(t, value, v=v):
+                flagmap = { u'-I' : 'include_dirs', 
+                            u'-L' : 'lib_dirs',
+                            u'-Wl,-rpath,' : 'rpaths',
+                            u'-l' : 'libs', 
+                            u'-D' : 'defines' 
+                            }
                 key = flagmap[t]
-                if key not in v:
+                print ">>>", key, value
+                if key not in v['export']:
                     v['export'][key] = []
                 v['export'][key] += [value]
     

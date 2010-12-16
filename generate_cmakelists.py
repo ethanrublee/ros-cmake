@@ -47,7 +47,7 @@ print >>out, '#\n#\n#'
 for (pkgname, version), d in index.iteritems():
     print >>out, "set(%s_PACKAGE_PATH %s)" % (pkgname, d['srcdir'])
 
-def write_project_cmake(name, d):
+def write_project_cmake(name, d, index=index):
     print ">>>", name
     bindir = sys.argv[2] + '/' + name
     os.mkdir(bindir)
@@ -59,6 +59,13 @@ def write_project_cmake(name, d):
     if 'export' in d \
             and 'include_dirs' in d['export']:
         print >>ofile, 'include_directories(%s)' % ' '.join(d['export']['include_dirs'])
+    if 'depend' in d:
+        for pkgname in d['depend']:
+            pkg = index[(pkgname, None)]
+            if 'export' in pkg:
+                if 'include_dirs' in pkg['export']:
+                    print >>ofile, 'include_directories(%s)' % \
+                        ' '.join(pkg['export']['include_dirs'])
     subdir(d['srcdir'], name)
 
 def dump(index, written = set([])):
