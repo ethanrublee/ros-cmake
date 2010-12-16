@@ -606,9 +606,9 @@ endmacro(rosbuild_add_library_module)
 # part of the "core" build that happens during a 'make' in ros, so we can
 # assume that's already built.
 macro(rosbuild_add_gtest_build_flags exe)
-  rosbuild_add_compile_flags(${exe} ${_gtest_CFLAGS_OTHER})
-  target_link_libraries(${exe} ${_gtest_LIBRARIES})
-  rosbuild_add_link_flags(${exe} ${_gtest_LDFLAGS_OTHER})
+  rosbuild_add_compile_flags(${exe} ${GTEST_CFLAGS_OTHER})
+  target_link_libraries(${exe} ${GTEST_LIBRARIES})
+  rosbuild_add_link_flags(${exe} ${GTEST_LDFLAGS_OTHER})
   rosbuild_declare_test(${exe})
 endmacro(rosbuild_add_gtest_build_flags)
 
@@ -627,7 +627,8 @@ macro(rosbuild_add_gtest exe)
   string(REPLACE "/" "_" _testname ${exe})
   # add_dependencies(test test_${_testname})
   # Register check for test output
-  _rosbuild_check_rostest_xml_result(${_testname} ${rosbuild_test_results_dir}/${PROJECT_NAME}/TEST-${_testname}.xml)
+  _rosbuild_check_rostest_xml_result(${_testname} 
+    ${rosbuild_test_results_dir}/${PROJECT_NAME}/TEST-${_testname}.xml)
 endmacro(rosbuild_add_gtest)
 
 # A version of add_gtest that checks a label against ROS_BUILD_TEST_LABEL

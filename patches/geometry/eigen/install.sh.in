@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -e
 
 echo "*\n*\n* building eigen\n*\n*"
 cd @CMAKE_CURRENT_BINARY_DIR@
