@@ -1,4 +1,4 @@
-#!/bin/sh -e
+#!/bin/sh -ex
 
 WORK=$(dirname $(dirname $(readlink -f $0)))
 echo "WORK=$WORK"
@@ -12,10 +12,12 @@ echo 'message("wtf, no cmakelists here")' >> common/actionlib/test/CMakeLists.tx
 echo "cmake_minimum_required(VERSION 2.8)" > CMakeLists.txt
 echo "include(cmake/main.cmake)" >> CMakeLists.txt
 rm -f $WORK/ros/core/roslisp/manifest.xml
-cp $WORK/cmake/rospy.cmake $WORK/ros/core/rospy/cmake
-cp $WORK/cmake/roscpp.cmake $WORK/ros/core/roscpp/cmake
 rm -f ros/tools/rxgraph/CMakeLists.txt ros/tools/rxtools/CMakeLists.txt
 
+if [ -d $WORK/ros/core/rosbuild ] ; then
+    rm -f $WORK/ros/core/rosbuild/manifest.xml
+    mv $WORK/ros/core/rosbuild $WORK/ros/core/rosbuild.aside
+fi
 #rm -f ./ros-cmake.rosinstall
 #wget --no-check-certificate https://github.com/straszheim/ros-cmake/raw/master/ros-cmake.rosinstall
 
@@ -29,8 +31,10 @@ rm -f ros/tools/rxgraph/CMakeLists.txt ros/tools/rxtools/CMakeLists.txt
 ./cmake/sanitize_manifest.py index.pkl
 ./cmake/sanitize_cmakelists.py index.pkl
 
-rm -rf build/
-mkdir build/
+rsync -va $WORK/cmake/patches/ $WORK/
+
+rm -rf $WORK/build/
+mkdir $WORK/build/
 
 ./cmake/generate_cmakelists.py index.pkl build/
 
@@ -42,4 +46,9 @@ echo
 echo
 echo CMAKESTART
 echo
-cmake -DROS_BUILD_SHARED_LIBS=TRUE ..
+cmake -DROS_BUILD_SHARED_LIBS=TRUE $WORK/
+
+make VERBOSE=1 3rdparty
+
+#cd $WORK/build/eigen/3rdparty
+#make

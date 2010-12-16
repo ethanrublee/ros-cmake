@@ -1,0 +1,10 @@
+#!/bin/sh
+
+echo "*\n*\n* building eigen\n*\n*"
+cd @CMAKE_CURRENT_BINARY_DIR@
+mkdir -p 3rdparty
+cd 3rdparty
+wget -c http://pr.willowgarage.com/downloads/eigen2-2.0.15.tar.bz2
+tar xjf eigen2-2.0.15.tar.bz2
+mkdir @CMAKE_CURRENT_BINARY_DIR@/include
+cp -r eigen/Eigen @CMAKE_CURRENT_BINARY_DIR@/include

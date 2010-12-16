@@ -61,7 +61,7 @@ def expand_cmdline(s, d, i):
         # split into args
         argv = matchobj.group()[1:-1].split(' ')  
         # run it, get result
-        print "SUBPROC: ", argv
+        # print "SUBPROC: ", argv
         if argv[0] == 'rosboost-cfg':
             if 'tools' not in i:
                 i['tools'] = {}
@@ -73,11 +73,13 @@ def expand_cmdline(s, d, i):
     
 def sanitize(index):
     for k,v in index.iteritems():
-        print k, v
+        # print k, v
 
         cf = ''
         lf = ''
         if 'export' in v:
+            print k[0],
+            sys.stdout.flush()
             exp = v['export']
             if 'cpp' in v['export']:
                 if 'cflags' in v['export']['cpp']:
@@ -115,18 +117,18 @@ def sanitize(index):
             for m in re.finditer(pattern, lf):
                 handle(*m.groups())
     
+
 ifile = open(sys.argv[1])
 index = pickle.load(ifile)
 
 index[('__langs', None)] = {}
 
+print "Sanitizing manifest index..."
 sanitize(index)
-pprint(index)
+
 ifile.close()
 ofile = open(sys.argv[1], 'w')
 pickle.dump(index, ofile)
 ofile.close()
-
-# -rw-r--r-- 1 troy troy 13876 2010-12-13 22:39 index.pickle
-# -rw-r--r-- 1 troy troy 17193 2010-12-13 22:39 index.pickle
+print 
 

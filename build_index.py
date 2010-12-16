@@ -2,7 +2,7 @@
 
 import os, os.path, sys, pprint, pickle, glob
 
-print "\nConverting stacks in sys.argv[2] to rosbuild2\n"
+print "\nBuilding index of packages in", sys.argv[2]
 
 if len(sys.argv) == 1:
     print "usage: %s indexfile_name ros_package_path"
@@ -24,7 +24,7 @@ pkgdirs = []
 for path in pkgpath:
     pkgdirs += get_package_dirs(path)
 
-print pkgdirs
+# print pkgdirs
 
 
 import lxml.objectify
@@ -46,6 +46,8 @@ def load_manifest(path, main_index):
     obj = lxml.objectify.fromstring(s)
     # print lxml.objectify.dump(obj)
     pkgname = os.path.basename(path)
+    print pkgname,
+    sys.stdout.flush()
     version = None
 
     key = (pkgname, version)
@@ -69,13 +71,13 @@ def load_manifest(path, main_index):
             entry['brief'] = obj.description.attrib['brief']
 
     if 'depend' in obj.__dict__:
-        print ">>>", [x.attrib for x in obj.depend]
-        entry['depend'] = [x.attrib['package'] for x in obj.depend]
+        # print ">>>", [x.attrib for x in obj.depend]
+        entry['depend'] = [x.attrib['package'] for x in obj.depend if x.attrib['package'] != 'rosbuild']
 
     if 'export' in obj.__dict__:
         export = {}
         entry['export'] = export
-        for x in ['cpp', 'python', 'roslang', 'rosdep', 'swig']:
+        for x in ['cpp', 'python', 'roslang', 'rosdep', 'swig', 'rosbuild']:
             if x in obj.export.__dict__:
                 export[x] = {}
                 for attr in obj.export.__dict__[x].attrib:
@@ -92,4 +94,4 @@ ofile = open(sys.argv[1], 'w')
 
 pickle.dump(main_index, ofile)
 
-print "done"
+print

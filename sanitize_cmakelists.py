@@ -52,7 +52,7 @@ def sanitize(index):
     for k, v in index.iteritems():
         if k == ('__langs', None):
             continue
-        print v['srcdir']
+        # print v['srcdir']
         if not os.path.isfile(v['srcdir'] + '/CMakeLists.txt'):
             continue
         os.chdir(v['srcdir'])
@@ -93,13 +93,17 @@ def sanitize(index):
                 if line[1][0] == 'include':
                     if line[1][1] == '$ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake':
                         continue
+                    if line[1][1] == '$ENV{ROS_ROOT}/core/rosbuild/rosconfig.cmake':
+                        continue
                 print >>oslist, "%s(%s)" % (line[1][0], ' '.join(line[1][1:]))
             if line[0] == 'comment':
                 print >>oslist, line[1]
 
         oslist.close()
-        print "wrote to", v['srcdir'] + '/CMakeLists.txt'
+        print k[0],
+        sys.stdout.flush()
 
+print "Sanitizing cmakelists from index", sys.argv[1] 
 index = pickle.load(open(sys.argv[1]))
 sanitize(index)
-
+print
