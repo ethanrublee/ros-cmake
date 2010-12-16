@@ -148,6 +148,8 @@ macro(_rosbuild_add_gtest exe)
     PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin/test
     )
+  get_filename_component(BINDIR ${PROJECT_BINARY_DIR}/bin/test/${exe} PATH)
+  file(MAKE_DIRECTORY ${BINDIR})
   rosbuild_add_gtest_build_flags(${exe})
 
   # Create a legal target name, in case the target name has slashes in it

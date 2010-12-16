@@ -94,6 +94,7 @@ macro(rosbuild_invoke_rospack pkgname _prefix _varname)
   # Check that our cached location of rospack is valid.  It can be invalid
   # if rospack has moved since last time we ran, #1154.  If it's invalid,
   # search again.
+  message(FATAL_ERROR "NOOOOOOOO don't invoke rospack ${pkgname}")
   set(_rospack_invoke_result)
 
   #message(">>> ${ROSPACK_EXE} ${ARGN} ${pkgname}")
@@ -542,6 +543,7 @@ macro(rosbuild_add_library lib)
     _rosbuild_add_library(${static_lib_name} ${lib} STATIC ${_var_DEFAULT_ARGS})
   endif()
 
+  target_link_libraries(${lib} ${EXPORTED_TO_ME_LIBRARIES})
   #
   #  ??? should this be disabled whenever we're not in a stack?
   #

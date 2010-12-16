@@ -59,6 +59,7 @@ def write_project_cmake(name, d, index=index):
     if 'export' in d \
             and 'include_dirs' in d['export']:
         print >>ofile, 'include_directories(%s)' % ' '.join(d['export']['include_dirs'])
+    libs_i_need = []
     if 'depend' in d:
         for pkgname in d['depend']:
             pkg = index[(pkgname, None)]
@@ -66,6 +67,11 @@ def write_project_cmake(name, d, index=index):
                 if 'include_dirs' in pkg['export']:
                     print >>ofile, 'include_directories(%s)' % \
                         ' '.join(pkg['export']['include_dirs'])
+                if 'libs' in pkg['export']:
+                    libs_i_need += pkg['export']['libs']
+
+    if len(libs_i_need) > 0:
+        print >>ofile, 'set(EXPORTED_TO_ME_LIBRARIES %s)' % ' '.join(libs_i_need)
     subdir(d['srcdir'], name)
 
 def dump(index, written = set([])):
