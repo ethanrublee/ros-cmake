@@ -6,6 +6,8 @@ set(ROSBUILD_SUBSHELL ${CMAKE_CURRENT_BINARY_DIR}/env.sh)
 set(ROS_PACKAGE_PATH $ENV{ROS_PACKAGE_PATH})
 set(ROSBUILD_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
 file(MAKE_DIRECTORY ${ROSBUILD_GEN_DIR})
+include_directories(${ROSBUILD_GEN_DIR}/cpp/msg)
+include_directories(${ROSBUILD_GEN_DIR}/cpp/srv)
 
 #
 # Globally unique targets.  Wtf. 

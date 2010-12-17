@@ -40,6 +40,9 @@ for j in langs:
     print >>out, '  gensrv_%s(${ARGV})' % j[3:]
 print >>out, 'endmacro()'
 
+for j in langs:
+    print >>out, 'add_custom_target(%s_codegen)' % j
+
 del index[('__langs', None)]
 
 print >>out, '#\n#\n#'

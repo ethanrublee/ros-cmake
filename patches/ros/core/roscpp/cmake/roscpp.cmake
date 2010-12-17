@@ -24,7 +24,7 @@ macro(genmsg_cpp)
       ${genmsg_cpp_exe} 
       ${_input}
       -o ${_outdir}
-      DEPENDS ${_input} ${genmsg_cpp_exe} ${gendeps_exe} 
+      DEPENDS ${_input} ${genmsg_cpp_exe} ${gendeps_exe} rospackexe
       ${${PROJECT_NAME}_${_msg}_GENDEPS} ${ROS_MANIFEST_LIST}
       )
 		     
@@ -35,22 +35,22 @@ macro(genmsg_cpp)
   if (_autogen)
     add_custom_target(${PROJECT_NAME}_roscpp_msggen ALL DEPENDS ${_autogen})
     add_dependencies(${PROJECT_NAME}_codegen ${PROJECT_NAME}_roscpp_msggen)
+    add_dependencies(roscpp_codegen ${PROJECT_NAME}_codegen)
   endif()
 endmacro(genmsg_cpp)
 
 # Service-generation support.
 macro(gensrv_cpp)
-if (FALSE)
-  rosbuild_get_srvs(_srvlist)
+
   set(_autogen "")
-  foreach(_srv ${_srvlist})
+  foreach(_srv ${ARGN})
     # Construct the path to the .srv file
     string(REPLACE ".srv" ".h" _output_cpp_base ${_srv})
 
-    set(_input ${PROJECT_SOURCE_DIR}/srv/${_srv})
-  
-    rosbuild_gendeps(${PROJECT_NAME} ${_srv})
-  
+    set(_input ${PROJECT_SOURCE_DIR}/${_srv})
+    
+    # rosbuild_gendeps(${PROJECT_NAME} ${_srv})
+    
     set(_outdir ${ROSBUILD_GEN_DIR}/cpp/srv)
     set(_output_cpp ${_outdir}/${PROJECT_NAME}/${_output_cpp_base})
 
@@ -61,7 +61,8 @@ if (FALSE)
       ${ROSBUILD_SUBSHELL} ${gensrv_cpp_exe} 
       --input=${_input}
       --outdir=${_outdir}
-      DEPENDS ${_input} ${gensrv_cpp_exe} ${genmsg_cpp_exe} ${gendeps_exe} ${${PROJECT_NAME}_${_srv}_GENDEPS} ${ROS_MANIFEST_LIST}
+      DEPENDS ${_input} ${gensrv_cpp_exe} ${genmsg_cpp_exe} ${gendeps_exe} 
+      ${${PROJECT_NAME}_${_srv}_GENDEPS} ${ROS_MANIFEST_LIST} rospackexe
       )
 
     list(APPEND _autogen ${_output_cpp})
@@ -75,6 +76,6 @@ if (FALSE)
     add_custom_target(${PROJECT_NAME}_roscpp_srvgen ALL DEPENDS ${_autogen})
     add_dependencies(${PROJECT_NAME}_codegen ${PROJECT_NAME}_roscpp_srvgen)
   endif()
-endif()
+
 endmacro(gensrv_cpp)
 

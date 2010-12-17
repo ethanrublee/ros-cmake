@@ -36,10 +36,10 @@
 ## 
 ## Converts ROS .msg files in a package into C++ source code implementations.
 
-print sys.path
 import roslib; roslib.load_manifest('roscpp')
 
 import sys
+print sys.path
 import os
 import traceback
 
