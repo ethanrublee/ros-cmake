@@ -174,7 +174,6 @@ def get_pkg_dir(package, required=True, ros_root=None, ros_package_path=None):
     #UNIXONLY
     #TODO: replace with non-rospack-based solution (e.g. os.walk())
     try:
-        print "ADFASDFSDFSFDSD"
         penv = os.environ.copy()
         if ros_root:
             ros_root = roslib.rosenv.resolve_path(ros_root)
@@ -190,7 +189,6 @@ def get_pkg_dir(package, required=True, ros_root=None, ros_package_path=None):
         if 'ROS_BUILD' in os.environ:
             rospack = os.path.join(os.environ['ROS_BUILD'], 'bin', 'rospack')
 
-        print "ROSPACK=%s" % rospack
         if ros_package_path is not None:
             ros_package_path = roslib.rosenv.resolve_paths(ros_package_path)
             penv[ROS_PACKAGE_PATH] = ros_package_path

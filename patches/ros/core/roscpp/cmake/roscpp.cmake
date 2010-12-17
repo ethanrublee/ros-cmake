@@ -24,7 +24,7 @@ macro(genmsg_cpp)
       ${genmsg_cpp_exe} 
       --input=${_input}
       --outdir=${_outdir}
-      DEPENDS ${_input} ${genmsg_cpp_exe} ${gendeps_exe} 
+      DEPENDS ${_input} ${genmsg_cpp_exe} ${gendeps_exe} rospackexe
       ${${PROJECT_NAME}_${_msg}_GENDEPS} ${ROS_MANIFEST_LIST}
       )
 		     
