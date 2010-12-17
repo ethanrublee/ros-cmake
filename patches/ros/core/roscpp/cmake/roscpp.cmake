@@ -35,7 +35,7 @@ macro(genmsg_cpp)
   if (_autogen)
     add_custom_target(${PROJECT_NAME}_roscpp_msggen ALL DEPENDS ${_autogen})
     add_dependencies(${PROJECT_NAME}_codegen ${PROJECT_NAME}_roscpp_msggen)
-    add_dependencies(roscpp_codegen ${PROJECT_NAME}_codegen)
+    # add_dependencies(roscpp_codegen ${PROJECT_NAME}_codegen)
   endif()
 endmacro(genmsg_cpp)
 
@@ -78,4 +78,3 @@ macro(gensrv_cpp)
   endif()
 
 endmacro(gensrv_cpp)
-
