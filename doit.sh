@@ -33,9 +33,9 @@ fi
 
 rsync -va $WORK/cmake/patches/ $WORK/
 
-#rm -rf $WORK/build/
-#mkdir $WORK/build/
-rm -f $WORK/build/CMakeCache.txt
+rm -rf $WORK/build/
+mkdir $WORK/build/
+# rm -f $WORK/build/CMakeCache.txt
 
 ./cmake/generate_cmakelists.py index.pkl build/
 

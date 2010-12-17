@@ -36,6 +36,7 @@
 ## 
 ## Converts ROS .msg files in a package into C++ source code implementations.
 
+print sys.path
 import roslib; roslib.load_manifest('roscpp')
 
 import sys
@@ -681,9 +682,9 @@ def generate(args):
 
     from optparse import OptionParser
     parser = OptionParser("generates c++ message serialization code")
-    parser.add_option("--input", dest='input',
-                      help="absolute path to message file")
-    parser.add_option("--outdir", dest='outdir',
+    #parser.add_option("--input", dest='input',
+    # help="absolute path to message file")
+    parser.add_option("-o", dest='outdir',
                       help="absolute path to output directory")
     (options, args) = parser.parse_args(args)
 
@@ -692,11 +693,11 @@ def generate(args):
     #
     # TDS:  AAAGH THIS SUCKS
     #
-    (package_dir, package) = roslib.packages.get_dir_pkg(options.input)
-    (_, spec) = roslib.msgs.load_from_file(options.input, package)
+    (package_dir, package) = roslib.packages.get_dir_pkg(args[1])
+    (_, spec) = roslib.msgs.load_from_file(args[1], package)
     
     s = StringIO()
-    write_begin(s, spec, options.input)
+    write_begin(s, spec, args[1])
     write_generic_includes(s)
     write_includes(s, spec)
     

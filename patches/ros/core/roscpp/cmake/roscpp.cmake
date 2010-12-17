@@ -22,8 +22,8 @@ macro(genmsg_cpp)
     add_custom_command(OUTPUT ${_output_cpp} 
       COMMAND ${ROSBUILD_SUBSHELL} 
       ${genmsg_cpp_exe} 
-      --input=${_input}
-      --outdir=${_outdir}
+      ${_input}
+      -o ${_outdir}
       DEPENDS ${_input} ${genmsg_cpp_exe} ${gendeps_exe} 
       ${${PROJECT_NAME}_${_msg}_GENDEPS} ${ROS_MANIFEST_LIST}
       )
