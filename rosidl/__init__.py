@@ -47,5 +47,21 @@ numerous ROS tools (e.g. rostopic).
 
 """
 
-from rosidl.launcher import load_manifest
-from rosidl.scriptutil import is_interactive, set_interactive
+# from rosidl.launcher import load_manifest
+# from rosidl.scriptutil import is_interactive, set_interactive
+
+verbose = True
+
+if verbose:
+    import inspect, pprint
+    def log(*args):
+        print "%s:%d" % inspect.stack()[1][1:3], 
+        print ' '.join([str(x) for x in args])
+
+    def plog(msg, obj):
+        print "%s:%d" % inspect.stack()[1][1:3], 
+        print msg, " ",
+        pprint.pprint(obj)
+else:
+    def log(*args): pass
+    def plog(*args): pass

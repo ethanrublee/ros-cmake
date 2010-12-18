@@ -46,15 +46,16 @@ md5sums and message definitions of classes.
 import sys
 import cStringIO
 
+from rosidl import log, plog
 import rosidl.msgs 
 import rosidl.names 
-import rosidl.packages 
+# import rosidl.packages 
 import rosidl.srvs 
 
 # name of the Header type as gentools knows it
 _header_type_name = 'rosidl/Header'
 
-def _add_msgs_depends(spec, deps, package_context):
+def _add_msgs_depends(spec, deps, package_context, includepath):
     """
     Add the list of message types that spec depends on to depends.
     @param spec: message to compute dependencies for
@@ -63,6 +64,7 @@ def _add_msgs_depends(spec, deps, package_context):
     with the dependencies of spec when the method completes
     @type  deps: [str]
     """
+    log("_add_msgs_depends <spec>",  deps, package_context)
     for t in spec.types:
         t = rosidl.msgs.base_msg_type(t)
         if not rosidl.msgs.is_builtin(t):
@@ -79,11 +81,11 @@ def _add_msgs_depends(spec, deps, package_context):
                         deps.append(package_context+'/'+t)
             else:
                 #lazy-load
-                key, depspec = rosidl.msgs.load_by_type(t, package_context)
+                key, depspec = rosidl.msgs.load_by_type(t, includepath, package_context)
                 if t != rosidl.msgs.HEADER:
                   deps.append(key)
                 rosidl.msgs.register(key, depspec)
-            _add_msgs_depends(depspec, deps, package_context)
+            _add_msgs_depends(depspec, deps, package_context, includepath)
 
 def compute_md5_text(get_deps_dict, spec):
     """
@@ -257,7 +259,8 @@ def get_file_dependencies(f, stdout=sys.stdout, stderr=sys.stderr):
         raise Exception("[%s] does not appear to be a message or service"%spec)
     return get_dependencies(spec, package, stdout, stderr)
 
-def get_dependencies(spec, package, compute_files=True, stdout=sys.stdout, stderr=sys.stderr):
+def get_dependencies(spec, package, includepath, 
+                     compute_files=True, stdout=sys.stdout, stderr=sys.stderr):
     """
     Compute dependencies of the specified Msgs/Srvs
     @param spec: message or service instance
@@ -289,7 +292,7 @@ def get_dependencies(spec, package, compute_files=True, stdout=sys.stdout, stder
 
     deps = []
     if isinstance(spec, rosidl.msgs.MsgSpec):
-        _add_msgs_depends(spec, deps, package)
+        _add_msgs_depends(spec, deps, package, includepath)
     elif isinstance(spec, rosidl.srvs.SrvSpec):
         _add_msgs_depends(spec.request, deps, package)
         _add_msgs_depends(spec.response, deps, package)                
@@ -313,6 +316,7 @@ def get_dependencies(spec, package, compute_files=True, stdout=sys.stdout, stder
         if not d in uniquedeps:
             uniquedeps.append(d)
 
+    plog("uniquedeps", uniquedeps)
     if compute_files:
         return { 'files': files, 'deps': deps, 'spec': spec, 'package': package, 'uniquedeps': uniquedeps }
     else:

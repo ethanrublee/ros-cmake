@@ -12,6 +12,7 @@ echo 'message("wtf, no cmakelists here")' >> common/actionlib/test/CMakeLists.tx
 echo "cmake_minimum_required(VERSION 2.8)" > CMakeLists.txt
 echo "include(cmake/main.cmake)" >> CMakeLists.txt
 rm -f $WORK/ros/core/roslisp/manifest.xml
+
 rm -f ros/tools/rxgraph/CMakeLists.txt ros/tools/rxtools/CMakeLists.txt
 
 if [ -d $WORK/ros/core/rosbuild ] ; then

@@ -44,12 +44,12 @@ import cStringIO
 import rosidl.exceptions
 import rosidl.msgs
 import rosidl.names
-import rosidl.packages
-import rosidl.resources
+#import rosidl.packages
+#import rosidl.resources
 
 # don't directly use code from this, though we do depend on the
 # manifest.Depend data type
-import rosidl.manifest
+#import rosidl.manifest
 
 ## file extension
 EXT = rosidl.names.SRV_EXT #alias

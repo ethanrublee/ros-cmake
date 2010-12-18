@@ -67,6 +67,8 @@ def write_project_cmake(name, d, index=index):
         print >>ofile, 'include_directories(%s)' % ' '.join(d['export']['include_dirs'])
     libs_i_need = []
     if 'depend' in d:
+        print >>ofile, 'set(DEPENDED_PACKAGE_PATHS %s)' % ' '.join([index[(pkgname, None)]['srcdir']
+                                                                   for pkgname in d['depend']])
         for pkgname in d['depend']:
             pkg = index[(pkgname, None)]
             if 'export' in pkg:

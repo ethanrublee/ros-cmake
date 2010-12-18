@@ -44,15 +44,18 @@ import itertools
 import sys
 import re
 import string
+import pdb
+
+from rosidl import log, plog
 
 import rosidl.exceptions
-import rosidl.manifest
+# import rosidl.manifest
 import rosidl.packages
 import rosidl.names
-import rosidl.resources
-import rosidl.rospack
+# import rosidl.resources
+# import rosidl.rospack
 
-VERBOSE = False
+VERBOSE = True
 
 ## @return: True if msg-related scripts should print verbose output
 def is_verbose():
@@ -359,13 +362,16 @@ def reinit():
     
 _initialized = False
 def _init():
+    # pdb.set_trace()
     #lazy-init
     global _initialized
     if _initialized:
         return
 
     fname = '%s%s'%(HEADER, EXT)
-    rosidl_dir = rosidl.packages.get_pkg_dir('rosidl')
+#    rosidl_dir = rosidl.packages.get_pkg_dir('rosidl')
+    rosidl_dir = rosidl.__path__[0]
+
     if rosidl_dir is None:
         raise MsgSpecException("Unable to locate rosidl: %s files cannot be loaded"%EXT)
     
@@ -404,10 +410,10 @@ def list_msg_types(package, include_depends):
     types = rosidl.resources.list_package_resources(package, include_depends, rosidl.packages.MSG_DIR, _msg_filter)
     return [x[:-len(EXT)] for x in types]
 
-def msg_file(package, type_):
+def msg_file(package, type_, searchpath):
     """
-    Determine the file system path for the specified .msg
-    resource. .msg resource does not have to exist.
+    Determine the file system path for the specified .msg on path
+    .msg resource does not have to exist.
     
     @param package: name of package .msg file is in
     @type  package: str
@@ -416,7 +422,15 @@ def msg_file(package, type_):
     @return: file path of .msg file in specified package
     @rtype: str
     """
-    return rosidl.packages.resource_file(package, rosidl.packages.MSG_DIR, type_+EXT)
+    log("msg_file(%s, %s, %s)" % (package, type_, str(searchpath))) 
+
+    for p in searchpath:
+        log("%s ??? %s" % (p, package))
+        if p.endswith("/"+package):
+            return p + "/msg/" + type_ + ".msg"
+
+    return "egh"
+        #False #rosidl.packages.resource_file(package, rosidl.packages.MSG_DIR, type_+EXT)
 
 def get_pkg_msg_specs(package):
     """
@@ -452,8 +466,8 @@ def load_package_dependencies(package, load_recursive=False):
     """
     global _loaded_packages
     _init()    
-    if VERBOSE:
-        print "Load dependencies for package", package
+
+    log("Load dependencies for package", package)
         
     if not load_recursive:
         manifest_file = rosidl.manifest.manifest_file(package, True)
@@ -465,8 +479,7 @@ def load_package_dependencies(package, load_recursive=False):
     msgs = []
     failures = []
     for d in depends:
-        if VERBOSE:
-            print "Load dependency", d
+        log("Load dependency", d)
         #check if already loaded
         # - we are dependent on manifest.getAll returning first-order dependencies first
         if d in _loaded_packages or d == package:
@@ -490,20 +503,19 @@ def load_package(package):
     """
     global _loaded_packages
     _init()    
-    if VERBOSE:
-        print "Load package", package
+
+    log("Load package", package)
         
     #check if already loaded
     # - we are dependent on manifest.getAll returning first-order dependencies first
     if package in _loaded_packages:
-        if VERBOSE:
-            print "Package %s is already loaded"%package
+        log("Package %s is already loaded" % package)
         return
 
     _loaded_packages.append(package)
     specs, failed = get_pkg_msg_specs(package)
-    if VERBOSE:
-        print "Package contains the following messages: %s"%specs
+
+    log("Package contains the following messages: %s" % specs)
     for key, spec in specs:
         #register spec under both local and fully-qualified key
         register(key, spec)
@@ -547,7 +559,7 @@ def _convert_val(type_, val):
         return True if eval(val) else False
     raise MsgSpecException("invalid constant type: [%s]"%type_)
         
-def load_by_type(msgtype, package_context=''):
+def load_by_type(msgtype, includepath, package_context=''):
     """
     Load message specification for specified type
     
@@ -557,12 +569,17 @@ def load_by_type(msgtype, package_context=''):
     @return: Message type name and message specification
     @rtype: (str, L{MsgSpec})
     """
+    log("load_by_type(%s, %s)" % (msgtype, package_context))
     pkg, basetype = rosidl.names.package_resource_name(msgtype)
     pkg = pkg or package_context # convert '' -> local package
-    try:
-        m_f = msg_file(pkg, basetype)
-    except rosidl.packages.InvalidROSPkgException:
-        raise MsgSpecException("Cannot locate message type [%s], package [%s] does not exist"%(msgtype, pkg)) 
+    
+    log("pkg", pkg)
+    #try:
+    log("here")
+    m_f = msg_file(pkg, basetype, includepath)
+    log("m_f", m_f)
+    #except: #rosidl.packages.InvalidROSPkgException:
+    #raise MsgSpecException("Cannot locate message type [%s], package [%s] does not exist"%(msgtype, pkg)) 
     return load_from_file(m_f, pkg)
 
 def load_from_string(text, package_context='', full_name='', short_name=''):
@@ -615,7 +632,6 @@ def load_from_string(text, package_context='', full_name='', short_name=''):
                 raise MsgSpecException("%s is not a legal message field name"%name)
             if package_context and not SEP in type_:
                 if not base_msg_type(type_) in RESERVED_TYPES:
-                    #print "rewrite", type_, "to", "%s/%s"%(package_context, type_)
                     type_ = "%s/%s"%(package_context, type_)
             types.append(type_)
             names.append(name)
@@ -634,11 +650,10 @@ def load_from_file(file_path, package_context=''):
     @rtype:  (str, L{MsgSpec})
     @raise MsgSpecException: if syntax errors or other problems are detected in file
     """
-    if VERBOSE:
-        if package_context:
-            print "Load spec from", file_path, "into package [%s]"%package_context
-        else:
-            print "Load spec from", file_path
+    if package_context:
+        log("Load spec from", file_path, "into package [%s]"%package_context)
+    else:
+        log("Load spec from", file_path)
 
     file_name = os.path.basename(file_path)
     type_ = file_name[:-len(EXT)]
@@ -729,6 +744,8 @@ def get_registered(msg_type_name, default_package=None):
     @return: msg spec for msg type name
     @rtype: L{MsgSpec}
     """
+    print "get_registered(%s, %s)" % (msg_type_name, default_package)
+    print REGISTERED_TYPES
     if msg_type_name in REGISTERED_TYPES:
         return REGISTERED_TYPES[msg_type_name]
     elif default_package:
@@ -747,7 +764,7 @@ def register(msg_type_name, msg_spec):
     @param msg_spec: spec to load
     @type  msg_spec: L{MsgSpec}
     """
-    if VERBOSE:
-        print "Register msg %s"%msg_type_name
+    log("Register msg %s"%msg_type_name)
+
     REGISTERED_TYPES[msg_type_name] = msg_spec
 

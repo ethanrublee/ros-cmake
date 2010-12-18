@@ -21,6 +21,3 @@
 - svn:
     uri: https://code.ros.org/svn/ros-pkg/stacks/common_msgs/tags/cturtle
     local-name: common_msgs
-
-    
-     

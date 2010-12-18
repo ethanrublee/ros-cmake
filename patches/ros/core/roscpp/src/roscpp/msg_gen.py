@@ -42,9 +42,9 @@ import sys
 import os
 import traceback
 
-import roslib.msgs 
-import roslib.packages
-import roslib.gentools
+import rosidl.msgs 
+import rosidl.packages
+import rosidl.gentools
 
 from cStringIO import StringIO
 
@@ -70,12 +70,12 @@ def msg_type_to_cpp(type):
     @return: The C++ declaration
     @rtype: str
     """
-    (base_type, is_array, array_len) = roslib.msgs.parse_type(type)
+    (base_type, is_array, array_len) = rosidl.msgs.parse_type(type)
     cpp_type = None
-    if (roslib.msgs.is_builtin(base_type)):
+    if (rosidl.msgs.is_builtin(base_type)):
         cpp_type = MSG_TYPE_TO_CPP[base_type]
     elif (len(base_type.split('/')) == 1):
-        if (roslib.msgs.is_header_type(base_type)):
+        if (rosidl.msgs.is_header_type(base_type)):
             cpp_type = ' ::roslib::Header_<ContainerAllocator> '
         else:
             cpp_type = '%s_<ContainerAllocator> '%(base_type)
@@ -104,7 +104,7 @@ def cpp_message_declarations(name_prefix, msg):
         ("std_msgs::String_", "std_msgs::String_<ContainerAllocator>", "std_msgs::String")
     @rtype: str 
     """
-    pkg, basetype = roslib.names.package_resource_name(msg)
+    pkg, basetype = rosidl.names.package_resource_name(msg)
     cpp_name = ' ::%s%s'%(name_prefix, msg)
     if (pkg):
         cpp_name = ' ::%s::%s'%(pkg, basetype)
@@ -117,7 +117,7 @@ def write_begin(s, spec, file):
     @param s: The stream to write to
     @type s: stream
     @param spec: The spec
-    @type spec: roslib.msgs.MsgSpec
+    @type spec: rosidl.msgs.MsgSpec
     @param file: The file this message is being generated for
     @type file: str
     """
@@ -132,7 +132,7 @@ def write_end(s, spec):
     @param s: The stream to write to
     @type s: stream
     @param spec: The spec
-    @type spec: roslib.msgs.MsgSpec
+    @type spec: rosidl.msgs.MsgSpec
     """
     s.write('#endif // %s_MESSAGE_%s_H\n'%(spec.package.upper(), spec.short_name.upper()))
     
@@ -159,14 +159,14 @@ def write_includes(s, spec):
     @param s: The stream to write to
     @type s: stream
     @param spec: The message spec to iterate over
-    @type spec: roslib.msgs.MsgSpec
+    @type spec: rosidl.msgs.MsgSpec
     """
     for field in spec.parsed_fields():
         if (not field.is_builtin):
             if (field.is_header):
                 s.write('#include "roslib/Header.h"\n')
             else:
-                (pkg, name) = roslib.names.package_resource_name(field.base_type)
+                (pkg, name) = rosidl.names.package_resource_name(field.base_type)
                 pkg = pkg or spec.package # convert '' to package
                 s.write('#include "%s/%s.h"\n'%(pkg, name))
                 
@@ -179,7 +179,7 @@ def write_struct(s, spec, cpp_name_prefix, extra_deprecated_traits = {}):
     @param s: The stream to write to
     @type s: stream
     @param spec: The message spec
-    @type spec: roslib.msgs.MsgSpec
+    @type spec: rosidl.msgs.MsgSpec
     @param cpp_name_prefix: The C++ prefix to use when referring to the message, e.g. "std_msgs::"
     @type cpp_name_prefix: str
     """
@@ -193,8 +193,8 @@ def write_struct(s, spec, cpp_name_prefix, extra_deprecated_traits = {}):
     write_members(s, spec)
     write_constant_declarations(s, spec)
     
-    gendeps_dict = roslib.gentools.get_dependencies(spec, spec.package, compute_files=False)
-    md5sum = roslib.gentools.compute_md5(gendeps_dict)
+    gendeps_dict = rosidl.gentools.get_dependencies(spec, spec.package, compute_files=False)
+    md5sum = rosidl.gentools.compute_md5(gendeps_dict)
     full_text = compute_full_text_escaped(gendeps_dict)
     
     write_deprecated_member_functions(s, spec, dict({'MD5Sum': md5sum, 'DataType': '%s/%s'%(spec.package, spec.short_name), 'MessageDefinition': full_text}.items() + extra_deprecated_traits.items()))
@@ -245,7 +245,7 @@ def write_initializer_list(s, spec, container_gets_allocator):
     @param s: The stream to write to
     @type s: stream
     @param spec: The message spec
-    @type spec: roslib.msgs.MsgSpec
+    @type spec: rosidl.msgs.MsgSpec
     @param container_gets_allocator: Whether or not a container type (whether it's another message, a vector, array or string)
         should have the allocator passed to its constructor.  Assumes the allocator is named _alloc.
     @type container_gets_allocator: bool
@@ -279,7 +279,7 @@ def write_fixed_length_assigns(s, spec, container_gets_allocator, cpp_name_prefi
     @param s: The stream to write to
     @type s: stream
     @param spec: The message spec
-    @type spec: roslib.msgs.MsgSpec
+    @type spec: rosidl.msgs.MsgSpec
     @param container_gets_allocator: Whether or not a container type (whether it's another message, a vector, array or string)
         should have the allocator passed to its constructor.  Assumes the allocator is named _alloc.
     @type container_gets_allocator: bool
@@ -310,7 +310,7 @@ def write_constructors(s, spec, cpp_name_prefix):
     @param s: The stream to write to
     @type s: stream
     @param spec: The message spec
-    @type spec: roslib.msgs.MsgSpec
+    @type spec: rosidl.msgs.MsgSpec
     @param cpp_name_prefix: The C++ prefix to use when referring to the message, e.g. "std_msgs::"
     @type cpp_name_prefix: str
     """
@@ -353,7 +353,7 @@ def write_members(s, spec):
     @param s: The stream to write to
     @type s: stream
     @param spec: The message spec
-    @type spec: roslib.msgs.MsgSpec
+    @type spec: rosidl.msgs.MsgSpec
     """
     [write_member(s, field) for field in spec.parsed_fields()]
         
@@ -369,7 +369,7 @@ def write_constant_declaration(s, constant):
     @param s: The stream to write to
     @type s: stream
     @param constant: The constant
-    @type constant: roslib.msgs.Constant
+    @type constant: rosidl.msgs.Constant
     """
     
     # integral types get their declarations as enums to allow use at compile time
@@ -385,7 +385,7 @@ def write_constant_declarations(s, spec):
     @param s: The stream to write to
     @type s: stream
     @param spec: The message spec
-    @type spec: roslib.msgs.MsgSpec
+    @type spec: rosidl.msgs.MsgSpec
     """
     [write_constant_declaration(s, constant) for constant in spec.constants]
     s.write('\n')
@@ -397,7 +397,7 @@ def write_constant_definition(s, spec, constant):
     @param s: The stream to write to
     @type s: stream
     @param constant: The constant
-    @type constant: roslib.msgs.Constant
+    @type constant: rosidl.msgs.Constant
     """
     
     # integral types do not need a definition, since they've been defined where they are declared
@@ -413,7 +413,7 @@ def write_constant_definitions(s, spec):
     @param s: The stream to write to
     @type s: stream
     @param spec: The message spec
-    @type spec: roslib.msgs.MsgSpec
+    @type spec: rosidl.msgs.MsgSpec
     """
     [write_constant_definition(s, spec, constant) for constant in spec.constants]
     s.write('\n')
@@ -423,7 +423,7 @@ def is_fixed_length(spec):
     Returns whether or not the message is fixed-length
     
     @param spec: The message spec
-    @type spec: roslib.msgs.MsgSpec
+    @type spec: rosidl.msgs.MsgSpec
     @param package: The package of the
     @type package: str
     """
@@ -440,8 +440,8 @@ def is_fixed_length(spec):
             
     types = set(types)
     for type in types:
-        type = roslib.msgs.resolve_type(type, spec.package)
-        (_, new_spec) = roslib.msgs.load_by_type(type, spec.package)
+        type = rosidl.msgs.resolve_type(type, spec.package)
+        (_, new_spec) = rosidl.msgs.load_by_type(type, spec.package)
         if (not is_fixed_length(new_spec)):
             return False
         
@@ -487,7 +487,7 @@ def write_deprecated_member_functions(s, spec, traits):
 
 def compute_full_text_escaped(gen_deps_dict):
     """
-    Same as roslib.gentools.compute_full_text, except that the
+    Same as rosidl.gentools.compute_full_text, except that the
     resulting text is escaped to be safe for C++ double quotes
 
     @param get_deps_dict: dictionary returned by get_dependencies call
@@ -495,7 +495,7 @@ def compute_full_text_escaped(gen_deps_dict):
     @return: concatenated text for msg/srv file and embedded msg/srv types. Text will be escaped for double quotes
     @rtype: str
     """
-    definition = roslib.gentools.compute_full_text(gen_deps_dict)
+    definition = rosidl.gentools.compute_full_text(gen_deps_dict)
     lines = definition.split('\n')
     s = StringIO()
     for line in lines:
@@ -571,15 +571,15 @@ def write_traits(s, spec, cpp_name_prefix, datatype = None):
     @param s: The stream to write to
     @type s: stream
     @param spec: The message spec
-    @type spec: roslib.msgs.MsgSpec
+    @type spec: rosidl.msgs.MsgSpec
     @param cpp_name_prefix: The C++ prefix to prepend to a message to refer to it (e.g. "std_msgs::")
     @type cpp_name_prefix: str
     @param datatype: The string to write as the datatype of the message.  If None (default), pkg/msg is used.
     @type datatype: str
     """
     # generate dependencies dictionary
-    gendeps_dict = roslib.gentools.get_dependencies(spec, spec.package, compute_files=False)
-    md5sum = roslib.gentools.compute_md5(gendeps_dict)
+    gendeps_dict = rosidl.gentools.get_dependencies(spec, spec.package, compute_files=False)
+    md5sum = rosidl.gentools.compute_md5(gendeps_dict)
     full_text = compute_full_text_escaped(gendeps_dict)
     
     if (datatype is None):
@@ -643,7 +643,7 @@ def write_serialization(s, spec, cpp_name_prefix):
     @param s: Stream to write to
     @type s: stream
     @param spec: The message spec
-    @type spec: roslib.msgs.MsgSpec
+    @type spec: rosidl.msgs.MsgSpec
     @param cpp_name_prefix: The C++ prefix to prepend to a message to refer to it (e.g. "std_msgs::")
     @type cpp_name_prefix: str
     """
@@ -692,8 +692,8 @@ def generate(args):
     #
     # TDS:  AAAGH THIS SUCKS
     #
-    (package_dir, package) = roslib.packages.get_dir_pkg(args[1])
-    (_, spec) = roslib.msgs.load_from_file(args[1], package)
+    (package_dir, package) = rosidl.packages.get_dir_pkg(args[1])
+    (_, spec) = rosidl.msgs.load_from_file(args[1], package)
     
     s = StringIO()
     write_begin(s, spec, args[1])

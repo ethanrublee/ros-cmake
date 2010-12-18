@@ -42,6 +42,7 @@ endmacro(genmsg_cpp)
 # Service-generation support.
 macro(gensrv_cpp)
 
+if (False)
   set(_autogen "")
   foreach(_srv ${ARGN})
     # Construct the path to the .srv file
@@ -76,5 +77,6 @@ macro(gensrv_cpp)
     add_custom_target(${PROJECT_NAME}_roscpp_srvgen ALL DEPENDS ${_autogen})
     add_dependencies(${PROJECT_NAME}_codegen ${PROJECT_NAME}_roscpp_srvgen)
   endif()
+endif()
 
 endmacro(gensrv_cpp)
