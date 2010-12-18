@@ -424,12 +424,14 @@ def msg_file(package, type_, searchpath):
     """
     log("msg_file(%s, %s, %s)" % (package, type_, str(searchpath))) 
 
+    assert isinstance(searchpath, list)
+
     for p in searchpath:
         log("%s ??? %s" % (p, package))
         if p.endswith("/"+package):
             return p + "/msg/" + type_ + ".msg"
 
-    return "egh"
+    return rosidl.__path__[0] + "/msg/" + type_ + ".msg"
         #False #rosidl.packages.resource_file(package, rosidl.packages.MSG_DIR, type_+EXT)
 
 def get_pkg_msg_specs(package):
@@ -569,7 +571,9 @@ def load_by_type(msgtype, includepath, package_context=''):
     @return: Message type name and message specification
     @rtype: (str, L{MsgSpec})
     """
-    log("load_by_type(%s, %s)" % (msgtype, package_context))
+    assert isinstance(includepath, list)
+
+    log("load_by_type(%s, %s, %s)" % (msgtype, str(includepath), package_context))
     pkg, basetype = rosidl.names.package_resource_name(msgtype)
     pkg = pkg or package_context # convert '' -> local package
     

@@ -87,7 +87,7 @@ def _add_msgs_depends(spec, deps, package_context, includepath):
                 rosidl.msgs.register(key, depspec)
             _add_msgs_depends(depspec, deps, package_context, includepath)
 
-def compute_md5_text(get_deps_dict, spec):
+def compute_md5_text(get_deps_dict, spec, includepath):
     """
     Compute the text used for md5 calculation. MD5 spec states that we
     removes comments and non-meaningful whitespace. We also strip
@@ -124,13 +124,13 @@ def compute_md5_text(get_deps_dict, spec):
             sub_pkg, _ = rosidl.names.package_resource_name(base_msg_type)
             sub_pkg = sub_pkg or package
             sub_spec = rosidl.msgs.get_registered(base_msg_type, package)
-            sub_deps = get_dependencies(sub_spec, sub_pkg, compute_files=compute_files)
-            sub_md5 = compute_md5(sub_deps)
+            sub_deps = get_dependencies(sub_spec, sub_pkg, includepath, compute_files=compute_files)
+            sub_md5 = compute_md5(sub_deps, includepath)
             buff.write("%s %s\n"%(sub_md5, name))
     
     return buff.getvalue().strip() # remove trailing new line
 
-def _compute_hash(get_deps_dict, hash):
+def _compute_hash(get_deps_dict, hash, includepath):
     """
     subroutine of compute_md5()
     @param get_deps_dict: dictionary returned by get_dependencies call
@@ -144,10 +144,10 @@ def _compute_hash(get_deps_dict, hash):
     from rosidl.srvs import SrvSpec
     spec = get_deps_dict['spec']
     if isinstance(spec, MsgSpec):
-        hash.update(compute_md5_text(get_deps_dict, spec))
+        hash.update(compute_md5_text(get_deps_dict, spec, includepath))
     elif isinstance(spec, SrvSpec):
-        hash.update(compute_md5_text(get_deps_dict, spec.request))
-        hash.update(compute_md5_text(get_deps_dict, spec.response))        
+        hash.update(compute_md5_text(get_deps_dict, spec.request, includepath))
+        hash.update(compute_md5_text(get_deps_dict, spec.response, includepath))        
     else:
         raise Exception("[%s] is not a message or service"%spec)   
     return hash.hexdigest()
@@ -187,7 +187,7 @@ def compute_md5_v1(get_deps_dict):
         import md5
         return _compute_hash_v1(get_deps_dict, md5.new())
 
-def compute_md5(get_deps_dict):
+def compute_md5(get_deps_dict, includepath):
     """
     Compute md5 hash for message/service
     @param get_deps_dict dict: dictionary returned by get_dependencies call
@@ -199,10 +199,10 @@ def compute_md5(get_deps_dict):
         # md5 is deprecated in Python 2.6 in favor of hashlib, but hashlib is
         # unavailable in Python 2.4
         import hashlib
-        return _compute_hash(get_deps_dict, hashlib.md5())
+        return _compute_hash(get_deps_dict, hashlib.md5(), includepath)
     except ImportError:
         import md5
-        return _compute_hash(get_deps_dict, md5.new())
+        return _compute_hash(get_deps_dict, md5.new(), includepath)
 
 ## alias
 compute_md5_v2 = compute_md5
