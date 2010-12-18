@@ -36,14 +36,13 @@
 ## 
 ## Converts ROS .msg files in a package into C++ source code implementations.
 
-import roslib; roslib.load_manifest('roscpp')
+from rosidl import log, plog
 
 import sys
 import os
 import traceback
 
 import rosidl.msgs 
-import rosidl.packages
 import rosidl.gentools
 
 from cStringIO import StringIO
@@ -95,7 +94,6 @@ def msg_type_to_cpp(type):
 def cpp_message_declarations(name_prefix, msg):
     """
     Returns the different possible C++ declarations for a message given the message itself.
-    
     @param name_prefix: The C++ prefix to be prepended to the name, e.g. "std_msgs::"
     @type name_prefix: str
     @param msg: The message type
@@ -691,44 +689,44 @@ def generate(args):
 
     #
     # TDS:  AAAGH THIS SUCKS
-    #
-    (package_dir, package) = rosidl.packages.get_dir_pkg(args[1])
-    (_, spec) = rosidl.msgs.load_from_file(args[1], package)
-    
-    s = StringIO()
-    write_begin(s, spec, args[1])
-    write_generic_includes(s)
-    write_includes(s, spec)
-    
-    cpp_prefix = '%s::'%(package)
-    
-    s.write('namespace %s\n{\n'%(package))
-    write_struct(s, spec, cpp_prefix)
-    write_constant_definitions(s, spec)
-    write_ostream_operator(s, spec, cpp_prefix)
-    s.write('} // namespace %s\n\n'%(package))
-    
-    write_traits(s, spec, cpp_prefix)
-    write_serialization(s, spec, cpp_prefix)
-    write_operations(s, spec, cpp_prefix)
-    write_end(s, spec)
-    
-    if 'ROS_BUILD' in os.environ:
-        package_dir = os.environ['ROS_BUILD']
-
-    
-    output_dir = '%s/%s'%(options.outdir, package)
-    # print "output_dir=", output_dir
-    if (not os.path.exists(output_dir)):
-        # if we're being run concurrently, the above test can report false but os.makedirs can still fail if
-        # another copy just created the directory
-        try:
-            os.makedirs(output_dir)
-        except OSError, e:
-            pass
-         
-    f = open('%s/%s.h' % (output_dir, spec.short_name), 'w')
-    print >> f, s.getvalue()
-    
-    s.close()
-
+#     #
+#     (package_dir, package) = rosidl.packages.get_dir_pkg(args[1])
+#     (_, spec) = rosidl.msgs.load_from_file(args[1], package)
+#     
+#     s = StringIO()
+#     write_begin(s, spec, args[1])
+#     write_generic_includes(s)
+#     write_includes(s, spec)
+#     
+#     cpp_prefix = '%s::'%(package)
+#     
+#     s.write('namespace %s\n{\n'%(package))
+#     write_struct(s, spec, cpp_prefix)
+#     write_constant_definitions(s, spec)
+#     write_ostream_operator(s, spec, cpp_prefix)
+#     s.write('} // namespace %s\n\n'%(package))
+#     
+#     write_traits(s, spec, cpp_prefix)
+#     write_serialization(s, spec, cpp_prefix)
+#     write_operations(s, spec, cpp_prefix)
+#     write_end(s, spec)
+#     
+#     if 'ROS_BUILD' in os.environ:
+#         package_dir = os.environ['ROS_BUILD']
+# 
+#     
+#     output_dir = '%s/%s'%(options.outdir, package)
+#     # print "output_dir=", output_dir
+#     if (not os.path.exists(output_dir)):
+#         # if we're being run concurrently, the above test can report false but os.makedirs can still fail if
+#         # another copy just created the directory
+#         try:
+#             os.makedirs(output_dir)
+#         except OSError, e:
+#             pass
+#          
+#     f = open('%s/%s.h' % (output_dir, spec.short_name), 'w')
+#     print >> f, s.getvalue()
+#     
+#     s.close()
+# 

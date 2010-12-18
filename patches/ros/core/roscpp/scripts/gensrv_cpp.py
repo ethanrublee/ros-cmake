@@ -36,8 +36,9 @@
 ## 
 ## Converts ROS .msg files in a package into C++ source code implementations.
 
-import roslib; roslib.load_manifest('roscpp')
-import roscpp.msg_gen as genmsg_cpp
+from rosidl import log, plog
+
+import genmsg_cpp
  
 import sys
 import os

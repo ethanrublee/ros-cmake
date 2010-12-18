@@ -294,8 +294,8 @@ def get_dependencies(spec, package, includepath,
     if isinstance(spec, rosidl.msgs.MsgSpec):
         _add_msgs_depends(spec, deps, package, includepath)
     elif isinstance(spec, rosidl.srvs.SrvSpec):
-        _add_msgs_depends(spec.request, deps, package)
-        _add_msgs_depends(spec.response, deps, package)                
+        _add_msgs_depends(spec.request, deps, package, includepath)
+        _add_msgs_depends(spec.response, deps, package, includepath)                
     else:
         raise Exception("[%s] does not appear to be a message or service"%spec)
 
@@ -306,7 +306,7 @@ def get_dependencies(spec, package, includepath,
         for d in set(deps):
             d_pkg, t = rosidl.names.package_resource_name(d)
             d_pkg = d_pkg or package # convert '' -> local package 
-            files[d] = rosidl.msgs.msg_file(d_pkg, t)
+            files[d] = rosidl.msgs.msg_file(d_pkg, t, includepath)
     else:
         files = None
 

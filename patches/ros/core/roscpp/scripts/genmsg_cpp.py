@@ -38,12 +38,13 @@
 
 from rosidl import log, plog
 
+# import msg_gen as genmsg_cpp
+
 import sys
 import os
 import traceback
 
 import rosidl.msgs 
-# import rosidl.packages
 import rosidl.gentools
 
 from cStringIO import StringIO
@@ -91,7 +92,7 @@ def msg_type_to_cpp(type):
             return 'boost::array<%s, %s> '%(cpp_type, array_len)
     else:
         return cpp_type
-    
+
 def cpp_message_declarations(name_prefix, msg):
     """
     Returns the different possible C++ declarations for a message given the message itself.
@@ -585,7 +586,8 @@ def write_traits(s, spec, cpp_name_prefix, includepath, datatype = None):
     assert isinstance(cpp_name_prefix, str)
 
     # generate dependencies dictionary
-    gendeps_dict = rosidl.gentools.get_dependencies(spec, spec.package, includepath, compute_files=False)
+    gendeps_dict = rosidl.gentools.get_dependencies(spec, spec.package, 
+                                                    includepath, compute_files=False)
     md5sum = rosidl.gentools.compute_md5(gendeps_dict, includepath)
     full_text = compute_full_text_escaped(gendeps_dict)
     
@@ -748,4 +750,5 @@ def generate(args):
     
     s.close()
 
-generate(sys.argv)
+if __name__ == "__main__":
+    generate(sys.argv)

@@ -1,13 +1,9 @@
-rosbuild_find_ros_package(roscpp)
 
 set(genmsg_cpp_exe ${CMAKE_SOURCE_DIR}/ros/core/roscpp/scripts/genmsg_cpp.py)
-set(gensrv_cpp_exe ${CMAKE_SOURCE_DIR}/ros/core/roscpp/scripts/gensrv_cpp.py)
-
 # Message-generation support.
 macro(genmsg_cpp)
 
   set(_autogen "")
-
   foreach(_msg ${ARGN})
     # Construct the path to the .msg file
     set(_input ${PROJECT_SOURCE_DIR}/${_msg})
@@ -43,12 +39,14 @@ macro(genmsg_cpp)
     add_dependencies(${PROJECT_NAME}_codegen ${PROJECT_NAME}_roscpp_msggen)
     # add_dependencies(roscpp_codegen ${PROJECT_NAME}_codegen)
   endif()
+
 endmacro(genmsg_cpp)
 
+
+set(gensrv_cpp_exe ${CMAKE_SOURCE_DIR}/ros/core/roscpp/scripts/gensrv_cpp.py)
 # Service-generation support.
 macro(gensrv_cpp)
 
-if (False)
   set(_autogen "")
   foreach(_srv ${ARGN})
     # Construct the path to the .srv file
@@ -61,13 +59,19 @@ if (False)
     set(_outdir ${ROSBUILD_GEN_DIR}/cpp/srv)
     set(_output_cpp ${_outdir}/${PROJECT_NAME}/${_output_cpp_base})
 
+    foreach(dir ${DEPENDED_PACKAGE_PATHS})
+      list(APPEND _incflags -I${dir})
+    endforeach()
+
     # Add the rule to build the .h from the .srv
     add_custom_command(
       OUTPUT ${_output_cpp} 
-      COMMAND 
-      ${ROSBUILD_SUBSHELL} ${gensrv_cpp_exe} 
-      --input=${_input}
-      --outdir=${_outdir}
+      COMMAND ${ROSBUILD_SUBSHELL} 
+      ${gensrv_cpp_exe} 
+      ${_input}
+      -p${PROJECT_NAME}
+      -o${_outdir}
+      ${_incflags} -I${CMAKE_CURRENT_SOURCE_DIR}
       DEPENDS ${_input} ${gensrv_cpp_exe} ${genmsg_cpp_exe} ${gendeps_exe} 
       ${${PROJECT_NAME}_${_srv}_GENDEPS} ${ROS_MANIFEST_LIST} rospackexe
       )
@@ -83,6 +87,4 @@ if (False)
     add_custom_target(${PROJECT_NAME}_roscpp_srvgen ALL DEPENDS ${_autogen})
     add_dependencies(${PROJECT_NAME}_codegen ${PROJECT_NAME}_roscpp_srvgen)
   endif()
-endif()
-
 endmacro(gensrv_cpp)
