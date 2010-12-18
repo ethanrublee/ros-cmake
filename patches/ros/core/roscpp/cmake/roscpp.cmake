@@ -18,12 +18,18 @@ macro(genmsg_cpp)
     set(_outdir ${ROSBUILD_GEN_DIR}/cpp/msg)
     set(_output_cpp ${_outdir}/${PROJECT_NAME}/${_output_cpp_base})
 
+    foreach(dir ${DEPENDED_PACKAGE_PATHS})
+      list(APPEND _incflags -I${dir})
+    endforeach()
+
     # Add the rule to build the .h the .msg
     add_custom_command(OUTPUT ${_output_cpp} 
       COMMAND ${ROSBUILD_SUBSHELL} 
       ${genmsg_cpp_exe} 
       ${_input}
+      -p ${PROJECT_NAME}
       -o ${_outdir}
+      ${_incflags} -I${CMAKE_CURRENT_SOURCE_DIR}
       DEPENDS ${_input} ${genmsg_cpp_exe} ${gendeps_exe} rospackexe
       ${${PROJECT_NAME}_${_msg}_GENDEPS} ${ROS_MANIFEST_LIST}
       )

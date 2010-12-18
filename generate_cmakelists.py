@@ -60,6 +60,10 @@ def write_project_cmake(name, d, index=index):
     print >>ofile, 'message(STATUS "^^-- %s")' % name
     print >>ofile, 'message("***** %s_codegen ******")' % name
     print >>ofile, 'add_custom_target(%s_codegen)' % name
+    if 'depend' in d:
+        print >>ofile, 'set(DEPENDED_PACKAGE_PATHS %s)' % ' '.join([index[(pkgname, None)]['srcdir']
+                                                                   for pkgname in d['depend']])
+
     print >>ofile, 'rosbuild_msgs(%s)' % ' '.join(d['msgs'])
     print >>ofile, 'rosbuild_srvs(%s)' % ' '.join(d['srvs'])
     if 'export' in d \
@@ -67,8 +71,6 @@ def write_project_cmake(name, d, index=index):
         print >>ofile, 'include_directories(%s)' % ' '.join(d['export']['include_dirs'])
     libs_i_need = []
     if 'depend' in d:
-        print >>ofile, 'set(DEPENDED_PACKAGE_PATHS %s)' % ' '.join([index[(pkgname, None)]['srcdir']
-                                                                   for pkgname in d['depend']])
         for pkgname in d['depend']:
             pkg = index[(pkgname, None)]
             if 'export' in pkg:
