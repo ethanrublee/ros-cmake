@@ -8,23 +8,9 @@ include(AddFileDependencies)
 # Used to check if a function exists
 include(CheckFunctionExists)
 
-# Find a ros package. 
-macro(rosbuild_find_ros_package pkgname) 
-  if (False)
-  # catch the error output to suppress it 
-  execute_process( 
-    COMMAND ${ROSBUILD_SUBSHELL} ${ROSPACK_EXE} find ${pkgname} 
-    ERROR_VARIABLE __rospack_err
-    OUTPUT_VARIABLE __pkg_dir 
-    RESULT_VARIABLE __rospack_failed
-    OUTPUT_STRIP_TRAILING_WHITESPACE) 
-  # todo: catch return code and be smart about it 
-  if (__rospack_failed)
-    message(FATAL_ERROR "ROSPACK FAILED WITH \"${__rospack_err}\"")
-  endif()
-  set(${pkgname}_PACKAGE_PATH ${__pkg_dir}) 
-  endif()
-endmacro(rosbuild_find_ros_package) 
+macro(rosbuild_find_ros_package)
+  message("*** rosbuild_find_ros_package, delete me ***")
+endmacro()
 
 # Retrieve the current COMPILE_FLAGS for the given target, append the new
 # ones, and set the result.
