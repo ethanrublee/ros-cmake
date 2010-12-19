@@ -10,6 +10,8 @@ index = pickle.load(ifile)
 
 out = open(sys.argv[2] +'/toplevel.cmake', 'w')
 
+print >>out, "include(${CMAKE_CURRENT_BINARY_DIR}/toplevel.static.cmake)"
+
 def msg(format, *args):
     global out
     print >>out, ("message(STATUS \"" + format + "\")") % args

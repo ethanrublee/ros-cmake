@@ -47,8 +47,12 @@ endmacro()
 
 add_custom_target(test-results-run)
 
+
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/private.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/public.cmake)
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/toplevel.static.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/toplevel.static.cmake)
 
 include(${CMAKE_CURRENT_BINARY_DIR}/toplevel.cmake)
 
@@ -61,5 +65,4 @@ foreach(setupfile
     ${CMAKE_CURRENT_BINARY_DIR}/${setupfile}
     @ONLY)
 endforeach()
-
 
