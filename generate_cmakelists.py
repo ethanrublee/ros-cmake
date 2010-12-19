@@ -63,6 +63,7 @@ def write_project_cmake(name, d, index=index):
     print >>ofile, 'message(STATUS "^^-- %s")' % name
     print >>ofile, 'message("***** %s_codegen ******")' % name
     print >>ofile, 'add_custom_target(%s_codegen)' % name
+    print >>ofile, 'include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)'
     if 'depend' in d:
         print >>ofile, 'set(DEPENDED_PACKAGE_PATHS %s)' % ' '.join([index[(pkgname, None)]['srcdir']
                                                                    for pkgname in d['depend']])
@@ -73,6 +74,7 @@ def write_project_cmake(name, d, index=index):
             and 'include_dirs' in d['export']:
         print >>ofile, 'include_directories(%s)' % ' '.join(d['export']['include_dirs'])
     libs_i_need = []
+    defines = []
     assert 'recursive_depends' in d
     for pkgname in d['recursive_depends']:
         pkg = index[(pkgname, None)]
@@ -82,9 +84,15 @@ def write_project_cmake(name, d, index=index):
                     ' '.join(pkg['export']['include_dirs'])
             if 'libs' in pkg['export']:
                 libs_i_need += pkg['export']['libs']
+            if 'defines' in pkg['export']:
+                defines += pkg['export']['defines']
 
     if len(libs_i_need) > 0:
         print >>ofile, 'set(EXPORTED_TO_ME_LIBRARIES %s)' % ' '.join(libs_i_need)
+
+    if len(defines) > 0:
+        print >>ofile, 'add_definitions(%s)' % ' '.join(['-D'+x for x in defines])
+
     subdir(d['srcdir'], name)
 
 

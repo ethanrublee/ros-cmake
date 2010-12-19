@@ -748,8 +748,6 @@ def get_registered(msg_type_name, default_package=None):
     @return: msg spec for msg type name
     @rtype: L{MsgSpec}
     """
-    print "get_registered(%s, %s)" % (msg_type_name, default_package)
-    print REGISTERED_TYPES
     if msg_type_name in REGISTERED_TYPES:
         return REGISTERED_TYPES[msg_type_name]
     elif default_package:

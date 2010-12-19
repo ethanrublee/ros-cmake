@@ -5,8 +5,8 @@
 
 #rosbuild_add_boost_directories()
 
-rosbuild_3rdparty(bullet foo)
-MAKE_DIRECTORY(${PROJECT_SOURCE_DIR}/src/)
+rosbuild_3rdparty(bullet include/Bullet-C-Api.h)
+# MAKE_DIRECTORY(${PROJECT_SOURCE_DIR}/src/)
 
 # Build Bullet
 #execute_process(COMMAND cmake -E chdir ${PROJECT_SOURCE_DIR} make -f Makefile.bullet

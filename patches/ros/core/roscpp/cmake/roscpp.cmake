@@ -1,4 +1,3 @@
-
 set(genmsg_cpp_exe ${CMAKE_SOURCE_DIR}/ros/core/roscpp/scripts/genmsg_cpp.py)
 # Message-generation support.
 macro(genmsg_cpp)
@@ -10,7 +9,11 @@ macro(genmsg_cpp)
   
     # rosbuild_gendeps(${PROJECT_NAME} ${_msg})
   
-    string(REPLACE ".msg" ".h" _output_cpp_base ${_msg})
+    get_filename_component(_fname ${_msg} NAME)
+
+    string(REPLACE ".msg" ".h" _output_cpp_base ${_fname})
+
+    message("OUTPUT_CPP_BASE ${_output_cpp_base}")
     set(_outdir ${ROSBUILD_GEN_DIR}/cpp/msg)
     set(_output_cpp ${_outdir}/${PROJECT_NAME}/${_output_cpp_base})
 
@@ -35,9 +38,11 @@ macro(genmsg_cpp)
   endforeach(_msg)
 
   if (_autogen)
-    add_custom_target(${PROJECT_NAME}_roscpp_msggen ALL DEPENDS ${_autogen})
-    add_dependencies(${PROJECT_NAME}_codegen ${PROJECT_NAME}_roscpp_msggen)
-    # add_dependencies(roscpp_codegen ${PROJECT_NAME}_codegen)
+    set_source_files_properties(${_autogen}
+      PROPERTIES
+      HEADER_FILE_ONLY TRUE)
+    add_dependencies(${PROJECT_NAME}_codegen ${_autogen})
+    add_dependencies(roscpp_codegen ${PROJECT_NAME}_codegen)
   endif()
 
 endmacro(genmsg_cpp)
@@ -50,12 +55,12 @@ macro(gensrv_cpp)
   set(_autogen "")
   foreach(_srv ${ARGN})
     # Construct the path to the .srv file
-    string(REPLACE ".srv" ".h" _output_cpp_base ${_srv})
 
     set(_input ${PROJECT_SOURCE_DIR}/${_srv})
     
-    # rosbuild_gendeps(${PROJECT_NAME} ${_srv})
-    
+    get_filename_component(_fname ${_srv} NAME)
+    string(REPLACE ".srv" ".h" _output_cpp_base ${_fname})
+
     set(_outdir ${ROSBUILD_GEN_DIR}/cpp/srv)
     set(_output_cpp ${_outdir}/${PROJECT_NAME}/${_output_cpp_base})
 
@@ -84,7 +89,10 @@ macro(gensrv_cpp)
   # files
 
   if (_autogen)
-    add_custom_target(${PROJECT_NAME}_roscpp_srvgen ALL DEPENDS ${_autogen})
-    add_dependencies(${PROJECT_NAME}_codegen ${PROJECT_NAME}_roscpp_srvgen)
+    set_source_files_properties(${_autogen}
+      PROPERTIES
+      HEADER_FILE_ONLY TRUE)
+    add_dependencies(${PROJECT_NAME}_codegen ${_autogen})
+    add_dependencies(roscpp_codegen ${PROJECT_NAME}_codegen)
   endif()
 endmacro(gensrv_cpp)
