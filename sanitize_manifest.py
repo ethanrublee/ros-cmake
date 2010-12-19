@@ -117,6 +117,18 @@ def sanitize(index):
             for m in re.finditer(pattern, lf):
                 handle(*m.groups())
     
+def get_recursive_depends(index, pkgname):
+    v = index[(pkgname, None)]
+    # print v
+    rdep = set([])
+    if 'depend' not in v:
+        return rdep
+    for dep in v['depend']:
+        # print ">>>", dep
+        rdep.add(dep)
+        rdep.update(get_recursive_depends(index, dep))
+    return rdep
+
 
 ifile = open(sys.argv[1])
 index = pickle.load(ifile)
@@ -125,6 +137,14 @@ index[('__langs', None)] = {}
 
 print "Sanitizing manifest index..."
 sanitize(index)
+
+for (k, _) in index:
+    if k == '__langs':
+        continue
+    rdep = get_recursive_depends(index, k)
+    index[(k, None)]['recursive_depends'] = rdep
+    
+
 
 ifile.close()
 ofile = open(sys.argv[1], 'w')

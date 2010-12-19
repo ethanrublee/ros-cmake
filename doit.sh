@@ -50,7 +50,7 @@ echo CMAKESTART
 echo
 cmake -DROS_BUILD_SHARED_LIBS=TRUE $WORK/
 
-make VERBOSE=1 tf_codegen
+make VERBOSE=1
 
 #cd $WORK/build/eigen/3rdparty
 #make
