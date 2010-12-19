@@ -6,8 +6,7 @@ BUILD=$WORK/build
 INDEX=$WORK/index.pkl
 
 rm -f $INDEX
-export ROS_PACKAGE_PATH=$WORK/ros
-#:$WORK/geometry:$WORK/common:$WORK/ros_comm:$WORK/common_msgs
+export ROS_PACKAGE_PATH=$WORK/ros:$WORK/geometry:$WORK/common:$WORK/ros_comm:$WORK/common_msgs
 # export ROS_PACKAGE_PATH=$WORK/ros:$WORK/geometry:$WORK/common:$WORK/ros_comm:$WORK/common_msgs
 cd $WORK
 # chmod 000 ros/core/rosbuild
@@ -39,15 +38,17 @@ fi
 rsync -a $WORK/cmake/patches/ $WORK/
 
 rm -rf $BUILD/gen
-#mkdir $WORK/build/
+if [ ! -d $WORK/build ] ; then
+    mkdir $WORK/build/
+fi
 rm -f $BUILD/CMakeCache.txt
 
 ./cmake/generate_cmakelists.py $INDEX build/
 cd $BUILD
 echo CMAKESTART
-/usr/local/bin/cmake -DROS_BUILD_SHARED_LIBS=TRUE $WORK/
+cmake -DROS_BUILD_SHARED_LIBS=TRUE $WORK/
 
-# make VERBOSE=1
+make VERBOSE=1
 
 #cd $WORK/build/eigen/3rdparty
 #make

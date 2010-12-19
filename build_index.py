@@ -29,15 +29,10 @@ for path in pkgpath:
 
 import lxml.objectify
 
-def get_msgs(srcdir):
-    msgs = glob.glob(srcdir + "/msg/*.msg")
-    short_msgs = [x[len(srcdir)+1:] for x in msgs]
-    return short_msgs
-
-def get_srvs(srcdir):
-    srvs = glob.glob(srcdir + "/srv/*.srv")
-    short_srvs = [x[len(srcdir)+1:] for x in srvs]
-    return short_srvs
+def get_idlspecs(idltype, srcdir):
+    idls = glob.glob(srcdir + '/' + idltype + '/*.' + idltype)
+    short_idlspecs = [x[len(srcdir)+1:] for x in idls]
+    return short_idlspecs
 
 def load_manifest(path, main_index):
     manifest_path = path + '/manifest.xml'
@@ -56,11 +51,9 @@ def load_manifest(path, main_index):
     entry['srcdir'] = path
     main_index[key] = entry
     
-    msgs = get_msgs(path)
-    entry['msgs'] = msgs
-
-    srvs = get_srvs(path)
-    entry['srvs'] = srvs
+    entry['msgs'] = get_idlspecs('msg', path)
+    entry['srvs'] = get_idlspecs('srv', path)
+    entry['actions'] = get_idlspecs('action', path)
 
     for x in 'author', 'license', 'url':
         if x in obj.__dict__:
