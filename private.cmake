@@ -350,15 +350,15 @@ macro(_rosbuild_add_library lib libname type)
   # The SOURCES property seems to be available only since 2.6.  Yar.
   #get_target_property(_srclist ${lib} SOURCES)
   set(_srclist ${ARGN})
-  foreach(_src ${_srclist})
-    set(_file_name _file_name-NOTFOUND)
-    find_file(_file_name ${_src} ${CMAKE_CURRENT_SOURCE_DIR} /)
-    if(NOT _file_name)
-      message("[rosbuild] Couldn't find source file ${_src}; assuming that it is in ${CMAKE_CURRENT_SOURCE_DIR} and will be generated later")
-      set(_file_name ${CMAKE_CURRENT_SOURCE_DIR}/${_src})
-    endif(NOT _file_name)
-    add_file_dependencies(${_file_name} ${ROS_MANIFEST_LIST}) 
-  endforeach(_src)
+#   foreach(_src ${_srclist})
+#     set(_file_name _file_name-NOTFOUND)
+#     find_file(_file_name ${_src} ${CMAKE_CURRENT_SOURCE_DIR} /)
+#     if(NOT _file_name)
+#       message("[rosbuild] Couldn't find source file ${_src}; assuming that it is in ${CMAKE_CURRENT_SOURCE_DIR} and will be generated later")
+#       set(_file_name ${CMAKE_CURRENT_SOURCE_DIR}/${_src})
+#     endif(NOT _file_name)
+#     add_file_dependencies(${_file_name} ${ROS_MANIFEST_LIST}) 
+#   endforeach(_src)
 
   # Prevent deletion of existing lib of same name
   set_target_properties(${lib} PROPERTIES CLEAN_DIRECT_OUTPUT 1)
@@ -372,10 +372,11 @@ macro(_rosbuild_add_library lib libname type)
   # are set in rosconfig.cmake.
   rosbuild_add_compile_flags(${lib} ${ROS_COMPILE_FLAGS})
   rosbuild_add_link_flags(${lib} ${ROS_LINK_FLAGS})
+  add_dependencies(${lib} ${PROJECT_NAME}_gen_cpp)
 
   # Make sure to do any prebuild work (e.g., msg/srv generation) before
   # building this target.
-  add_dependencies(${lib} ${PROJECT_NAME}_codegen)
+  # add_dependencies(${lib} ${PROJECT_NAME}_codegen)
   # message("${lib} <<== ${ROSBUILD_GEN_TARGETS}")
 endmacro(_rosbuild_add_library)
 

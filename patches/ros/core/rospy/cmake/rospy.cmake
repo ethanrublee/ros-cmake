@@ -42,8 +42,6 @@ macro(genmsg_py)
       # the user calls genmsg()
       add_dependencies(rospack_genmsg ROSBUILD_genmsg_py)
     endif(_autogen)
-  else()
-    message("genmsg_py ${ARGV}")
   endif()
 endmacro()
 
@@ -89,11 +87,11 @@ macro(gensrv_py)
       # the user calls gensrv()
       add_dependencies(rospack_gensrv ROSBUILD_gensrv_py)
     endif(_autogen)
-  else()
-    message("gensrv_py ${ARGV}")
   endif()
 endmacro(gensrv_py)
 
 # Call the macro we just defined.
 gensrv_py()
 
+macro(gentargets_py)
+endmacro()

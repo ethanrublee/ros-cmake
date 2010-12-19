@@ -132,21 +132,22 @@ def get_recursive_depends(index, pkgname):
 
 ifile = open(sys.argv[1])
 index = pickle.load(ifile)
+ifile.close()
 
 index[('__langs', None)] = {}
 
 print "Sanitizing manifest index..."
 sanitize(index)
 
+print "Generating full recursive dependencies"
 for (k, _) in index:
     if k == '__langs':
         continue
+    print "r: %50s\r" % k, ; sys.stdout.flush()
     rdep = get_recursive_depends(index, k)
     index[(k, None)]['recursive_depends'] = rdep
     
 
-
-ifile.close()
 ofile = open(sys.argv[1], 'w')
 pickle.dump(index, ofile)
 ofile.close()

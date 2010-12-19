@@ -29,8 +29,8 @@ for k,v in index[('__langs', None)].iteritems():
 
 print >>out, 'set(ROSBUILD_LANGS\n  %s\n  CACHE STRING "List of enabled languages")' % ' '.join(langs)
 msg("Enabled lanaguages (ROSBUILD_LANGS) = ${ROSBUILD_LANGS}")
-print >>out, "set(ROSBUILD_GEN_TARGETS\n  ", \
-    ' '.join(["%s_msggen %s_srvgen" % (x,x) for x in langs]), ')'
+#print >>out, "set(ROSBUILD_GEN_TARGETS\n  ", \
+#    ' '.join(["%s_msggen %s_srvgen" % (x,x) for x in langs]), ')'
 
 print >>out, 'macro(rosbuild_msgs)'
 for j in langs:
@@ -42,8 +42,13 @@ for j in langs:
     print >>out, '  gensrv_%s(${ARGV})' % j[3:]
 print >>out, 'endmacro()'
 
+print >>out, 'macro(rosbuild_gentargets)'
 for j in langs:
-    print >>out, 'add_custom_target(%s_codegen)' % j
+    print >>out, '  gentargets_%s(${ARGV})' % j[3:]
+print >>out, 'endmacro()'
+
+# for j in langs:
+#     print >>out, 'add_custom_target(%s_codegen)' % j
 
 del index[('__langs', None)]
 
@@ -60,9 +65,8 @@ def write_project_cmake(name, d, index=index):
         os.mkdir(bindir)
     ofile = open(bindir + '/package.cmake', 'w')
     print >>ofile, 'project(%s)' % name
-    print >>ofile, 'message(STATUS "^^-- %s")' % name
-    print >>ofile, 'message("***** %s_codegen ******")' % name
-    print >>ofile, 'add_custom_target(%s_codegen)' % name
+    print >>ofile, 'message(STATUS "***** %s *****")' % name
+    # print >>ofile, 'add_custom_target(%s_codegen)' % name
     print >>ofile, 'include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)'
     if 'depend' in d:
         print >>ofile, 'set(DEPENDED_PACKAGE_PATHS %s)' % ' '.join([index[(pkgname, None)]['srcdir']
@@ -70,6 +74,9 @@ def write_project_cmake(name, d, index=index):
 
     print >>ofile, 'rosbuild_msgs(%s)' % ' '.join(d['msgs'])
     print >>ofile, 'rosbuild_srvs(%s)' % ' '.join(d['srvs'])
+    print >>ofile, 'rosbuild_gentargets()'
+    print >>ofile, 'message("DEPENDS: ${%s_generated}")' % name
+#    print >>ofile, 'add_dependencies(roscpp_codegen %s_codegen)'%name
     if 'export' in d \
             and 'include_dirs' in d['export']:
         print >>ofile, 'include_directories(%s)' % ' '.join(d['export']['include_dirs'])
@@ -86,7 +93,8 @@ def write_project_cmake(name, d, index=index):
                 libs_i_need += pkg['export']['libs']
             if 'defines' in pkg['export']:
                 defines += pkg['export']['defines']
-
+    if len(d['recursive_depends']) > 0:
+        print >>ofile, "add_dependencies(%s_gen_cpp "%name + ' '.join(["%s_gen_cpp" % x for x in d['recursive_depends']]) + ")"
     if len(libs_i_need) > 0:
         print >>ofile, 'set(EXPORTED_TO_ME_LIBRARIES %s)' % ' '.join(libs_i_need)
 

@@ -2,17 +2,23 @@
 
 WORK=$(dirname $(dirname $(readlink -f $0)))
 echo "WORK=$WORK"
-PTHS=$WORK/ros:$WORK/geometry:$WORK/common:$WORK/ros_comm:$WORK/common_msgs
-export ROS_PACKAGE_PATH=$PTHS
+BUILD=$WORK/build
+INDEX=$WORK/index.pkl
+
+rm -f $INDEX
+export ROS_PACKAGE_PATH=$WORK/ros
+#:$WORK/geometry:$WORK/common:$WORK/ros_comm:$WORK/common_msgs
+# export ROS_PACKAGE_PATH=$WORK/ros:$WORK/geometry:$WORK/common:$WORK/ros_comm:$WORK/common_msgs
 cd $WORK
 # chmod 000 ros/core/rosbuild
 
-echo 'message("wtf, no cmakelists here")' >> common/actionlib/test/CMakeLists.txt
+echo 'message("actionlib has no cmakelists.  hrm.")' > common/actionlib/test/CMakeLists.txt
 
 echo "cmake_minimum_required(VERSION 2.8)" > CMakeLists.txt
 echo "include(cmake/main.cmake)" >> CMakeLists.txt
 rm -f $WORK/ros/core/roslisp/manifest.xml
 
+# FIXME
 rm -f ros/tools/rxgraph/CMakeLists.txt ros/tools/rxtools/CMakeLists.txt
 
 if [ -d $WORK/ros/core/rosbuild ] ; then
@@ -25,21 +31,21 @@ fi
 #rosinstall -n ri/src ./ros-cmake.rosinstall
 #cd ri/src
 
-#./cmake/build_index.py index.pkl $PTHS
+./cmake/build_index.py $INDEX $ROS_PACKAGE_PATH
 
-#./cmake/sanitize_manifest.py index.pkl
-#./cmake/sanitize_cmakelists.py index.pkl
+./cmake/sanitize_manifest.py $INDEX
+./cmake/sanitize_cmakelists.py $INDEX
 
 rsync -a $WORK/cmake/patches/ $WORK/
 
-#rm -rf $WORK/build/
+rm -rf $BUILD/gen
 #mkdir $WORK/build/
-# rm -f $WORK/build/CMakeCache.txt
+rm -f $BUILD/CMakeCache.txt
 
-# ./cmake/generate_cmakelists.py index.pkl build/
-cd build
+./cmake/generate_cmakelists.py $INDEX build/
+cd $BUILD
 echo CMAKESTART
-cmake -DROS_BUILD_SHARED_LIBS=TRUE $WORK/
+/usr/local/bin/cmake -DROS_BUILD_SHARED_LIBS=TRUE $WORK/
 
 # make VERBOSE=1
 

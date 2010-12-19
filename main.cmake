@@ -9,6 +9,9 @@ file(MAKE_DIRECTORY ${ROSBUILD_GEN_DIR})
 include_directories(${ROSBUILD_GEN_DIR}/cpp/msg)
 include_directories(${ROSBUILD_GEN_DIR}/cpp/srv)
 
+#set_property(GLOBAL 
+#  PROPERTY
+#  GLOBAL_DEPENDS_DEBUG_MODE TRUE)
 #
 # Globally unique targets.  Wtf. 
 #

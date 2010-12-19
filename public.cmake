@@ -12,6 +12,12 @@ macro(rosbuild_find_ros_package)
   message("*** rosbuild_find_ros_package, delete me ***")
 endmacro()
 
+macro(rosbuild_assert_file_exists FNAME)
+  if(NOT EXISTS ${FNAME})
+    message(FATAL_ERROR "File ${FNAME} doesn't exist")
+  endif()
+endmacro()
+
 # Retrieve the current COMPILE_FLAGS for the given target, append the new
 # ones, and set the result.
 macro(rosbuild_add_compile_flags target)
@@ -433,18 +439,6 @@ macro(rosbuild_add_executable exe)
     add_executable(${exe} ${_var_DEFAULT_ARGS})
   endif()
 
-  # Add explicit dependency of each file on our manifest.xml and those of
-  # our dependencies.
-  foreach(_src ${_var_DEFAULT_ARGS}) 
-    set(_file_name _file_name-NOTFOUND)
-    find_file(_file_name ${_src} ${CMAKE_CURRENT_SOURCE_DIR} /)
-    if(NOT _file_name)
-      message("[rosbuild] Couldn't find source file ${_src}; assuming that it is in ${CMAKE_CURRENT_SOURCE_DIR} and will be generated later")
-      set(_file_name ${CMAKE_CURRENT_SOURCE_DIR}/${_src})
-    endif()
-    add_file_dependencies(${_file_name} ${ROS_MANIFEST_LIST}) 
-  endforeach(_src)
-
   rosbuild_add_compile_flags(${exe} ${${PROJECT_NAME}_CFLAGS_OTHER})
   rosbuild_add_link_flags(${exe} ${${PROJECT_NAME}_LDFLAGS_OTHER})
 
@@ -462,10 +456,7 @@ macro(rosbuild_add_executable exe)
   rosbuild_add_compile_flags(${exe} ${ROS_COMPILE_FLAGS})
   rosbuild_add_link_flags(${exe} ${ROS_LINK_FLAGS})
 
-  # Make sure to do any prebuild work (e.g., msg/srv generation) before
-  # building this target.
-  add_dependencies(${exe} ${PROJECT_NAME}_codegen)
-
+  add_dependencies(${exe} ${PROJECT_NAME}_gen_cpp)
   # If we're linking boost statically, we have to force allow multiple definitions because
   # rospack does not remove duplicates
   if ("$ENV{ROS_BOOST_LINK}" STREQUAL "static")
@@ -487,8 +478,9 @@ macro(rosbuild_add_executable exe)
 	RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin)
     endif()
   else()
-    message("WHAT NO STACK?  ${exe}")
+    message("install problems, ${PROJECT_NAME} has no stack")
   endif()
+
 endmacro(rosbuild_add_executable)
 
 #
@@ -530,12 +522,13 @@ macro(rosbuild_add_library lib)
   endif()
 
   target_link_libraries(${lib} ${EXPORTED_TO_ME_LIBRARIES})
+
   #
   #  ??? should this be disabled whenever we're not in a stack?
   #
   if (STACK_NAME)
     if (_var_PACKAGE_INSTALL)
-      install(TARGETS ${lib} 
+      install(TARGETS ${lib}
 	LIBRARY DESTINATION ${ROS_PACKAGE_INSTALL_PREFIX}/lib  # shared objects
 	ARCHIVE DESTINATION ${ROS_PACKAGE_INSTALL_PREFIX}/lib  # statics
 	)
