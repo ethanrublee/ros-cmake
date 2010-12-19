@@ -53,7 +53,8 @@ for (pkgname, version), d in index.iteritems():
     print >>out, "set(%s_PACKAGE_PATH %s)" % (pkgname, d['srcdir'])
 
 def write_project_cmake(name, d, index=index):
-    print ">>>", name
+    print ">>>", name, '                    \r',
+    sys.stdout.flush()
     bindir = sys.argv[2] + '/' + name
     if not os.path.isdir(bindir):
         os.mkdir(bindir)
@@ -96,10 +97,6 @@ def dump(index, written = set([])):
     for k, v in d['depend']:
         if len(written.difference(set(v))) == 0 and k not in written:
             leaves += [k]
-    
-    for l in leaves:
-        print ">>>", l
-
 
 def build_depgraph(index, depgraph = {}):
     for (pkg, version), d in index.iteritems():
@@ -135,6 +132,9 @@ while len(depgraph) > 0:
         if len(deps) == 0 and pkg not in written:
             write_project_cmake(pkg, index[(pkg, None)])
             written.add(pkg)
+    
     for pkg in written:
         if pkg in depgraph:
             del depgraph[pkg]
+
+print

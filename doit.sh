@@ -25,32 +25,23 @@ fi
 #rosinstall -n ri/src ./ros-cmake.rosinstall
 #cd ri/src
 
-#. ./setup.sh
-#./cmake/convert.py
+#./cmake/build_index.py index.pkl $PTHS
 
-./cmake/build_index.py index.pkl $PTHS
-./cmake/sanitize_manifest.py index.pkl
-./cmake/sanitize_cmakelists.py index.pkl
+#./cmake/sanitize_manifest.py index.pkl
+#./cmake/sanitize_cmakelists.py index.pkl
 
-rsync -va $WORK/cmake/patches/ $WORK/
+rsync -a $WORK/cmake/patches/ $WORK/
 
-rm -rf $WORK/build/
-mkdir $WORK/build/
+#rm -rf $WORK/build/
+#mkdir $WORK/build/
 # rm -f $WORK/build/CMakeCache.txt
 
-./cmake/generate_cmakelists.py index.pkl build/
-
+# ./cmake/generate_cmakelists.py index.pkl build/
 cd build
-echo
-echo
-echo
-echo
-echo
 echo CMAKESTART
-echo
 cmake -DROS_BUILD_SHARED_LIBS=TRUE $WORK/
 
-make VERBOSE=1
+# make VERBOSE=1
 
 #cd $WORK/build/eigen/3rdparty
 #make

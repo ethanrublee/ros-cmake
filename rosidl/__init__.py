@@ -50,7 +50,7 @@ numerous ROS tools (e.g. rostopic).
 # from rosidl.launcher import load_manifest
 # from rosidl.scriptutil import is_interactive, set_interactive
 
-verbose = True
+verbose = False
 
 if verbose:
     import inspect, pprint

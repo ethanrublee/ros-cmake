@@ -455,7 +455,7 @@ macro(rosbuild_add_executable exe)
     rosbuild_add_link_flags(${exe} -static-libgcc -Wl,-Bstatic)
   endif()
 
-  target_link_libraries(${exe} ${${PROJECT_NAME}_LIBRARIES})
+  target_link_libraries(${exe} ${${PROJECT_NAME}_LIBRARIES} ${EXPORTED_TO_ME_LIBRARIES})
 
   # Add ROS-wide compile and link flags (usually things like -Wall).  These
   # are set in rosconfig.cmake.

@@ -73,12 +73,12 @@ def expand_cmdline(s, d, i):
     
 def sanitize(index):
     for k,v in index.iteritems():
-        print '$$$', k, v
+        #print '$$$', k, v
 
         cf = ''
         lf = ''
         if 'export' in v:
-            print k[0],
+            print k[0], '\r',
             sys.stdout.flush()
             exp = v['export']
             if 'cpp' in v['export']:
@@ -107,7 +107,7 @@ def sanitize(index):
                             u'-D' : 'defines' 
                             }
                 key = flagmap[t]
-                print ">>>", key, value
+                #print ">>>", key, value
                 if key not in v['export']:
                     v['export'][key] = []
                 v['export'][key] += [value]

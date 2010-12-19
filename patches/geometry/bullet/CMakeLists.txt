@@ -5,6 +5,7 @@
 
 #rosbuild_add_boost_directories()
 
+rosbuild_3rdparty(bullet foo)
 MAKE_DIRECTORY(${PROJECT_SOURCE_DIR}/src/)
 
 # Build Bullet
@@ -22,3 +23,4 @@ add_definitions(-DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX)
 ### bullet unit tests for items i've patched
 rosbuild_add_gtest(bullet_unittest test/bullet_unittest.cpp)
 target_link_libraries(bullet_unittest LinearMath)
+

@@ -99,7 +99,7 @@ def sanitize(index):
                 print >>oslist, line[1]
 
         oslist.close()
-        print k[0],
+        print k[0], '\r',
         sys.stdout.flush()
 
 print "Sanitizing cmakelists from index", sys.argv[1] 

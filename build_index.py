@@ -46,7 +46,7 @@ def load_manifest(path, main_index):
     obj = lxml.objectify.fromstring(s)
     # print lxml.objectify.dump(obj)
     pkgname = os.path.basename(path)
-    print pkgname,
+    print pkgname, '\r',
     sys.stdout.flush()
     version = None
 
@@ -87,6 +87,7 @@ main_index = {}
 
 for pkg in pkgdirs:
     load_manifest(pkg, main_index)
+
 
 # pprint.pprint(main_index)
 
