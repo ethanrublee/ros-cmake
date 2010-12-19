@@ -18,6 +18,7 @@ macro(genmsg_cpp)
 
     list(APPEND ${PROJECT_NAME}_generated ${_output_cpp})
 
+    set(_incflags "")
     foreach(dir ${DEPENDED_PACKAGE_PATHS})
       list(APPEND _incflags -I${dir})
     endforeach()
@@ -56,6 +57,7 @@ macro(gensrv_cpp)
     
     list(APPEND ${PROJECT_NAME}_generated ${_output_cpp})
 
+    set(_incflags "")
     foreach(dir ${DEPENDED_PACKAGE_PATHS})
       list(APPEND _incflags -I${dir})
     endforeach()
