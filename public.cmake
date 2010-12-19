@@ -439,6 +439,8 @@ macro(rosbuild_add_executable exe)
     add_executable(${exe} ${_var_DEFAULT_ARGS})
   endif()
 
+  get_filename_component(thisexe_path ${exe} PATH)
+  file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${thisexe_path})
   rosbuild_add_compile_flags(${exe} ${${PROJECT_NAME}_CFLAGS_OTHER})
   rosbuild_add_link_flags(${exe} ${${PROJECT_NAME}_LDFLAGS_OTHER})
 
