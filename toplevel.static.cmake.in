@@ -1,0 +1,2 @@
+message("Including CMAKE_CURRENT_BINARY_DIR/toplevel.static.cmake")
+include_directories(@CMAKE_CURRENT_SOURCE_DIR@/ros/core/roslib/include)
