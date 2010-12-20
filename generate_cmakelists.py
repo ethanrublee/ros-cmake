@@ -79,9 +79,9 @@ def write_project_cmake(name, d, index=index):
     print >>ofile, 'rosbuild_gentargets()'
     print >>ofile, 'message("DEPENDS: ${%s_generated}")' % name
 #    print >>ofile, 'add_dependencies(roscpp_codegen %s_codegen)'%name
-    if 'export' in d \
-            and 'include_dirs' in d['export']:
-        print >>ofile, 'include_directories(%s)' % ' '.join(d['export']['include_dirs'])
+    if 'export' in d:
+        if 'include_dirs' in d['export']:
+            print >>ofile, 'include_directories(%s)' % ' '.join(d['export']['include_dirs'])
     libs_i_need = []
     defines = []
     assert 'recursive_depends' in d
@@ -93,6 +93,8 @@ def write_project_cmake(name, d, index=index):
                     ' '.join(pkg['export']['include_dirs'])
             if 'libs' in pkg['export']:
                 libs_i_need += pkg['export']['libs']
+            if 'lib_dirs' in pkg['export']:
+                print >>ofile, 'link_directories(%s)' % ' '.join(pkg['export']['lib_dirs'])
             if 'defines' in pkg['export']:
                 defines += pkg['export']['defines']
     if len(d['recursive_depends']) > 0:
