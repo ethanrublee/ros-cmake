@@ -1,0 +1,33 @@
+#!/bin/sh -ex
+
+echo "*\n*\n* building kdl\n*\n*"
+cd @CMAKE_CURRENT_BINARY_DIR@
+mkdir -p 3rdparty
+cd 3rdparty
+
+TARBALL_NAME=kdl-31715.tar.gz
+TARBALL=build/${TARBALL_NAME}.tar.gz
+TARBALL_URL=http://pr.willowgarage.com/downloads/${TARBALL_NAME}.tar.gz
+BULLET_TARGETS="LinearMath BulletCollision BulletDynamics BulletSoftBody"
+
+wget -c http://pr.willowgarage.com/downloads/kdl-31715.tar.gz
+tar xzf kdl-31715.tar.gz
+cd kdl-tar
+
+patch -p0 < @CMAKE_CURRENT_SOURCE_DIR@/total.patch
+
+cmake \
+    -DCMAKE_INSTALL_PREFIX=@CMAKE_CURRENT_BINARY_DIR@ \
+    -DPYTHON_BINDINGS=ON \
+    -DCMAKE_CXX_FLAGS=-DEIGEN_USE_NEW_STDVECTOR \
+    -DPYTHON_SITE_PACKAGES_DIR=@CMAKE_CURRENT_BINARY_DIR@/lib \
+    -DBOOST:STRING=@Boost_INCLUDE_DIR@ \
+    -DEIGEN2_INCLUDE_DIR=@CMAKE_BINARY_DIR@/eigen/include \
+    -DTINYXML_INCLUDE_DIR=@CMAKE_BINARY_DIR@/tinyxml/include \
+    -DCMAKE_BUILD_TYPE=Release \
+    .
+
+make
+make install
+
+echo "Done."
