@@ -55,17 +55,6 @@ import rosidl.names
 # import rosidl.resources
 # import rosidl.rospack
 
-VERBOSE = True
-
-## @return: True if msg-related scripts should print verbose output
-def is_verbose():
-    return VERBOSE
-
-## set whether msg-related scripts should print verbose output
-def set_verbose(v):
-    global VERBOSE
-    VERBOSE = v
-
 EXT = rosidl.names.MSG_EXT #alias
 SEP = rosidl.names.PRN_SEPARATOR #e.g. std_msgs/String
 ## character that designates a constant assignment rather than a field
@@ -112,7 +101,7 @@ def resolve_type(type_, package_context):
     else:
         return "%s%s%s"%(package_context, SEP, type_)    
 
-#NOTE: this assumes that we aren't going to support multi-dimensional
+#NOTE: this assumes that we are not going to support multi-dimensional
 
 def parse_type(type_):
     """
@@ -425,11 +414,12 @@ def msg_file(package, type_, searchpath):
     log("msg_file(%s, %s, %s)" % (package, type_, str(searchpath))) 
 
     assert isinstance(searchpath, list)
-
+    
     for p in searchpath:
-        log("%s ??? %s" % (p, package))
-        if p.endswith("/"+package):
-            return p + "/msg/" + type_ + ".msg"
+        j = os.path.join(p, "msg", type_ + ".msg")
+        log(j, "???")
+        if os.path.isfile(j):
+            return j
 
     return rosidl.__path__[0] + "/msg/" + type_ + ".msg"
         #False #rosidl.packages.resource_file(package, rosidl.packages.MSG_DIR, type_+EXT)
@@ -552,9 +542,11 @@ def _convert_val(type_, val):
         else:
             upper = int(math.pow(2, b-1)-1)   
             lower = -upper - 1 #two's complement min
+
         val = int(val) #python will autocast to long if necessary
-        if val > upper or val < lower:
-            raise MsgSpecException("cannot coerce [%s] to %s (out of bounds)"%(val, type_))
+
+        if val < lower or val > upper:
+            raise MsgSpecException("cannot coerce [%s] to %s (out of bounds)" % (val, type_))
         return val
     elif type_ == 'bool':
         # TODO: need to nail down constant spec for bool
@@ -578,12 +570,9 @@ def load_by_type(msgtype, includepath, package_context=''):
     pkg = pkg or package_context # convert '' -> local package
     
     log("pkg", pkg)
-    #try:
     log("here")
     m_f = msg_file(pkg, basetype, includepath)
     log("m_f", m_f)
-    #except: #rosidl.packages.InvalidROSPkgException:
-    #raise MsgSpecException("Cannot locate message type [%s], package [%s] does not exist"%(msgtype, pkg)) 
     return load_from_file(m_f, pkg)
 
 def load_from_string(text, package_context='', full_name='', short_name=''):
@@ -640,7 +629,7 @@ def load_from_string(text, package_context='', full_name='', short_name=''):
             types.append(type_)
             names.append(name)
     return MsgSpec(types, names, constants, text, full_name, short_name, package_context)
-
+                                
 def load_from_file(file_path, package_context=''):
     """
     Convert the .msg representation in the file to a MsgSpec instance.

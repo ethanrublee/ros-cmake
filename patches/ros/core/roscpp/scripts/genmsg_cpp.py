@@ -708,6 +708,7 @@ def generate(args):
     # package = os.path.basename
     # (package_dir, package) = rosidl.packages.get_dir_pkg(args[1])
     rosidl.msgs._init()
+    
     (_, spec) = rosidl.msgs.load_from_file(args[1], options.package)
     plog("spec", spec)
     

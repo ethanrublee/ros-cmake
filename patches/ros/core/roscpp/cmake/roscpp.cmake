@@ -1,14 +1,20 @@
 set(genmsg_cpp_exe ${CMAKE_SOURCE_DIR}/ros/core/roscpp/scripts/genmsg_cpp.py)
 # Message-generation support.
-macro(genmsg_cpp)
+macro(genmsg_cpp TYPE)
 
   foreach(_msg ${ARGN})
     # Construct the path to the .msg file
-    set(_input ${PROJECT_SOURCE_DIR}/${_msg})
-  
-    rosbuild_assert_file_exists(${_input})
-    # rosbuild_gendeps(${PROJECT_NAME} ${_msg})
-  
+    if (${TYPE} STREQUAL "STATIC")
+      set(_input ${PROJECT_SOURCE_DIR}/${_msg})
+      message("BING: ${_input}")
+      rosbuild_assert_file_exists(${_input})
+    elseif(${TYPE} STREQUAL "GENERATED")
+      set(_input ${_msg})
+      message("GENERATED: ${_input}") 
+    else()
+      message(FATAL_ERROR "Unknown message type \"${TYPE}\" (must be either STATIC or GENERATED)")
+    endif()
+
     get_filename_component(_fname ${_msg} NAME)
 
     string(REPLACE ".msg" ".h" _output_cpp_base ${_fname})
@@ -31,8 +37,9 @@ macro(genmsg_cpp)
       ${_input}
       -p ${PROJECT_NAME}
       -o ${_outdir}
-      ${_incflags} -I${CMAKE_CURRENT_SOURCE_DIR}
+      -I${CMAKE_CURRENT_BINARY_DIR} ${_incflags} -I${CMAKE_CURRENT_SOURCE_DIR}
       DEPENDS ${_input} ${genmsg_cpp_exe} ${gendeps_exe}
+      COMMENT "Generating C++ message from ${_input}"
       )
     message("generated msg: ${_output_cpp}")
   endforeach(_msg)
@@ -42,13 +49,20 @@ endmacro(genmsg_cpp)
 
 set(gensrv_cpp_exe ${CMAKE_SOURCE_DIR}/ros/core/roscpp/scripts/gensrv_cpp.py)
 # Service-generation support.
-macro(gensrv_cpp)
+macro(gensrv_cpp TYPE)
 
   foreach(_srv ${ARGN})
     # Construct the path to the .srv file
 
-    set(_input ${PROJECT_SOURCE_DIR}/${_srv})
-    
+    # Construct the path to the .msg file
+    if (${TYPE} STREQUAL "STATIC")
+      set(_input ${PROJECT_SOURCE_DIR}/${_srv})
+    elseif(${TYPE} STREQUAL "GENERATED")
+      set(_input ${CMAKE_CURRENT_BINARY_DIR}/${_srv})
+    else()
+      message(FATAL_ERROR "Unknown message type \"${TYPE}\" (must be either STATIC or GENERATED)")
+    endif()
+
     get_filename_component(_fname ${_srv} NAME)
     string(REPLACE ".srv" ".h" _output_cpp_base ${_fname})
 
@@ -72,6 +86,7 @@ macro(gensrv_cpp)
       -o ${_outdir}
       ${_incflags} -I${CMAKE_CURRENT_SOURCE_DIR}
       DEPENDS ${_input} ${gensrv_cpp_exe} ${genmsg_cpp_exe} ${gendeps_exe} 
+      COMMENT "Generating C++ service from ${_input}"
       )
 
   endforeach(_srv)

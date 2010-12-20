@@ -34,6 +34,7 @@ import re
 import rosidl, rosidl.msgs
 import os, os.path
 import errno
+from optparse import OptionParser
 
 IODELIM   = '---'
 COMMENTCHAR = rosidl.msgs.COMMENTCHAR
@@ -57,17 +58,16 @@ def write_file(filename, text):
 
 def main():
 
-    if len(sys.argv) < 3:
-        print "Need to give a package path and file name"
-        sys.exit(1)
+    parser = OptionParser("Actionlib generator")
+    parser.add_option('-o', dest='output_dir',
+                      help='output directory')
+
+    (options, args) = parser.parse_args(sys.argv)
+
     pkg = os.path.abspath(sys.argv[1])
     filename = sys.argv[2]
 
-    if not os.path.exists(os.path.join(pkg, 'manifest.xml')):
-        print "Not a package %s" % pkg
-        sys.exit(1)
-    
-    output_dir = os.path.join(pkg, 'msg')
+    output_dir = options.output_dir
 
     # Try to make the directory, but silently continue if it already exists
     try:
@@ -78,12 +78,11 @@ def main():
         else:
             raise
 
-    action_dir = os.path.join(pkg, 'action')
-    action_file = os.path.join(action_dir, filename)
+    action_file = args[1]
     if not action_file.endswith('.action'):
         print "The file specified has the wrong extension. It must end in .action"
     else:
-        filename = os.path.join(action_dir, action_file)
+        filename = action_file
 
         f = open(filename)
         action_spec = f.read()
