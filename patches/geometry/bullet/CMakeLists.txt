@@ -16,8 +16,8 @@ rosbuild_3rdparty(bullet include/Bullet-C-Api.h)
 #endif(_make_failed)
 
 ### local includes
-#include_directories(include)
-link_directories(${PROJECT_SOURCE_DIR}/lib)
+include_directories(${CMAKE_CURRENT_BINARY_DIR}/include)
+link_directories(${CMAKE_CURRENT_BINARY_DIR}/lib)
 add_definitions(-DBT_USE_DOUBLE_PRECISION -DBT_EULER_DEFAULT_ZYX)
 
 ### bullet unit tests for items i've patched
