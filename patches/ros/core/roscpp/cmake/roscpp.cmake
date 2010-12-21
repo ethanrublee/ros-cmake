@@ -6,11 +6,9 @@ macro(genmsg_cpp TYPE)
     # Construct the path to the .msg file
     if (${TYPE} STREQUAL "STATIC")
       set(_input ${PROJECT_SOURCE_DIR}/${_msg})
-      message("BING: ${_input}")
       rosbuild_assert_file_exists(${_input})
     elseif(${TYPE} STREQUAL "GENERATED")
       set(_input ${_msg})
-      message("GENERATED: ${_input}") 
     else()
       message(FATAL_ERROR "Unknown message type \"${TYPE}\" (must be either STATIC or GENERATED)")
     endif()
@@ -41,7 +39,6 @@ macro(genmsg_cpp TYPE)
       DEPENDS ${_input} ${genmsg_cpp_exe} ${gendeps_exe}
       COMMENT "Generating C++ message from ${_input}"
       )
-    message("generated msg: ${_output_cpp}")
   endforeach(_msg)
 
 endmacro(genmsg_cpp)
