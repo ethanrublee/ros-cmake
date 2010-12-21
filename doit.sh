@@ -17,6 +17,12 @@ echo "cmake_minimum_required(VERSION 2.8)" > CMakeLists.txt
 echo "include(cmake/main.cmake)" >> CMakeLists.txt
 rm -f $WORK/ros/core/roslisp/manifest.xml
 
+#
+# deprecated file
+#
+rm -rf $WORK/common/actionlib/cmake
+rm -rf $WORK/common/actionlib/cmake
+
 # FIXME
 rm -f ros/tools/rxgraph/CMakeLists.txt ros/tools/rxtools/CMakeLists.txt
 
@@ -35,6 +41,7 @@ fi
 ./cmake/sanitize_manifest.py $INDEX
 ./cmake/sanitize_cmakelists.py $INDEX
 
+
 rsync -a $WORK/cmake/patches/ $WORK/
 
 rm -rf $BUILD/gen
@@ -45,10 +52,9 @@ rm -f $BUILD/CMakeCache.txt
 
 ./cmake/generate_cmakelists.py $INDEX build/
 cd $BUILD
+
 echo CMAKESTART
 cmake -DROS_BUILD_SHARED_LIBS=TRUE $WORK/
 
-make VERBOSE=1
+make VERBOSE=1 -C actionlib
 
-#cd $WORK/build/eigen/3rdparty
-#make

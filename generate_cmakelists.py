@@ -29,6 +29,7 @@ for k,v in index[('__langs', None)].iteritems():
 
 print >>out, 'set(ROSBUILD_LANGS\n  %s\n  CACHE STRING "List of enabled languages")' % ' '.join(langs)
 msg("Enabled lanaguages (ROSBUILD_LANGS) = ${ROSBUILD_LANGS}")
+
 #print >>out, "set(ROSBUILD_GEN_TARGETS\n  ", \
 #    ' '.join(["%s_msggen %s_srvgen" % (x,x) for x in langs]), ')'
 
@@ -73,9 +74,17 @@ def write_project_cmake(name, d, index=index):
     if 'depend' in d:
         print >>ofile, 'set(DEPENDED_PACKAGE_PATHS %s)' % ' '.join([index[(pkgname, None)]['srcdir']
                                                                    for pkgname in d['depend']])
+    if len(d['actions']) > 0:
+        print >>ofile, 'rosbuild_actions(GENERATED_ACTIONS %s)' % ' '.join(d['actions'])
+        print >>ofile, 'message("GENERATED_ACTIONS=${GENERATED_ACTIONS}")'
+        print >>ofile, 'rosbuild_msgs(GENERATED ${GENERATED_ACTIONS})'
 
-    print >>ofile, 'rosbuild_msgs(%s)' % ' '.join(d['msgs'])
-    print >>ofile, 'rosbuild_srvs(%s)' % ' '.join(d['srvs'])
+    if len(d['msgs']) > 0:
+        print >>ofile, 'rosbuild_msgs(STATIC %s)' % ' '.join(d['msgs'])
+
+    if len(d['srvs']) > 0:
+        print >>ofile, 'rosbuild_srvs(STATIC %s)' % ' '.join(d['srvs'])
+
     print >>ofile, 'rosbuild_gentargets()'
     print >>ofile, 'message("DEPENDS: ${%s_generated}")' % name
 #    print >>ofile, 'add_dependencies(roscpp_codegen %s_codegen)'%name

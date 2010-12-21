@@ -10,6 +10,10 @@ file(MAKE_DIRECTORY ${ROSBUILD_GEN_DIR})
 include_directories(${ROSBUILD_GEN_DIR}/cpp/msg)
 include_directories(${ROSBUILD_GEN_DIR}/cpp/srv)
 
+if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/common_msgs/actionlib_msgs/cmake/actionbuild.cmake)
+  include(${CMAKE_CURRENT_SOURCE_DIR}/common_msgs/actionlib_msgs/cmake/actionbuild.cmake)
+endif()
+
 #set_property(GLOBAL 
 #  PROPERTY
 #  GLOBAL_DEPENDS_DEBUG_MODE TRUE)

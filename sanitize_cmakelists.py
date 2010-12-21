@@ -76,7 +76,8 @@ def sanitize(index):
                                   'rosbuild_init',
                                   'rosbuild_genmsg',
                                   'rosbuild_gensrv',
-                                  'rosbuild_find_ros_package']:
+                                  'rosbuild_find_ros_package',
+                                  'genaction']:
                     continue
 
                 if line[1][0] in ['set', 'Set', 'SET']:
