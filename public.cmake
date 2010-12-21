@@ -465,23 +465,8 @@ macro(rosbuild_add_executable exe)
     rosbuild_add_link_flags(${exe} "-Wl,--allow-multiple-definition")
   endif()
 
-  if (STACK_NAME)
-    if(_var_ROOT_INSTALL)
-      install(TARGETS ${exe}
-        RUNTIME DESTINATION ${ROS_INSTALL_PREFIX}/bin)
-      set_target_properties(${exe}
-	PROPERTIES
-	RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-    elseif(_var_PACKAGE_INSTALL)
-      install(TARGETS ${exe}
-        RUNTIME DESTINATION ${ROS_PACKAGE_INSTALL_PREFIX}/bin)
-      set_target_properties(${exe}
-	PROPERTIES
-	RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin)
-    endif()
-  else()
-    message("install problems, ${PROJECT_NAME} has no stack")
-  endif()
+  install(TARGETS ${exe}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/${PROJECT_NAME})
 
 endmacro(rosbuild_add_executable)
 
@@ -525,28 +510,11 @@ macro(rosbuild_add_library lib)
 
   target_link_libraries(${lib} ${EXPORTED_TO_ME_LIBRARIES})
 
-  #
-  #  ??? should this be disabled whenever we're not in a stack?
-  #
-  if (STACK_NAME)
-    if (_var_PACKAGE_INSTALL)
-      install(TARGETS ${lib}
-	LIBRARY DESTINATION ${ROS_PACKAGE_INSTALL_PREFIX}/lib  # shared objects
-	ARCHIVE DESTINATION ${ROS_PACKAGE_INSTALL_PREFIX}/lib  # statics
-	)
-      set_target_properties(${lib} PROPERTIES
-	LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib
-	ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib)
-    elseif (_var_ROOT_INSTALL)
-      install(TARGETS ${lib} 
-	LIBRARY DESTINATION ${ROS_INSTALL_PREFIX}/lib  # shared objects
-	ARCHIVE DESTINATION ${ROS_INSTALL_PREFIX}/lib  # static libs
-	)
-      set_target_properties(${lib} PROPERTIES
-	LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
-	ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-    endif()
-  endif()
+  install(TARGETS ${lib}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib  # shared objects
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib  # shared objects
+    )
+
 endmacro(rosbuild_add_library)
 
 macro(rosbuild_install)
