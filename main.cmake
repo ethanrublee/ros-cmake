@@ -51,7 +51,7 @@ macro(rosbuild_3rdparty PKGNAME DEPFILE)
     execute_process(COMMAND ${CMAKE_CURRENT_BINARY_DIR}/3rdparty/install.sh
       RESULT_VARIABLE _3rdparty_result)
     if (NOT ${_3rdparty_result} EQUAL "0")
-      message(STATUS 
+      message(FATAL_ERROR 
 	"FAIL: 3rdparty ${PKGNAME} returned ${_3rdparty_result}, not 0 as we'd hoped.")
     else()
       message(STATUS 

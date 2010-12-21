@@ -9,7 +9,6 @@ include(AddFileDependencies)
 include(CheckFunctionExists)
 
 macro(rosbuild_find_ros_package)
-  message("*** rosbuild_find_ros_package, delete me ***")
 endmacro()
 
 macro(rosbuild_assert_file_exists FNAME)
@@ -83,45 +82,7 @@ macro(rosbuild_remove_link_flags target)
 endmacro(rosbuild_remove_link_flags)
 
 macro(rosbuild_invoke_rospack pkgname _prefix _varname)
-  # Check that our cached location of rospack is valid.  It can be invalid
-  # if rospack has moved since last time we ran, #1154.  If it's invalid,
-  # search again.
-  message(FATAL_ERROR "NOOOOOOOO don't invoke rospack ${pkgname}")
-  set(_rospack_invoke_result)
-
-  #message(">>> ${ROSPACK_EXE} ${ARGN} ${pkgname}")
-  #message("${ROSBUILD_SUBSHELL}")
-  execute_process(
-    COMMAND ${ROSBUILD_SUBSHELL}
-    ${ROSPACK_EXE} ${ARGN} ${pkgname}
-    OUTPUT_VARIABLE _rospack_invoke_result
-    ERROR_VARIABLE _rospack_err_ignore
-    RESULT_VARIABLE _rospack_failed
-    OUTPUT_STRIP_TRAILING_WHITESPACE)
-
-  #if(ROSBUILD_VERBOSE)
-  #message("<<< ${_rospack_invoke_result}")
-  #endif()
-
-  if (_rospack_failed)
-    # set(_rospack_${_varname} "")
-    # set(${_prefix}_${_varname} "" CACHE INTERNAL "")
-    message("Failed to invoke ${ROSPACK_EXE} ${ARGN} ${pkgname}")
-    message("${_rospack_err_ignore}")
-    message("${_rospack_invoke_result}")
-    message(FATAL_ERROR "\nFailed to invoke rospack to get compile flags for package '${pkgname}'.  Look above for errors from rospack itself.  Aborting.  Please fix the broken dependency!\n")
-  else()
-    separate_arguments(_rospack_invoke_result)
-    set(_rospack_${_varname} ${_rospack_invoke_result})
-    # We don't cache results that contain newlines, because
-    # they make CMake's cache unhappy. This check should only affect calls
-    # to `rospack plugins`, which we don't need to cache.
-    if(_rospack_invoke_result MATCHES ".*\n.*")
-      set(${_prefix}_${_varname} "${_rospack_invoke_result}")
-    else()
-      set(${_prefix}_${_varname} "${_rospack_invoke_result}" CACHE INTERNAL "")
-    endif()
-  endif()
+  message(FATAL_ERROR "Don't invoke rospack.")
 endmacro()
 
 ###############################################################################
@@ -512,9 +473,8 @@ macro(rosbuild_add_library lib)
 
   install(TARGETS ${lib}
     LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib  # shared objects
-    ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib  # shared objects
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib  # statics
     )
-
 endmacro(rosbuild_add_library)
 
 macro(rosbuild_install)
@@ -751,7 +711,6 @@ macro(rosbuild_link_boost target)
 
   foreach(arg ${ARGN})
     string(TOUPPER ${arg} ARG)
-    message("LINKING ${Boost_${ARG}_LIBRARY}")
     target_link_libraries(${target} ${Boost_${ARG}_LIBRARY})
   endforeach()
 

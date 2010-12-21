@@ -52,18 +52,14 @@ def sanitize(index):
     for k, v in index.iteritems():
         if k == ('__langs', None):
             continue
-        # print v['srcdir']
         if not os.path.isfile(v['srcdir'] + '/CMakeLists.txt'):
             continue
         os.chdir(v['srcdir'])
         os.popen('svn revert CMakeLists.txt').read()
         inlists = v['srcdir'] + '/CMakeLists.txt'
-        # print inlists
         itext = open(inlists).read()
-        # print '\n\n\n', itext, '\n\n\n' 
         finput = fileinput.FileInput([inlists])
         ast = parse(cmake(), finput, True)
-        # pprint(ast)
 
         oslist = open(v['srcdir'] + '/CMakeLists.txt', 'w')
         
@@ -100,7 +96,7 @@ def sanitize(index):
                 print >>oslist, line[1]
 
         oslist.close()
-        print k[0], '\r',
+        print '>>> %30s\r' % k[0],
         sys.stdout.flush()
 
 print "Sanitizing cmakelists from index", sys.argv[1] 

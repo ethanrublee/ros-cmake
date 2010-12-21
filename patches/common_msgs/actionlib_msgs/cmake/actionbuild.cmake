@@ -5,7 +5,6 @@ macro(rosbuild_actions OUTPUT_VAR)
 
   set(_autogen "")
   set(_autogen_msg_list "")
-
   foreach(_action ${ARGN})
     message(STATUS "Generating Messages for Action" ${_action})
     #construct the path to the .action file
@@ -38,10 +37,10 @@ macro(rosbuild_actions OUTPUT_VAR)
     message(STATUS ${_output_action})
 
     add_custom_command(
-      OUTPUT ${_output_action} ${_output_goal} ${_output_action_goal} ${_output_result} 
-      ${_output_action_result} ${_output_feedback} ${_output_action_feedback} 
-      COMMAND ${ROSBUILD_SUBSHELL} 
-      ${genaction_exe} 
+      OUTPUT ${_output_action} ${_output_goal} ${_output_action_goal} 
+      ${_output_result} ${_output_action_result} ${_output_feedback} 
+      ${_output_action_feedback} 
+      COMMAND ${ROSBUILD_SUBSHELL} ${genaction_exe} 
       ${_input}
       -o ${_output_dir}
       DEPENDS ${_input} ${genaction_exe} ${ROS_MANIFEST_LIST}
