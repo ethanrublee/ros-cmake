@@ -26,9 +26,12 @@ rm -rf $WORK/common/actionlib/cmake
 rm -f ros/tools/rxgraph/CMakeLists.txt ros/tools/rxtools/CMakeLists.txt
 
 if [ -d $WORK/ros/core/rosbuild ] ; then
-    rm -f $WORK/ros/core/rosbuild/manifest.xml
-    mv $WORK/ros/core/rosbuild $WORK/ros/core/rosbuild.aside
+    rm -rf $WORK/ros/core/rosbuild
 fi
+if [ -d $WORK/ros/core/mk ] ; then
+    rm -rf $WORK/ros/core/mk
+fi
+
 #rm -f ./ros-cmake.rosinstall
 #wget --no-check-certificate https://github.com/straszheim/ros-cmake/raw/master/ros-cmake.rosinstall
 

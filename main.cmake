@@ -62,7 +62,11 @@ macro(rosbuild_3rdparty PKGNAME DEPFILE)
 endmacro()
 
 add_custom_target(test-results-run)
-
+add_custom_target(tests)
+add_custom_target(test-results
+  COMMAND echo ${rostest_path}/bin/rostest-results --nodeps ${PROJECT_NAME}
+  COMMENT FIXME test-results)
+add_custom_target(clean-test-results)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/private.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/public.cmake)

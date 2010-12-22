@@ -101,7 +101,7 @@ def sanitize_one(inlists, pkgname):
                     continue
                 if line[1][1] == '$ENV{ROS_ROOT}/core/rosbuild/rosconfig.cmake':
                     continue
-            print line
+            #print line
             oslist += '%s(%s)\n' % (line[1][0], ' '.join([reconstitute(x) 
                                                           for x in
                                                           line[1][1:]]))

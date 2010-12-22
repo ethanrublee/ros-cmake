@@ -401,6 +401,8 @@ macro(rosbuild_add_executable exe)
     add_executable(${exe} EXCLUDE_FROM_ALL ${_var_DEFAULT_ARGS})
   else()
     add_executable(${exe} ${_var_DEFAULT_ARGS})
+    install(TARGETS ${exe}
+      RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/${PROJECT_NAME})
   endif()
 
   get_filename_component(thisexe_path ${exe} PATH)
@@ -429,9 +431,7 @@ macro(rosbuild_add_executable exe)
     rosbuild_add_link_flags(${exe} "-Wl,--allow-multiple-definition")
   endif()
 
-  install(TARGETS ${exe}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/${PROJECT_NAME})
-
+  
 endmacro(rosbuild_add_executable)
 
 #
