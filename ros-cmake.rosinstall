@@ -19,6 +19,6 @@
     uri: https://code.ros.org/svn/ros-pkg/stacks/common_msgs/trunk
     local-name: common_msgs
 
-- svn:
-    uri: https://code.ros.org/svn/ros-pkg/stacks/geometry/trunk
+- hg:
+    uri: http://ros-geometry.google.com/hg/
     local-name: geometry
