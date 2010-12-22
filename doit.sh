@@ -6,7 +6,7 @@ BUILD=$WORK/build
 INDEX=$WORK/index.pkl
 
 rm -f $INDEX
-export ROS_PACKAGE_PATH=$WORK/ros:$WORK/ros_comm:$WORK/common:$WORK/common_msgs
+export ROS_PACKAGE_PATH=$WORK/ros:$WORK/ros_comm:$WORK/common:$WORK/common_msgs:$WORK/geometry
 # export ROS_PACKAGE_PATH=$WORK/ros:$WORK/geometry:$WORK/common:$WORK/ros_comm:$WORK/common_msgs
 cd $WORK
 # chmod 000 ros/core/rosbuild
@@ -20,7 +20,6 @@ rm -f $WORK/ros_comm/clients/roslisp/manifest.xml
 #
 # deprecated file
 #
-rm -rf $WORK/common/actionlib/cmake
 rm -rf $WORK/common/actionlib/cmake
 
 # FIXME
@@ -37,7 +36,6 @@ fi
 #cd ri/src
 
 ./cmake/build_index.py $INDEX $ROS_PACKAGE_PATH
-
 ./cmake/sanitize_manifest.py $INDEX
 ./cmake/sanitize_cmakelists.py -i $INDEX
 
