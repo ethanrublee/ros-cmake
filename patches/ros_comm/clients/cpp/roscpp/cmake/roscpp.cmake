@@ -1,4 +1,4 @@
-set(genmsg_cpp_exe ${CMAKE_SOURCE_DIR}/ros_comm/clients/cpp/roscpp/scripts/genmsg_cpp.py)
+set(genmsg_cpp_exe ${roscpp_PACKAGE_PATH}/scripts/genmsg_cpp.py)
 # Message-generation support.
 macro(genmsg_cpp TYPE)
 

@@ -10,6 +10,10 @@ index = pickle.load(ifile)
 
 out = open(sys.argv[2] +'/toplevel.cmake', 'w')
 
+for (pkgname, version), d in index.iteritems():
+    if pkgname != '__langs':
+        print >>out, "set(%s_PACKAGE_PATH %s)" % (pkgname, d['srcdir'])
+
 print >>out, "include(${CMAKE_CURRENT_BINARY_DIR}/toplevel.static.cmake)"
 
 def msg(format, *args):
@@ -54,9 +58,6 @@ print >>out, 'endmacro()'
 del index[('__langs', None)]
 
 print >>out, '#\n#\n#'
-
-for (pkgname, version), d in index.iteritems():
-    print >>out, "set(%s_PACKAGE_PATH %s)" % (pkgname, d['srcdir'])
 
 def write_project_cmake(name, d, index=index):
     print ">>>", name, '                    \r',
