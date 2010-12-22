@@ -6,7 +6,7 @@ BUILD=$WORK/build
 INDEX=$WORK/index.pkl
 
 rm -f $INDEX
-export ROS_PACKAGE_PATH=$WORK/ros:$WORK/ros_comm
+export ROS_PACKAGE_PATH=$WORK/ros:$WORK/ros_comm:$WORK/common:$WORK/common_msgs
 # export ROS_PACKAGE_PATH=$WORK/ros:$WORK/geometry:$WORK/common:$WORK/ros_comm:$WORK/common_msgs
 cd $WORK
 # chmod 000 ros/core/rosbuild

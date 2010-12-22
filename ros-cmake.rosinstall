@@ -11,3 +11,10 @@
     uri: https://code.ros.org/svn/ros/stacks/ros_comm/trunk
     local-name: ros_comm
  
+- svn:
+    uri: https://code.ros.org/svn/ros-pkg/stacks/common/trunk
+    local-name: common
+
+- svn:
+    uri: https://code.ros.org/svn/ros-pkg/stacks/common_msgs/trunk
+    local-name: common_msgs
