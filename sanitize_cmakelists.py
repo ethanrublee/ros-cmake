@@ -87,6 +87,15 @@ def sanitize_one(inlists, pkgname):
                                   'CMAKE_BUILD_WITH_INSTALL_RPATH',
                                   'CMAKE_SKIP_BUILD_RPATH']:
                     continue
+            # strip leading 'bin/' from executables
+            if line[1][0] in ['rosbuild_add_executable', 'target_link_libraries']:
+                while line[1][1].startswith('bin/'):
+                    line[1][1] = line[1][1][4:]
+
+            if line[1][0] ==  'rosbuild_add_library':
+                while line[1][1].startswith('lib/'):
+                    line[1][1] = line[1][1][4:]
+
             if line[1][0] == 'include':
                 if line[1][1] == '$ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake':
                     continue
