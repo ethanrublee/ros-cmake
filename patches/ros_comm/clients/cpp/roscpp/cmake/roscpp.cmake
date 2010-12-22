@@ -17,7 +17,7 @@ macro(genmsg_cpp TYPE)
 
     string(REPLACE ".msg" ".h" _output_cpp_base ${_fname})
 
-    set(_outdir ${ROSBUILD_GEN_DIR}/cpp/msg)
+    set(_outdir ${ROSBUILD_GEN_DIR}/cpp)
     set(_output_cpp ${_outdir}/${PROJECT_NAME}/${_output_cpp_base})
 
     list(APPEND ${PROJECT_NAME}_generated ${_output_cpp})
@@ -63,7 +63,7 @@ macro(gensrv_cpp TYPE)
     get_filename_component(_fname ${_srv} NAME)
     string(REPLACE ".srv" ".h" _output_cpp_base ${_fname})
 
-    set(_outdir ${ROSBUILD_GEN_DIR}/cpp/srv)
+    set(_outdir ${ROSBUILD_GEN_DIR}/cpp)
     set(_output_cpp ${_outdir}/${PROJECT_NAME}/${_output_cpp_base})
     
     list(APPEND ${PROJECT_NAME}_generated ${_output_cpp})
