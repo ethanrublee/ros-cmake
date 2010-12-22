@@ -31,7 +31,7 @@ import sys, pickle, re, os, fileinput
 from pprint import pprint
 from pyPEG import parse, keyword, _and, _not
 import pyPEG
-pyPEG.print_trace = True
+pyPEG.print_trace = False
 
 def quotedstring():
     return '"', -1, [re.compile('[^\\"]'), re.compile('\\.')], '"'

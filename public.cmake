@@ -3,6 +3,9 @@
 # to rosbuild_init(), related to #1487.
 set(ROSBUILD_init_called 0)
 
+find_library(GTEST_LIBRARIES gtest)
+set(GTEST_INCLUDE_DIR /usr/include)
+
 # Use this package to get add_file_dependencies()
 include(AddFileDependencies)
 # Used to check if a function exists

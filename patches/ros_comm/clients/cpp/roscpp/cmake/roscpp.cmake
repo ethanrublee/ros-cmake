@@ -1,4 +1,4 @@
-set(genmsg_cpp_exe ${CMAKE_SOURCE_DIR}/ros/core/roscpp/scripts/genmsg_cpp.py)
+set(genmsg_cpp_exe ${CMAKE_SOURCE_DIR}/ros_comm/clients/cpp/roscpp/scripts/genmsg_cpp.py)
 # Message-generation support.
 macro(genmsg_cpp TYPE)
 
@@ -44,7 +44,7 @@ macro(genmsg_cpp TYPE)
 endmacro(genmsg_cpp)
 
 
-set(gensrv_cpp_exe ${CMAKE_SOURCE_DIR}/ros/core/roscpp/scripts/gensrv_cpp.py)
+set(gensrv_cpp_exe ${CMAKE_SOURCE_DIR}/ros_comm/clients/cpp/roscpp/scripts/gensrv_cpp.py)
 # Service-generation support.
 macro(gensrv_cpp TYPE)
 

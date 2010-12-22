@@ -56,5 +56,5 @@ cd $BUILD
 echo CMAKESTART
 cmake -DROS_BUILD_SHARED_LIBS=TRUE $WORK/
 
-make VERBOSE=1 -C actionlib
+make VERBOSE=1 
 
