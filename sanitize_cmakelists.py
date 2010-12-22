@@ -31,22 +31,75 @@ import sys, pickle, re, os, fileinput
 from pprint import pprint
 from pyPEG import parse, keyword, _and, _not
 import pyPEG
-# pyPEG.print_trace = True
+pyPEG.print_trace = True
 
-def identifier(): 
-    return 
+def quotedstring():
+    return '"', -1, [re.compile('[^\\"]'), re.compile('\\.')], '"'
 
 def arglist():
-    return '(', -1, re.compile(r'[^\s\(\)]+'), ')'
+    return '(', -1, [quotedstring, re.compile(r'[^\s\(\)]+')], ')'
 
 def macrocall():
-    return re.compile(r'[^\s\(\)]+'), '(', -1, re.compile(r'[^\s\(\)]+'), ')'
+    return re.compile(r'[^\s\(\)]+'), '(', -1, [quotedstring,
+                                                re.compile(r'[^\s\(\)]+')], ')'
 
 def cmake():
     return -2, [comment, macrocall]
 
 def comment():
     return re.compile(r'#.*')
+
+def reconstitute(thing):
+    if isinstance(thing, tuple):
+        if thing[0] == 'quotedstring':
+            return '"' + ''.join(thing[1]) + '"'
+        assert False
+    elif isinstance(thing, unicode):
+        return thing
+    print "???", thing, type(thing)
+    assert False
+
+def sanitize_one(inlists, pkgname):
+    finput = fileinput.FileInput([inlists])
+    ast = parse(cmake(), finput, True)
+
+    oslist = ''
+    oslist += 'message("%s ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}")\n' % pkgname
+    oslist += 'include(${CMAKE_CURRENT_BINARY_DIR}/package.cmake)\n'
+
+    for line in ast:
+        if line[0] == 'macrocall':
+            if line[1][0] in ['cmake_minimum_required',
+                              'rosbuild_init',
+                              'rosbuild_genmsg',
+                              'rosbuild_gensrv',
+                              'rosbuild_find_ros_package',
+                              'genaction']:
+                continue
+
+            if line[1][0] in ['set', 'Set', 'SET']:
+                if line[1][1] in ['ROS_BUILD_TYPE', 
+                                  'EXECUTABLE_OUTPUT_PATH',
+                                  'LIBRARY_OUTPUT_PATH',
+                                  'CMAKE_BUILD_TYPE',
+                                  'CMAKE_INSTALL_RPATH',
+                                  'CMAKE_INSTALL_RPATH_USE_LINK_PATH',
+                                  'CMAKE_BUILD_WITH_INSTALL_RPATH',
+                                  'CMAKE_SKIP_BUILD_RPATH']:
+                    continue
+            if line[1][0] == 'include':
+                if line[1][1] == '$ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake':
+                    continue
+                if line[1][1] == '$ENV{ROS_ROOT}/core/rosbuild/rosconfig.cmake':
+                    continue
+            print line
+            oslist += '%s(%s)\n' % (line[1][0], ' '.join([reconstitute(x) 
+                                                          for x in
+                                                          line[1][1:]]))
+        if line[0] == 'comment':
+            oslist += line[1] + '\n'
+
+    return oslist
 
 def sanitize(index):
     for k, v in index.iteritems():
@@ -56,50 +109,24 @@ def sanitize(index):
             continue
         os.chdir(v['srcdir'])
         os.popen('svn revert CMakeLists.txt').read()
-        inlists = v['srcdir'] + '/CMakeLists.txt'
-        itext = open(inlists).read()
-        finput = fileinput.FileInput([inlists])
-        ast = parse(cmake(), finput, True)
+        otxt = sanitize_one(v['srcdir'] + '/CMakeLists.txt', k[0])
+        oslistfile = open(v['srcdir'] + '/CMakeLists.txt', 'w')
+        print >>oslistfile, otxt
 
-        oslist = open(v['srcdir'] + '/CMakeLists.txt', 'w')
-        
-        print >>oslist, 'message("%s ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}")' % k[0]
-        print >>oslist, ("include(${CMAKE_CURRENT_BINARY_DIR}/package.cmake)")
+from optparse import OptionParser
+parser = OptionParser("options")
+parser.add_option('-f', '--file', dest='file',
+                  help='sanitize individual file')
+parser.add_option('-i', '--index', dest='index',
+                  help='sanitize all files in this index')
 
-        for line in ast:
-            if line[0] == 'macrocall':
-                if line[1][0] in ['cmake_minimum_required',
-                                  'rosbuild_init',
-                                  'rosbuild_genmsg',
-                                  'rosbuild_gensrv',
-                                  'rosbuild_find_ros_package',
-                                  'genaction']:
-                    continue
+(options, args) = parser.parse_args(sys.argv)
 
-                if line[1][0] in ['set', 'Set', 'SET']:
-                    if line[1][1] in ['ROS_BUILD_TYPE', 
-                                      'EXECUTABLE_OUTPUT_PATH',
-                                      'LIBRARY_OUTPUT_PATH',
-                                      'CMAKE_BUILD_TYPE',
-                                      'CMAKE_INSTALL_RPATH',
-                                      'CMAKE_INSTALL_RPATH_USE_LINK_PATH',
-                                      'CMAKE_BUILD_WITH_INSTALL_RPATH',
-                                      'CMAKE_SKIP_BUILD_RPATH']:
-                        continue
-                if line[1][0] == 'include':
-                    if line[1][1] == '$ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake':
-                        continue
-                    if line[1][1] == '$ENV{ROS_ROOT}/core/rosbuild/rosconfig.cmake':
-                        continue
-                print >>oslist, "%s(%s)" % (line[1][0], ' '.join(line[1][1:]))
-            if line[0] == 'comment':
-                print >>oslist, line[1]
-
-        oslist.close()
-        print '>>> %30s\r' % k[0],
-        sys.stdout.flush()
-
-print "Sanitizing cmakelists from index", sys.argv[1] 
-index = pickle.load(open(sys.argv[1]))
-sanitize(index)
-print
+if options.index:
+    print "Sanitizing cmakelists from index", options.index
+    index = pickle.load(open(options.index))
+    sanitize(index)
+    print
+elif options.file:
+    print "Sanitizing individual cmakelists", 
+    print sanitize_one(options.file, "UNK")

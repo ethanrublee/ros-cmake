@@ -6,16 +6,16 @@ BUILD=$WORK/build
 INDEX=$WORK/index.pkl
 
 rm -f $INDEX
-export ROS_PACKAGE_PATH=$WORK/ros:$WORK/geometry:$WORK/common:$WORK/ros_comm:$WORK/common_msgs
+export ROS_PACKAGE_PATH=$WORK/ros:$WORK/ros_comm
 # export ROS_PACKAGE_PATH=$WORK/ros:$WORK/geometry:$WORK/common:$WORK/ros_comm:$WORK/common_msgs
 cd $WORK
 # chmod 000 ros/core/rosbuild
 
-echo 'message("actionlib has no cmakelists.  hrm.")' > common/actionlib/test/CMakeLists.txt
+#echo 'message("actionlib has no cmakelists.  hrm.")' > common/actionlib/test/CMakeLists.txt
 
 echo "cmake_minimum_required(VERSION 2.8)" > CMakeLists.txt
 echo "include(cmake/main.cmake)" >> CMakeLists.txt
-rm -f $WORK/ros/core/roslisp/manifest.xml
+rm -f $WORK/ros_comm/clients/roslisp/manifest.xml
 
 #
 # deprecated file
@@ -39,7 +39,7 @@ fi
 ./cmake/build_index.py $INDEX $ROS_PACKAGE_PATH
 
 ./cmake/sanitize_manifest.py $INDEX
-./cmake/sanitize_cmakelists.py $INDEX
+./cmake/sanitize_cmakelists.py -i $INDEX
 
 
 rsync -a $WORK/cmake/patches/ $WORK/
