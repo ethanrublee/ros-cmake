@@ -130,14 +130,14 @@ class Generator(object):
                 package_files[package].append(f)
             except Exception, e:
                 print "\nERROR[%s]: Unable to load %s file '%s': %s\n"%(self.name, self.ext, f, e)
-                retcode = 1 #flag error
+                raise
         return retcode
 
-    def write_modules(self, package_files):
+    def write_modules(self, package_files, options):
         for package, pfiles in package_files.iteritems():
-            mfiles = [self.resource_name(f) for f in pfiles]
-            package_dir = rosidl.packages.get_pkg_dir(package, True)
-            outdir = self.outdir(package_dir)
+            mfiles = map(lambda s: os.path.basename(os.path.splitext(s)[0]),
+                         pfiles)
+            outdir = options.outdir
 
             #TODO: also check against MSG/SRV dir to make sure it
             # really is a generated file get a list of all the python
@@ -147,12 +147,11 @@ class Generator(object):
             # having to 'make clean'
             good_types = set([f[1:-3] for f in os.listdir(outdir)
                              if f.endswith('.py') and f != '__init__.py'])
-            types = set(self.list_types(package))
+            types = set(map(lambda s: os.path.basename(os.path.splitext(s)[0]),
+                            pfiles))
             generated_modules = [self._module_name(f) for f in good_types.intersection(types)]
-            if package_dir is None:
-                continue #already printed error message about
 
-            self.write_module(package_dir, package, generated_modules)
+            self.write_module(options.outdir, package, generated_modules)
         return 0
 
     ## @param base_dir str: path to package
@@ -162,14 +161,11 @@ class Generator(object):
     ##   .msg file.
     def write_module(self, basedir, package, generated_modules):
         """create a module file to mark directory for python"""
-        dir = self.outdir(basedir)
-        if not os.path.exists(dir):
-            os.makedirs(dir)
-        elif not os.path.isdir(dir):
+        if not os.path.exists(basedir):
+            os.makedirs(basedir)
+        elif not os.path.isdir(basedir):
             raise self.exception("file preventing the creating of module directory: %s"%dir)
-        p = os.path.join(dir, '__init__.py')
-        if rosidl.msgs.is_verbose():
-            print "... creating module file", p
+        p = os.path.join(basedir, '__init__.py')
         f = open(p, 'w')
         try:
             #this causes more problems than anticipated -- for pure python
@@ -181,11 +177,10 @@ class Generator(object):
         finally:
             f.close()
 
-        parentInit = os.path.dirname(dir)
+        parentInit = os.path.dirname(basedir)
         p = os.path.join(parentInit, '__init__.py')
         if not os.path.exists(p):
             #touch __init__.py in the parent package
-            print "... also creating module file %s"%p
             f = open(p, 'w')
             f.close()
 
@@ -240,7 +235,7 @@ class Generator(object):
             retcode = self.generate_package(package, pfiles, options) or retcode
         return retcode
 
-    def generate_initpy(self, files):
+    def generate_initpy(self, files, options):
         """
         Generate __init__.py file for each package in in the msg/srv file list
         and have the __init__.py file import the required symbols from
@@ -251,12 +246,10 @@ class Generator(object):
         @rtype: int
         """
         
-        package_files = {}
-        # pass 1: collect list of files for each package
-        retcode = self.generate_package_files(package_files, files, self.ext)
+        package_files = { options.package : files }
 
         # pass 2: write the __init__.py file for the module
-        retcode = retcode or self.write_modules(package_files)
+        self.write_modules(package_files, options)
         
     def generate_messages(self, files, options):
         """
@@ -280,8 +273,6 @@ class Generator(object):
         return retcode
 
     def write_gen(self, outfile, gen, verbose):
-        if verbose:
-            print  "... generating %s"%outfile
         f = open(outfile, 'w')
         try:
             for l in gen:
@@ -303,12 +294,8 @@ def genmain(argv, gen, usage_fn=usage):
     parser.add_option('-I', dest='includepath', action='append')
     (options, args) = parser.parse_args(argv)
     try:
-        #gen_initpy = '--initpy' in argv
-        #no_gen_initpy = '--noinitpy' in argv
-        
         if options.initpy:
-            # #1827
-            retcode = gen.generate_initpy(args)
+            retcode = gen.generate_initpy(args, options)
         else:
             retcode = gen.generate_messages(args[1:], options)
     except rosidl.msgs.MsgSpecException, e:
