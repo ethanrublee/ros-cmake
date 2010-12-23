@@ -36,6 +36,7 @@ macro(genmsg_py TYPE)
       ${genmsg_py_exe} 
       ${_input}
       -o ${_outdir}
+      -p ${PROJECT_NAME}
       -I${CMAKE_CURRENT_BINARY_DIR} ${_incflags} -I${CMAKE_CURRENT_SOURCE_DIR}
       DEPENDS ${_input} ${genmsg_py_exe} ${gendeps_exe} ${${PROJECT_NAME}_${_msg}_GENDEPS} ${ROS_MANIFEST_LIST})
     list(APPEND _autogen ${_output_py})

@@ -918,7 +918,7 @@ def deserialize_fn_generator(package, spec, is_numpy=False):
     yield "except struct.error, e:"
     yield "  raise rosidl.message.DeserializationError(e) #most likely buffer underfill"
 
-def msg_generator(package, name, spec):
+def msg_generator(package, name, spec, includepath):
     """
     Python code generator for .msg files. Takes in a package name,
     message name, and message specification and generates a Python
@@ -937,8 +937,8 @@ def msg_generator(package, name, spec):
     # generate dependencies dictionary. omit files calculation as we
     # rely on in-memory MsgSpecs instead so that we can generate code
     # for older versions of msg files
-    gendeps_dict = rosidl.gentools.get_dependencies(spec, package, compute_files=False)
-    md5sum = rosidl.gentools.compute_md5(gendeps_dict)
+    gendeps_dict = rosidl.gentools.get_dependencies(spec, package, includepath, compute_files=False)
+    md5sum = rosidl.gentools.compute_md5(gendeps_dict, includepath)
     
     # remap spec names to be Python-safe
     spec = make_python_safe(spec) 

@@ -64,7 +64,7 @@ class GenmsgPackage(genutil.Generator):
             rosidl.msgs.EXT, rosidl.packages.MSG_DIR, 
             rosidl.genpy.MsgGenerationException)
 
-    def generate(self, package, f, outdir):
+    def generate(self, package, f, outdir, includepath):
         """
         Generate python message code for a single .msg file
         @param f: path to .msg file
@@ -83,7 +83,7 @@ class GenmsgPackage(genutil.Generator):
         base_name = rosidl.names.resource_name_base(name)
         
         self.write_gen(outfile_name, 
-                       rosidl.genpy.msg_generator(package, base_name, spec), 
+                       rosidl.genpy.msg_generator(package, base_name, spec, includepath), 
                        verbose)
 
         rosidl.msgs.register(name, spec)
