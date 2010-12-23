@@ -38,30 +38,28 @@ ROS message source code generation for rospy.
 
 Converts ROS .srv files into Python source code implementations.
 """
-import roslib; roslib.load_manifest('rospy')
+import sys, os, traceback, trace
 
-import sys, os
-
-import roslib.genpy
-import roslib.gentools 
-import roslib.srvs
+import rosidl.srvs
+import rosidl.packages
 
 import genmsg_py, genutil
 
 REQUEST ='Request'
 RESPONSE='Response'
 
-class SrvGenerationException(roslib.genpy.MsgGenerationException): pass
+class SrvGenerationException(rosidl.genpy.MsgGenerationException): 
+    pass
 
 def srv_generator(package, name, spec):
     req, resp = ["%s%s"%(name, suff) for suff in [REQUEST, RESPONSE]]
 
-    fulltype = '%s%s%s'%(package, roslib.srvs.SEP, name)
+    fulltype = '%s%s%s'%(package, rosidl.srvs.SEP, name)
 
-    gendeps_dict = roslib.gentools.get_dependencies(spec, package)
-    md5 = roslib.gentools.compute_md5(gendeps_dict)
+    gendeps_dict = rosidl.gentools.get_dependencies(spec, package)
+    md5 = rosidl.gentools.compute_md5(gendeps_dict)
 
-    yield "class %s(roslib.message.ServiceDefinition):"%name
+    yield "class %s(rosidl.message.ServiceDefinition):"%name
     yield "  _type          = '%s'"%fulltype
     yield "  _md5sum = '%s'"%md5
     yield "  _request_class  = %s"%req
@@ -69,7 +67,9 @@ def srv_generator(package, name, spec):
 
 class SrvGenerator(genutil.Generator):
     def __init__(self):
-        super(SrvGenerator, self).__init__('gensrv_py', 'services', roslib.srvs.EXT, 'srv', SrvGenerationException)
+        super(SrvGenerator, self) \
+            .__init__('gensrv_py', 'services', rosidl.srvs.EXT, 
+                      'srv', SrvGenerationException)
 
     def generate(self, package, f, outdir):
         verbose = True
@@ -80,19 +80,19 @@ class SrvGenerator(genutil.Generator):
         elif not os.path.isdir(outdir): 
             raise SrvGenerationException("Cannot write to %s: file in the way"%outdir)
 
-        prefix = infile_name[:-len(roslib.srvs.EXT)]
+        prefix = infile_name[:-len(rosidl.srvs.EXT)]
         # generate message files for request/response        
-        name, spec = roslib.srvs.load_from_file(f, package)
-        base_name = roslib.names.resource_name_base(name)
+        name, spec = rosidl.srvs.load_from_file(f, package)
+        base_name = rosidl.names.resource_name_base(name)
         
         outfile = self.outfile_name(outdir, f)
         f = open(outfile, 'w')
         try:
             for mspec, suffix in ((spec.request, REQUEST), (spec.response, RESPONSE)):
                 #outfile = os.path.join(outdir, prefix+suffix+".py")    
-                #gen = roslib.genpy.msg_generator(package, name+suffix, mspec)
-                #self.write_gen(outfile, gen, roslib.srvs.is_verbose())
-                for l in roslib.genpy.msg_generator(package, base_name+suffix, mspec):
+                #gen = rosidl.genpy.msg_generator(package, name+suffix, mspec)
+                #self.write_gen(outfile, gen, rosidl.srvs.is_verbose())
+                for l in rosidl.genpy.msg_generator(package, base_name+suffix, mspec):
                     f.write(l+'\n')
 
             # generate service file
@@ -105,5 +105,9 @@ class SrvGenerator(genutil.Generator):
         return outfile
     
 if __name__ == "__main__":
-    roslib.srvs.set_verbose(False)
-    genutil.genmain(sys.argv, SrvGenerator())
+    rosidl.srvs.set_verbose(True)
+    tracer = trace.Trace(
+        ignoredirs=[sys.prefix, sys.exec_prefix],
+        trace=1)
+    tracer.run("genutil.genmain(sys.argv, SrvGenerator())")
+

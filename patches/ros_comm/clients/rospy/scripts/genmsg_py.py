@@ -38,9 +38,7 @@ ROS message source code generation for Python
 
 Converts ROS .msg files in a package into Python source code implementations.
 """
-import sys
-import os
-import traceback, trace
+import sys, os, traceback, trace
 
 # roslib.msgs contains the utilities for parsing .msg specifications. It is meant to have no rospy-specific knowledge
 import rosidl.msgs 
