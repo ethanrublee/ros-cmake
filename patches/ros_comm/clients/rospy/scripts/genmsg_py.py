@@ -91,7 +91,8 @@ class GenmsgPackage(genutil.Generator):
 
 if __name__ == "__main__":
     # rosidl.msgs.set_verbose(False)
-    tracer = trace.Trace(
-        ignoredirs=[sys.prefix, sys.exec_prefix],
-        trace=1)
-    tracer.run("genutil.genmain(sys.argv, GenmsgPackage())")
+    #tracer = trace.Trace(
+    #ignoredirs=[sys.prefix, sys.exec_prefix],
+    #trace=1)
+    #tracer.run("")
+    genutil.genmain(sys.argv, GenmsgPackage())

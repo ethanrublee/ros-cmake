@@ -20,9 +20,9 @@ macro(genmsg_py TYPE)
 
     string(REPLACE ".msg" ".py" _output_py_base ${_fname})
 
-    set(_outdir ${ROSBUILD_GEN_DIR}/py)
-    set(_output_py ${ROSBUILD_GEN_DIR}/py/${PROJECT_NAME}/msg/${_output_py_base})
-
+    set(_outdir ${ROSBUILD_GEN_DIR}/py/${PROJECT_NAME}/msg)
+    set(_output_py ${_outdir}/${_output_py_base})
+    file(MAKE_DIRECTORY ${_outdir})
     list(APPEND ${PROJECT_NAME}_generated ${_output_py})
 
     set(_incflags "")
@@ -32,7 +32,7 @@ macro(genmsg_py TYPE)
 
     # Add the rule to build the .py from the .msg.
     add_custom_command(OUTPUT ${_output_py} 
-      COMMAND ${ROSBUILD_SUBSHELL} 
+      COMMAND ${ROSBUILD_SUBSHELL}
       ${genmsg_py_exe} 
       ${_input}
       -o ${_outdir}

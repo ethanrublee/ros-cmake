@@ -70,7 +70,6 @@ class Generator(object):
     ## @return str: name of ROS resource
     def resource_name(self, filename):
         assert isinstance(filename, str)
-        print "FILENAME=", filename
         return os.path.basename(filename)[:-len(self.ext)]
         
     ## @param type_name str: Name of message type sans package,
@@ -117,17 +116,14 @@ class Generator(object):
     def generate_package_files(self, package_files, files, ext):
         files = filter(lambda f: f.endswith(ext), files)
         retcode = 0
-        print "files=", files
         assert isinstance(files, list)
         for f in files:
 
-            print "F=", f
             try:
                 package_dir, package = rosidl.packages.get_dir_pkg(f)
                 outdir = self.outdir(package_dir)
                 if not package:
                     raise self.exception("Cannot locate package for %s. Is ROS_ROOT set?"%f)
-                print "GETTINGOUTFILENAME"
                 outfile_name = self.outfile_name(outdir, f)
                 if not package in package_files:
                     package_files[package] = []
@@ -193,7 +189,7 @@ class Generator(object):
             f = open(p, 'w')
             f.close()
 
-    def generate_package(self, package, pfiles, includepath):
+    def generate_package(self, package, pfiles, options):
         if not rosidl.names.is_legal_resource_base_name(package):
             print "\nERROR[%s]: package name '%s' is illegal and cannot be used in message generation.\nPlease see http://ros.org/wiki/Names"%(self.name, package)
             return 1 # flag error
@@ -204,7 +200,7 @@ class Generator(object):
         #return 1 #flag error
 
         # package/src/package/msg for messages, packages/src/package/srv for services
-        outdir = '/tmp/EGH' #self.outdir(package_dir)
+        outdir = options.outdir #self.outdir(package_dir)
         try:
             # TODO: this can result in packages getting dependencies
             # that they shouldn't. To implement this correctly will
@@ -217,35 +213,31 @@ class Generator(object):
             print "\nERROR[%s]: Unable to load package dependencies for %s: %s\n"%(self.name, package, e)
             return 1 #flag error
         try:
-            print "XYXY"
             # rosidl.msgs.load_package(package)        
-            print "XYXY: loaded"
+            pass
         except Exception, e:
             print "\nERROR[%s]: Unable to load package %s: %s\n"%(self.name, package, e)
             return 1 #flag error
 
         retcode = 0
         for f in pfiles:
-            print "finpfiles=", f
             try:
-                outfile = self.generate(package, f, outdir, includepath) #actual generation
+                outfile = self.generate(package, f, outdir, options.includepath) #actual generation
             except Exception, e:
                 if not isinstance(e, MsgGenerationException) and not isinstance(e, rosidl.msgs.MsgSpecException):
                     traceback.print_exc()
                 print "\nERROR[%s]: Unable to generate %s for package '%s': while processing '%s': %s\n"%(self.name, self.what, package, f, e)
                 retcode = 1 #flag error
-        print "%s: python messages for '%s' ==> %s"%(self.name, package, outdir)
         return retcode
         
-    def generate_all_by_package(self, package_files, includepath):
+    def generate_all_by_package(self, package_files, options):
         """
         @return: return code
         @rtype: int
         """
         retcode = 0
         for package, pfiles in package_files.iteritems():
-            print "package=", package, "pfiles=", pfiles
-            retcode = self.generate_package(package, pfiles, includepath) or retcode
+            retcode = self.generate_package(package, pfiles, options) or retcode
         return retcode
 
     def generate_initpy(self, files):
@@ -277,11 +269,9 @@ class Generator(object):
         package_files = { options.package : [files[0]] }
         # pass 1: collect list of files for each package
         # retcode = self.generate_package_files(package_files, files, self.ext)
-        print "PACKAGE_FILES=", package_files
-        print "[%s]: generating %s for the following packages: %s" % (self.name, self.what, package_files.keys())
 
         # pass 2: rosidl.msgs.load_package(), generate messages
-        retcode = self.generate_all_by_package(package_files, options.incdirs)
+        retcode = self.generate_all_by_package(package_files, options)
 
         # backwards compat
         if options.initpy:
@@ -309,8 +299,8 @@ def genmain(argv, gen, usage_fn=usage):
     parser.add_option('--initpy', dest='initpy', action='store_true',
                       default=False)
     parser.add_option('-p', dest='package')
-    parser.add_option('-o', dest='output_dir')
-    parser.add_option('-I', dest='incdirs', action='append')
+    parser.add_option('-o', dest='outdir')
+    parser.add_option('-I', dest='includepath', action='append')
     (options, args) = parser.parse_args(argv)
     try:
         #gen_initpy = '--initpy' in argv
