@@ -67,7 +67,7 @@ def write_project_cmake(name, d, index=index):
         os.mkdir(bindir)
     ofile = open(bindir + '/package.cmake', 'w')
     print >>ofile, 'project(%s)' % name
-    print >>ofile, 'message(STATUS "***** %s *****")' % name
+    print >>ofile, 'message(STATUS " + %s")' % name
     print >>ofile, 'set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin)'
     print >>ofile, 'set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib)'
     # print >>ofile, 'add_custom_target(%s_codegen)' % name
@@ -77,7 +77,7 @@ def write_project_cmake(name, d, index=index):
                                                                    for pkgname in d['depend']])
     if len(d['actions']) > 0:
         print >>ofile, 'rosbuild_actions(GENERATED_ACTIONS %s)' % ' '.join(d['actions'])
-        print >>ofile, 'message("GENERATED_ACTIONS=${GENERATED_ACTIONS}")'
+        # print >>ofile, 'message("GENERATED_ACTIONS=${GENERATED_ACTIONS}")'
         print >>ofile, 'rosbuild_msgs(GENERATED ${GENERATED_ACTIONS})'
 
     if len(d['msgs']) > 0:
@@ -87,7 +87,7 @@ def write_project_cmake(name, d, index=index):
         print >>ofile, 'rosbuild_srvs(STATIC %s)' % ' '.join(d['srvs'])
 
     print >>ofile, 'rosbuild_gentargets()'
-    print >>ofile, 'message("DEPENDS: ${%s_generated}")' % name
+    # print >>ofile, 'message("DEPENDS: ${%s_generated}")' % name
 #    print >>ofile, 'add_dependencies(roscpp_codegen %s_codegen)'%name
     if 'export' in d:
         if 'include_dirs' in d['export']:

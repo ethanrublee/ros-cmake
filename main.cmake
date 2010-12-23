@@ -13,6 +13,20 @@ if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/common_msgs/actionlib_msgs/cmake/actionbu
   include(${CMAKE_CURRENT_SOURCE_DIR}/common_msgs/actionlib_msgs/cmake/actionbuild.cmake)
 endif()
 
+
+#
+#  apply MACRO to args ARGN
+#
+macro(apply MACRO)
+  set(APPLY_MACRO ${MACRO})
+  set(APPLY_ARGS ${ARGN})
+  set(_APPLY ${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/_apply.cmake)
+  configure_file(_apply.cmake.in
+    ${_APPLY}
+    @ONLY)
+  include(${_APPLY})
+endmacro()
+
 #set_property(GLOBAL 
 #  PROPERTY
 #  GLOBAL_DEPENDS_DEBUG_MODE TRUE)

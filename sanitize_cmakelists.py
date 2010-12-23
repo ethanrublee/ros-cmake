@@ -64,7 +64,6 @@ def sanitize_one(inlists, pkgname):
     ast = parse(cmake(), finput, True)
 
     oslist = ''
-    oslist += 'message("%s ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}")\n' % pkgname
     oslist += 'include(${CMAKE_CURRENT_BINARY_DIR}/package.cmake)\n'
 
     for line in ast:
@@ -117,7 +116,10 @@ def sanitize(index):
         if not os.path.isfile(v['srcdir'] + '/CMakeLists.txt'):
             continue
         os.chdir(v['srcdir'])
-        os.popen('svn revert CMakeLists.txt').read()
+        if os.path.isdir('.svn'):
+            os.popen('svn revert CMakeLists.txt').read()
+        else:
+            os.popen('hg revert CMakeLists.txt').read()
         otxt = sanitize_one(v['srcdir'] + '/CMakeLists.txt', k[0])
         oslistfile = open(v['srcdir'] + '/CMakeLists.txt', 'w')
         print >>oslistfile, otxt
