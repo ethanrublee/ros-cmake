@@ -113,7 +113,9 @@ class Generator(object):
     def generate_package_files(self, package_files, files, ext):
         files = filter(lambda f: f.endswith(ext), files)
         retcode = 0
+        print "files=", files
         for f in files:
+            print "F=", f
             try:
                 package_dir, package = rosidl.packages.get_dir_pkg(f)
                 outdir = self.outdir(package_dir)
@@ -133,10 +135,13 @@ class Generator(object):
             mfiles = [self.resource_name(f) for f in pfiles]
             package_dir = rosidl.packages.get_pkg_dir(package, True)
             outdir = self.outdir(package_dir)
-            #TODO: also check against MSG/SRV dir to make sure it really is a generated file
-            # get a list of all the python files in the generated directory
-            # so we can import them into __init__.py. We intersect that list with the
-            # list of the .msg files so we can catch deletions without having to 'make clean'
+
+            #TODO: also check against MSG/SRV dir to make sure it
+            # really is a generated file get a list of all the python
+            # files in the generated directory so we can import them
+            # into __init__.py. We intersect that list with the list
+            # of the .msg files so we can catch deletions without
+            # having to 'make clean'
             good_types = set([f[1:-3] for f in os.listdir(outdir)
                              if f.endswith('.py') and f != '__init__.py'])
             types = set(self.list_types(package))
@@ -261,7 +266,7 @@ class Generator(object):
         package_files = {}
         # pass 1: collect list of files for each package
         retcode = self.generate_package_files(package_files, files, self.ext)
-        print "[%s]: generating %s for the following packages: %s"%(self.name, self.what, package_files.keys())
+        print "[%s]: generating %s for the following packages: %s" % (self.name, self.what, package_files.keys())
 
         # pass 2: rosidl.msgs.load_package(), generate messages
         retcode = retcode or self.generate_all_by_package(package_files)
@@ -295,20 +300,23 @@ def get_files(argv, usage_fn, ext):
     return files
 
 def genmain(argv, gen, usage_fn=usage):
+
+    from optparse import OptionParser
+    parser = OptionParser("options")
+    parser.add_option('--initpy', dest='initpy', action='store_true',
+                      default=False)
+    parser.add_option('-o', dest='output_dir')
+    parser.add_option('-I', dest='incdirs', action='append')
+    (options, args) = parser.parse_args(argv)
     try:
-        gen_initpy = '--initpy' in argv
-        no_gen_initpy = '--noinitpy' in argv
+        #gen_initpy = '--initpy' in argv
+        #no_gen_initpy = '--noinitpy' in argv
         
-        if gen_initpy:
+        if options.initpy:
             # #1827
-            packages = [p for p in argv[1:] if not p == '--initpy']
-            retcode = gen.generate_initpy(packages)
+            retcode = gen.generate_initpy(args)
         else:
-            files = get_files(argv, usage_fn, gen.ext)
-            if not files:
-                print "No matching files found"
-                return
-            retcode = gen.generate_messages(files, no_gen_initpy)
+            retcode = gen.generate_messages(args, False)
     except rosidl.msgs.MsgSpecException, e:
         print >> sys.stderr, "ERROR: ", e
         retcode = 1

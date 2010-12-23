@@ -34,7 +34,6 @@ macro(genmsg_py TYPE)
     add_custom_command(OUTPUT ${_output_py} 
       COMMAND ${ROSBUILD_SUBSHELL} 
       ${genmsg_py_exe} 
-      --noinitpy 
       ${_input}
       -o ${_outdir}
       -I${CMAKE_CURRENT_BINARY_DIR} ${_incflags} -I${CMAKE_CURRENT_SOURCE_DIR}

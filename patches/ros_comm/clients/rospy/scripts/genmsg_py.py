@@ -40,7 +40,7 @@ Converts ROS .msg files in a package into Python source code implementations.
 """
 import sys
 import os
-import traceback
+import traceback, trace
 
 # roslib.msgs contains the utilities for parsing .msg specifications. It is meant to have no rospy-specific knowledge
 import rosidl.msgs 
@@ -60,7 +60,9 @@ class GenmsgPackage(genutil.Generator):
     """
     def __init__(self):
         super(GenmsgPackage, self).__init__(
-            'genmsg_py', 'messages', rosidl.msgs.EXT, rosidl.packages.MSG_DIR, rosidl.genpy.MsgGenerationException)
+            'genmsg_py', 'messages', 
+            rosidl.msgs.EXT, rosidl.packages.MSG_DIR, 
+            rosidl.genpy.MsgGenerationException)
 
     def generate(self, package, f, outdir):
         """
@@ -80,11 +82,16 @@ class GenmsgPackage(genutil.Generator):
         (name, spec) = rosidl.msgs.load_from_file(f, package)
         base_name = rosidl.names.resource_name_base(name)
         
-        self.write_gen(outfile_name, rosidl.genpy.msg_generator(package, base_name, spec), verbose)
+        self.write_gen(outfile_name, 
+                       rosidl.genpy.msg_generator(package, base_name, spec), 
+                       verbose)
 
         rosidl.msgs.register(name, spec)
         return outfile_name
 
 if __name__ == "__main__":
     # rosidl.msgs.set_verbose(False)
-    genutil.genmain(sys.argv, GenmsgPackage())
+    tracer = trace.Trace(
+        ignoredirs=[sys.prefix, sys.exec_prefix],
+        trace=1)
+    tracer.run("genutil.genmain(sys.argv, GenmsgPackage())")
