@@ -13,7 +13,6 @@ macro(genmsg_py TYPE)
     else()
       message(FATAL_ERROR "Unknown message type \"${TYPE}\" (must be either STATIC or GENERATED)")
     endif()
-    list(APPEND _inlist ${_input})
 
     get_filename_component(_fname ${_msg} NAME)
 
@@ -23,7 +22,6 @@ macro(genmsg_py TYPE)
     set(_output_py ${_outdir}/_${_output_py_base})
 
     file(MAKE_DIRECTORY ${_outdir})
-    list(APPEND ${PROJECT_NAME}_generated ${_output_py})
 
     set(_incflags "")
     foreach(dir ${DEPENDED_PACKAGE_PATHS})
@@ -42,6 +40,9 @@ macro(genmsg_py TYPE)
       DEPENDS ${_input} ${genmsg_py_exe} ${gendeps_exe} 
       ${${PROJECT_NAME}_${_msg}_GENDEPS} ${ROS_MANIFEST_LIST}
       COMMENT "Generating python message from ${_input}")
+
+    list(APPEND ${PROJECT_NAME}_generated ${_output_py})
+    list(APPEND _inlist ${_input})
   endforeach(_msg)
 
   if(${PROJECT_NAME}_generated)
@@ -57,7 +58,7 @@ macro(genmsg_py TYPE)
       ${_inlist}
       DEPENDS ${_inlist}
       COMMENT "Generating python __init__.py for ${PROJECT_NAME} messages")
-    list(APPEND ${PROJECT_NAME}_generated ${_outdir}/__init__.py)
+    list(APPEND ${PROJECT_NAME}_generated ${_output_py})
   endif()
 endmacro()
 
@@ -100,6 +101,7 @@ macro(gensrv_py TYPE)
       ${_incflags}
       DEPENDS ${_input} ${gensrv_py_exe} ${gendeps_exe} ${${PROJECT_NAME}_${_srv}_GENDEPS} ${ROS_MANIFEST_LIST})
     list(APPEND _autogen ${_output_py})
+    list(APPEND _inlist ${_input})
   endforeach(_srv)
 
   if(_autogen)
@@ -107,18 +109,17 @@ macro(gensrv_py TYPE)
     # files created by the above loop.  It can't run until those files are
     # generated, so it depends on them.
     set(_output_py ${PROJECT_SOURCE_DIR}/src/${PROJECT_NAME}/srv/__init__.py)
-    #add_custom_command(OUTPUT ${_output_py}
-    #COMMAND ${gensrv_py_exe} --initpy ${_inlist}
-    #DEPENDS ${_autogen})
-    
-    # Make our target depend on rosbuild_premsgsrvgen, to allow any
-    # pre-msg/srv generation steps to be done first.
-    #add_dependencies(ROSBUILD_gensrv_py rosbuild_premsgsrvgen)
-    # Add our target to the top-level gensrv target, which will be fired if
-    # the user calls gensrv()
-    #add_dependencies(rospack_gensrv ROSBUILD_gensrv_py)
-  endif(_autogen)
-endmacro(gensrv_py)
+    add_custom_command(OUTPUT ${_output_py}
+      COMMAND ${ROSBUILD_SUBSHELL} ${gensrv_py_exe} --initpy 
+      -p ${PROJECT_NAME}
+      -o ${_outdir}
+      ${_inlist}
+      DEPENDS ${_inlist}
+      COMMENT "Generating python __init__.py for ${PROJECT_NAME} services"
+      )
+    list(APPEND ${PROJECT_NAME}_generated ${_output_py})
+  endif()
+endmacro()
 
 macro(gentargets_py)
 endmacro()
