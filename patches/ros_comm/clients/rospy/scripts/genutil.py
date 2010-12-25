@@ -109,7 +109,7 @@ class Generator(object):
             raise self.exception("Cannot write to %s: file in the way"%outdir)
         return outdir
 
-    def generate(self, package, f, outdir):
+    def generate(self, package, f, outdir, incdir):
         raise Exception('subclass must override')
 
     ## reindex files as a dictionary keyed by package

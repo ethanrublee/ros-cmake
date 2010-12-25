@@ -51,13 +51,13 @@ RESPONSE='Response'
 class SrvGenerationException(rosidl.genpy.MsgGenerationException): 
     pass
 
-def srv_generator(package, name, spec):
+def srv_generator(package, name, spec, includepath):
     req, resp = ["%s%s"%(name, suff) for suff in [REQUEST, RESPONSE]]
 
     fulltype = '%s%s%s'%(package, rosidl.srvs.SEP, name)
 
-    gendeps_dict = rosidl.gentools.get_dependencies(spec, package)
-    md5 = rosidl.gentools.compute_md5(gendeps_dict)
+    gendeps_dict = rosidl.gentools.get_dependencies(spec, package, includepath)
+    md5 = rosidl.gentools.compute_md5(gendeps_dict, includepath)
 
     yield "class %s(rosidl.message.ServiceDefinition):"%name
     yield "  _type          = '%s'"%fulltype
@@ -71,7 +71,7 @@ class SrvGenerator(genutil.Generator):
             .__init__('gensrv_py', 'services', rosidl.srvs.EXT, 
                       'srv', SrvGenerationException)
 
-    def generate(self, package, f, outdir):
+    def generate(self, package, f, outdir, incpath):
         verbose = True
         f = os.path.abspath(f)
         infile_name = os.path.basename(f)
@@ -92,13 +92,13 @@ class SrvGenerator(genutil.Generator):
                 #outfile = os.path.join(outdir, prefix+suffix+".py")    
                 #gen = rosidl.genpy.msg_generator(package, name+suffix, mspec)
                 #self.write_gen(outfile, gen, rosidl.srvs.is_verbose())
-                for l in rosidl.genpy.msg_generator(package, base_name+suffix, mspec):
+                for l in rosidl.genpy.msg_generator(package, base_name+suffix, mspec, incpath):
                     f.write(l+'\n')
 
             # generate service file
             #outfile = os.path.join(outdir, prefix+".py")
             #self.write_gen(outfile, srv_generator(package, name, spec), verbose)
-            for l in srv_generator(package, base_name, spec):
+            for l in srv_generator(package, base_name, spec, incpath):
                 f.write(l+'\n')
         finally:
             f.close()
