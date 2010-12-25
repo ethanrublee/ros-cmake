@@ -108,6 +108,6 @@ if __name__ == "__main__":
     rosidl.srvs.set_verbose(True)
     tracer = trace.Trace(
         ignoredirs=[sys.prefix, sys.exec_prefix],
-        trace=1)
+        trace=0)
     tracer.run("genutil.genmain(sys.argv, SrvGenerator())")
 

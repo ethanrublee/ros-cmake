@@ -134,7 +134,6 @@ class Generator(object):
         return retcode
 
     def write_modules(self, package_files, options):
-        print "WRITE_MODULES:", package_files
         for package, pfiles in package_files.iteritems():
             mfiles = map(lambda s: os.path.basename(os.path.splitext(s)[0]),
                          pfiles)
