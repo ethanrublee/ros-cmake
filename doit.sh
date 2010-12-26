@@ -7,7 +7,7 @@ INDEX=$WORK/index.pkl
 INSTALL=$WORK/inst
 
 rm -f $INDEX 
-export ROS_PACKAGE_PATH=$WORK/ros:$WORK/ros_comm:$WORK/common:$WORK/common_msgs:$WORK/geometry
+export ROS_PACKAGE_PATH=$WORK/ros:$WORK/ros_comm:$WORK/common:$WORK/common_msgs:$WORK/geometry:$WORK/ros_tutorials
 # export ROS_PACKAGE_PATH=$WORK/ros:$WORK/geometry:$WORK/common:$WORK/ros_comm:$WORK/common_msgs
 cd $WORK
 # chmod 000 ros/core/rosbuild
@@ -42,7 +42,6 @@ fi
 ./cmake/build_index.py $INDEX $ROS_PACKAGE_PATH
 ./cmake/sanitize_manifest.py $INDEX
 ./cmake/sanitize_cmakelists.py -i $INDEX
-
 
 rsync -a $WORK/cmake/patches/ $WORK/
 
