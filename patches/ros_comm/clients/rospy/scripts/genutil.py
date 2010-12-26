@@ -183,7 +183,7 @@ class Generator(object):
             #touch __init__.py in the parent package
             f = open(p, 'w')
             print >>f, "import pkgutil"
-            print >>f, "__path__ = pkgutil.extend_path(__name__, __path__)"
+            print >>f, "__path__ = pkgutil.extend_path(__path__, __name__)"
             f.close()
 
     def generate_package(self, package, pfiles, options):
