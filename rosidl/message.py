@@ -54,7 +54,7 @@ struct_I = struct.Struct('<I')
 
 class ROSMessageException(rosidl.exceptions.ROSLibException):
     """
-    Exception type for errors in rosidl.message routines
+    Exception type for errors in roslib.message routines
     """
     pass
 
@@ -336,7 +336,7 @@ class Message(object):
         and is meant for post-error diagnosis
         @param exc: underlying exception that gave cause for type check. 
         @type  exc: Exception
-        @raise rosidl.messages.SerializationError: if typecheck fails
+        @raise roslib.messages.SerializationError: if typecheck fails
         """
         for n, t in zip(self.__slots__, self._get_types()):
             check_type(n, t, getattr(self, n))
