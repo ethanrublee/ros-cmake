@@ -10,12 +10,16 @@ index = pickle.load(ifile)
 
 out = open(sys.argv[2] +'/toplevel.cmake', 'w')
 
+src_pythonpath = []
 for (pkgname, version), d in index.iteritems():
     if pkgname != '__langs':
         print >>out, "set(%s_PACKAGE_PATH %s)" % (pkgname, d['srcdir'])
+    if 'pythondir' in d:
+        src_pythonpath += [d['pythondir']]
 
 print >>out, "include(${CMAKE_CURRENT_BINARY_DIR}/toplevel.static.cmake)"
 
+print >>out, "set(ROSBUILD_PYTHONPATH " + ':'.join(src_pythonpath) + ")"
 def msg(format, *args):
     global out
     print >>out, ("message(STATUS \"" + format + "\")") % args

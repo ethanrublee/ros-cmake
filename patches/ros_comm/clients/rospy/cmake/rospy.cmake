@@ -108,7 +108,7 @@ macro(gensrv_py TYPE)
     # Set up to create the __init__.py file that will import the .py
     # files created by the above loop.  It can't run until those files are
     # generated, so it depends on them.
-    set(_output_py ${PROJECT_SOURCE_DIR}/src/${PROJECT_NAME}/srv/__init__.py)
+    set(_output_py ${_outdir}/__init__.py)
     add_custom_command(OUTPUT ${_output_py}
       COMMAND ${ROSBUILD_SUBSHELL} ${gensrv_py_exe} --initpy 
       -p ${PROJECT_NAME}

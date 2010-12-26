@@ -28,7 +28,7 @@ then
     export ROS_ROOT=@CMAKE_SOURCE_DIR@/ros
     export ROS_BUILD=@CMAKE_BINARY_DIR@
     export PATH=$ROS_ROOT/bin:$ROS_BUILD/bin:$PATH
-    export PYTHONPATH=$ROS_BUILD/gen/py:@CMAKE_SOURCE_DIR@/cmake:$ROS_ROOT/core/roslib/src:$PYTHONPATH
+    export PYTHONPATH=$ROS_BUILD/gen/py:@CMAKE_SOURCE_DIR@/cmake:$ROS_ROOT/core/roslib/src:@ROSBUILD_PYTHONPATH@:$PYTHONPATH
     export ROS_PACKAGE_PATH=@ROS_PACKAGE_PATH@
     if [ -z "$ROS_MASTER_URI" ] ; then
 	export ROS_MASTER_URI=@ROS_MASTER_URI@
