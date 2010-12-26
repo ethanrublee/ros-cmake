@@ -746,7 +746,6 @@ def generate(args):
          
     oname = '%s/%s.h' % (odir, spec.short_name)
     f = open(oname, 'w')
-    print "Writing to %s" % oname
     print >> f, s.getvalue()
     
     s.close()

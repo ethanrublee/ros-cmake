@@ -39,7 +39,7 @@ macro(genmsg_py TYPE)
       ${_incflags} 
       DEPENDS ${_input} ${genmsg_py_exe} ${gendeps_exe} 
       ${${PROJECT_NAME}_${_msg}_GENDEPS} ${ROS_MANIFEST_LIST}
-      COMMENT "Generating python message from ${_input}")
+      COMMENT "${PROJECT_NAME}: generating msg/_${_output_py_base}")
 
     list(APPEND ${PROJECT_NAME}_generated ${_output_py})
     list(APPEND _inlist ${_input})
@@ -58,7 +58,7 @@ macro(genmsg_py TYPE)
       -o ${_outdir}
       ${_inlist}
       DEPENDS ${_inlist}
-      COMMENT "Generating python __init__.py for ${PROJECT_NAME} messages")
+      COMMENT "${PROJECT_NAME}: generating msg/__init__.py")
     list(APPEND ${PROJECT_NAME}_generated ${_output_py})
   endif()
 endmacro()
@@ -101,7 +101,8 @@ macro(gensrv_py TYPE)
       -o ${_outdir}
       -I ${CMAKE_CURRENT_BINARY_DIR} -I ${CMAKE_CURRENT_SOURCE_DIR}
       ${_incflags}
-      DEPENDS ${_input} ${gensrv_py_exe} ${gendeps_exe} ${${PROJECT_NAME}_${_srv}_GENDEPS} ${ROS_MANIFEST_LIST})
+      DEPENDS ${_input} ${gensrv_py_exe} ${gendeps_exe} ${${PROJECT_NAME}_${_srv}_GENDEPS} ${ROS_MANIFEST_LIST}
+      COMMENT "${PROJECT_NAME}: generating srv/_${_output_py_base}")
     list(APPEND _autogen ${_output_py})
     list(APPEND _inlist ${_input})
   endforeach(_srv)
@@ -117,7 +118,7 @@ macro(gensrv_py TYPE)
       -o ${_outdir}
       ${_inlist}
       DEPENDS ${_inlist}
-      COMMENT "Generating python __init__.py for ${PROJECT_NAME} services"
+      COMMENT "${PROJECT_NAME}: generating srv/__init__.py"
       )
     list(APPEND ${PROJECT_NAME}_generated ${_output_py})
   endif()

@@ -37,7 +37,7 @@ macro(genmsg_cpp TYPE)
       -o ${_outdir}
       -I${CMAKE_CURRENT_BINARY_DIR} ${_incflags} -I${CMAKE_CURRENT_SOURCE_DIR}
       DEPENDS ${_input} ${genmsg_cpp_exe} ${gendeps_exe}
-      COMMENT "Generating C++ message from ${_input}"
+      COMMENT "${PROJECT_NAME}: generating ${_output_cpp_base}"
       )
   endforeach(_msg)
 
@@ -83,7 +83,7 @@ macro(gensrv_cpp TYPE)
       -o ${_outdir}
       ${_incflags} -I${CMAKE_CURRENT_SOURCE_DIR}
       DEPENDS ${_input} ${gensrv_cpp_exe} ${genmsg_cpp_exe} ${gendeps_exe} 
-      COMMENT "Generating C++ service from ${_input}"
+      COMMENT "${PROJECT_NAME}: generating ${_output_cpp_base}"
       )
 
   endforeach(_srv)
