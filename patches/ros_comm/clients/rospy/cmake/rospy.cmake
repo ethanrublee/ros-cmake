@@ -57,7 +57,7 @@ macro(genmsg_py TYPE)
       -s ${CMAKE_CURRENT_SOURCE_DIR}/src
       -o ${_outdir}
       ${_inlist}
-      DEPENDS ${_inlist}
+      DEPENDS ${_inlist} ${${PROJECT_NAME}_generated}
       COMMENT "${PROJECT_NAME}: generating msg/__init__.py")
     list(APPEND ${PROJECT_NAME}_generated ${_output_py})
   endif()
@@ -117,7 +117,7 @@ macro(gensrv_py TYPE)
       -p ${PROJECT_NAME}
       -o ${_outdir}
       ${_inlist}
-      DEPENDS ${_inlist}
+      DEPENDS ${_inlist} ${${PROJECT_NAME}_generated}
       COMMENT "${PROJECT_NAME}: generating srv/__init__.py"
       )
     list(APPEND ${PROJECT_NAME}_generated ${_output_py})
