@@ -151,7 +151,7 @@ class Generator(object):
                             pfiles))
             generated_modules = [self._module_name(f) for f in good_types.intersection(types)]
 
-            self.write_module(options.outdir, package, generated_modules)
+            self.write_module(options.outdir, package, generated_modules, options.srcdir)
         return 0
 
     ## @param base_dir str: path to package
@@ -159,7 +159,7 @@ class Generator(object):
     ## @param generated_modules [str]: list of generated message modules,
     ##   i.e. the names of the .py files that were generated for each
     ##   .msg file.
-    def write_module(self, basedir, package, generated_modules):
+    def write_module(self, basedir, package, generated_modules, srcdir):
         """create a module file to mark directory for python"""
         if not os.path.exists(basedir):
             os.makedirs(basedir)
@@ -182,8 +182,9 @@ class Generator(object):
         if not os.path.exists(p):
             #touch __init__.py in the parent package
             f = open(p, 'w')
-            print >>f, "import pkgutil"
+            print >>f, "import pkgutil, os.path"
             print >>f, "__path__ = pkgutil.extend_path(__path__, __name__)"
+            print >>f, "if os.path.isfile('%s/__init__.py'): execfile('%s/__init__.py')" % (srcdir, srcdir)
             f.close()
 
     def generate_package(self, package, pfiles, options):
@@ -292,6 +293,7 @@ def genmain(argv, gen, usage_fn=usage):
     parser.add_option('--initpy', dest='initpy', action='store_true',
                       default=False)
     parser.add_option('-p', dest='package')
+    parser.add_option('-s', dest='srcdir')
     parser.add_option('-o', dest='outdir')
     parser.add_option('-I', dest='includepath', action='append')
     (options, args) = parser.parse_args(argv)

@@ -54,6 +54,7 @@ macro(genmsg_py TYPE)
       COMMAND 
       ${ROSBUILD_SUBSHELL} ${genmsg_py_exe} --initpy 
       -p ${PROJECT_NAME}
+      -s ${CMAKE_CURRENT_SOURCE_DIR}/src
       -o ${_outdir}
       ${_inlist}
       DEPENDS ${_inlist}
@@ -96,6 +97,7 @@ macro(gensrv_py TYPE)
       ${gensrv_py_exe} 
       ${_input}
       -p ${PROJECT_NAME}
+      -s ${CMAKE_CURRENT_SOURCE_DIR}/src
       -o ${_outdir}
       -I ${CMAKE_CURRENT_BINARY_DIR} -I ${CMAKE_CURRENT_SOURCE_DIR}
       ${_incflags}
