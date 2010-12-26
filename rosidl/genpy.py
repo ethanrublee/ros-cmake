@@ -164,9 +164,9 @@ class Special:
             return None
         
 _SPECIAL_TYPES = {
-    rosidl.msgs.HEADER:   Special('rosidl.msg._Header.Header()',         None,   'import rosidl.msg'),
-    rosidl.msgs.TIME:     Special('rosidl.rostime.Time()',     '%s.canon()', 'import rosidl.rostime'),
-    rosidl.msgs.DURATION: Special('rosidl.rostime.Duration()', '%s.canon()', 'import rosidl.rostime'), 
+    rosidl.msgs.HEADER:   Special('roslib.msg._Header.Header()',         None,   'import roslib.msg'),
+    rosidl.msgs.TIME:     Special('roslib.rostime.Time()',     '%s.canon()', 'import roslib.rostime'),
+    rosidl.msgs.DURATION: Special('roslib.rostime.Duration()', '%s.canon()', 'import roslib.rostime'), 
     }
 
 ################################################################################
@@ -1129,7 +1129,7 @@ def _gen_dyn_modify_references(py_text, types):
         # - super() references for __init__
         py_text = py_text.replace('super(%s,'%base_type, 'super(%s,'%gen_name)
     # rosidl/Header also has to be rewritten to be a local reference
-    py_text = py_text.replace('rosidl.msg._Header.Header', _gen_dyn_name('rosidl', 'Header'))
+    py_text = py_text.replace('roslib.msg._Header.Header', _gen_dyn_name('roslib', 'Header'))
     return py_text
 
 def generate_dynamic(core_type, msg_cat):
