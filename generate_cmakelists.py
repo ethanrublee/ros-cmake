@@ -72,8 +72,8 @@ def write_project_cmake(name, d, index=index):
     ofile = open(bindir + '/package.cmake', 'w')
     print >>ofile, 'project(%s)' % name
     print >>ofile, 'message(STATUS " + %s")' % name
-    print >>ofile, 'set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin)'
-    print >>ofile, 'set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib)'
+    print >>ofile, 'set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)'
+    print >>ofile, 'set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)'
     # print >>ofile, 'add_custom_target(%s_codegen)' % name
     print >>ofile, 'include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)'
     if 'depend' in d:

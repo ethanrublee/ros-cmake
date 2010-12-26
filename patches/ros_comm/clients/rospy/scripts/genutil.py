@@ -184,7 +184,8 @@ class Generator(object):
             f = open(p, 'w')
             print >>f, "import pkgutil, os.path"
             print >>f, "__path__ = pkgutil.extend_path(__path__, __name__)"
-            print >>f, "if os.path.isfile('%s/__init__.py'): execfile('%s/__init__.py')" % (srcdir, srcdir)
+            staticinit = '%s/%s/__init__.py' % (srcdir, package)
+            print >>f, "if os.path.isfile('%s'): execfile('%s')" % (staticinit, staticinit)
             f.close()
 
     def generate_package(self, package, pfiles, options):
