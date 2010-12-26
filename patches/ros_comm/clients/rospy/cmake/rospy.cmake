@@ -3,6 +3,9 @@ set(genmsg_py_exe ${rospy_PACKAGE_PATH}/scripts/genmsg_py.py)
 # Message-generation support.
 macro(genmsg_py TYPE)
   set(_inlist "") # accumulator for __init__.py generation step
+  set(_outdir ${ROSBUILD_GEN_DIR}/py/${PROJECT_NAME}/msg)
+  install(DIRECTORY ${_outdir} DESTINATION python/${PROJECT_NAME} OPTIONAL COMPONENT ${PROJECT_NAME})
+
   foreach(_msg ${ARGN})
     # Construct the path to the .msg file
     if (${TYPE} STREQUAL "STATIC")
@@ -18,7 +21,6 @@ macro(genmsg_py TYPE)
 
     string(REPLACE ".msg" ".py" _output_py_base ${_fname})
 
-    set(_outdir ${ROSBUILD_GEN_DIR}/py/${PROJECT_NAME}/msg)
     set(_output_py ${_outdir}/_${_output_py_base})
 
     file(MAKE_DIRECTORY ${_outdir})
@@ -45,6 +47,8 @@ macro(genmsg_py TYPE)
     list(APPEND _inlist ${_input})
   endforeach(_msg)
 
+
+
   if(${PROJECT_NAME}_generated)
     # Set up to create the __init__.py file that will import the .py
     # files created by the above loop.  It can't run until those files are
@@ -68,6 +72,8 @@ set(gensrv_py_exe ${rospy_PACKAGE_PATH}/scripts/gensrv_py.py)
 macro(gensrv_py TYPE)
   set(_inlist "")
   set(_autogen "")
+  set(_outdir ${ROSBUILD_GEN_DIR}/py/${PROJECT_NAME}/srv)
+  install(DIRECTORY ${_outdir} DESTINATION python/${PROJECT_NAME} OPTIONAL COMPONENT ${PROJECT_NAME})
 
   foreach(_srv ${ARGN})
     if (${TYPE} STREQUAL "STATIC")
@@ -82,7 +88,6 @@ macro(gensrv_py TYPE)
 
     string(REPLACE ".srv" ".py" _output_py_base ${_fname})
 
-    set(_outdir ${ROSBUILD_GEN_DIR}/py/${PROJECT_NAME}/srv)
     set(_output_py ${_outdir}/_${_output_py_base})
     list(APPEND ${PROJECT_NAME}_generated ${_output_py})
     

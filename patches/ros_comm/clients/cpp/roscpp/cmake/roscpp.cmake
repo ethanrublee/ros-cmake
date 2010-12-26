@@ -93,4 +93,9 @@ endmacro(gensrv_cpp)
 macro(gentargets_cpp)
   add_custom_target(${PROJECT_NAME}_gen_cpp
     DEPENDS ${${PROJECT_NAME}_generated})
+  install(DIRECTORY ${ROSBUILD_GEN_DIR}/cpp/${PROJECT_NAME} 
+    DESTINATION include
+    OPTIONAL
+    COMPONENT ${PROJECT_NAME})
+
 endmacro()

@@ -120,7 +120,10 @@ def write_project_cmake(name, d, index=index):
         print >>ofile, 'add_definitions(%s)' % ' '.join(['-D'+x for x in defines])
 
     subdir(d['srcdir'], name)
-
+    pysrcdir = os.path.join(d['srcdir'], 'src')
+    if 'pythondir' in d:
+        print >>ofile, 'install(DIRECTORY %s/${PROJECT_NAME} DESTINATION python COMPONENT %s PATTERN ".svn" EXCLUDE REGEX ".*\\\.py$")' \
+            % (d['pythondir'], name)
 
 def dump(index, written = set([])):
 

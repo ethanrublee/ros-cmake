@@ -73,6 +73,7 @@ endmacro(rosbuild_add_link_flags)
 # Retrieve the current LINK_FLAGS for the given target, remove the given
 # ones, and set the result.
 macro(rosbuild_remove_link_flags target)
+  message(FATAL_ERROR "You shouldn't be callign rosbuild_remove_link_flags")
   set(args ${ARGN})
   separate_arguments(args)
   get_target_property(_flags ${target} LINK_FLAGS)
@@ -92,6 +93,8 @@ endmacro()
 # This is the user's main entry point.  A *lot* of work gets done here.  It
 # should probably be split up into multiple macros.
 macro(rosbuild_init)
+
+  message(FATAL_ERROR "You shouldn't be calling rosbuild_init")
   # Record that we've been called
   set(ROSBUILD_init_called 1)
 
@@ -402,7 +405,9 @@ macro(rosbuild_add_executable exe)
   else()
     add_executable(${exe} ${_var_DEFAULT_ARGS})
     install(TARGETS ${exe}
-      RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/${PROJECT_NAME})
+      RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+      COMPONENT ${PROJECT_NAME}
+      )
   endif()
 
   get_filename_component(thisexe_path ${exe} PATH)
@@ -477,6 +482,7 @@ macro(rosbuild_add_library lib)
   install(TARGETS ${lib}
     LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib  # shared objects
     ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib  # statics
+    COMPONENT ${PROJECT_NAME}
     )
 endmacro(rosbuild_add_library)
 
@@ -490,10 +496,14 @@ macro(rosbuild_install_directories)
   parse_arguments(_var "" "INSTALL_TO_ROOT" ${ARGN})
   if (_var_INSTALL_TO_ROOT)
     install(DIRECTORY ${_var_DEFAULT_ARGS}
-      DESTINATION ${ROS_INSTALL_PREFIX})
+      DESTINATION ${CMAKE_INSTALL_PREFIX}
+      COMPONENT ${PROJECT_NAME}
+      )
   else()
     install(DIRECTORY ${_var_DEFAULT_ARGS}
-      DESTINATION ${ROS_PACKAGE_INSTALL_PREFIX})
+      DESTINATION ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}
+      COMPONENT ${PROJECT_NAME}
+      )
   endif()
 endmacro()
 
@@ -501,10 +511,14 @@ macro(rosbuild_install_programs)
   parse_arguments(_var "" "INSTALL_TO_ROOT" ${ARGN})
   if (_var_INSTALL_TO_ROOT)
     install(PROGRAMS ${_var_DEFAULT_ARGS}
-      DESTINATION ${ROS_INSTALL_PREFIX}/bin)
+      DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
+      COMPONENT ${PROJECT_NAME}
+      )
   else()
     install(PROGRAMS ${_var_DEFAULT_ARGS}
-      DESTINATION ${ROS_PACKAGE_INSTALL_PREFIX}/bin)
+      DESTINATION ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/bin
+      COMPONENT ${PROJECT_NAME}
+      )
   endif()
 endmacro()
 
@@ -829,6 +843,9 @@ macro(rosbuild_add_openmp_flags target)
 endmacro(rosbuild_add_openmp_flags)
 
 macro(rosbuild_make_distribution)
+  message(FATAL_ERROR "this doesn't get called")
+
+  if (False)
   # Infer stack name from directory name.
   get_filename_component(${PROJECT_NAME} ${PROJECT_SOURCE_DIR} NAME)
   project(${PROJECT_NAME})
@@ -854,7 +871,8 @@ macro(rosbuild_make_distribution)
   # cleaned, so we don't need to ignore .a, .o, .so, etc.
   list(APPEND CPACK_SOURCE_IGNORE_FILES "/build/;/.svn/;.gitignore;build-failure;test-failure;rosmakeall-buildfailures-withcontext.txt;rosmakeall-profile;rosmakeall-buildfailures.txt;rosmakeall-testfailures.txt;rosmakeall-coverage.txt;/log/")
   include(CPack)
-  install(FILES stack.xml DESTINATION ${ROS_INSTALL_PREFIX}/lib/ros/${PROJECT_NAME})
+  install(FILES stack.xml DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/ros/${PROJECT_NAME})
+  endif()
 endmacro(rosbuild_make_distribution)
 
 # Compute the number of hardware cores on the machine.  Intended to use for

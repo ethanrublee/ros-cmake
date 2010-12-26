@@ -75,10 +75,12 @@ class SrvGenerator(genutil.Generator):
         verbose = True
         f = os.path.abspath(f)
         infile_name = os.path.basename(f)
-        if not os.path.exists(outdir):
+        try:
+            # you can't just check first... race condition
             os.makedirs(outdir)
-        elif not os.path.isdir(outdir): 
-            raise SrvGenerationException("Cannot write to %s: file in the way"%outdir)
+        except OSError, e:
+            if e.errno != 17: # file exists
+                raise
 
         prefix = infile_name[:-len(rosidl.srvs.EXT)]
         # generate message files for request/response        

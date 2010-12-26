@@ -68,15 +68,16 @@ def sanitize_one(inlists, pkgname):
 
     for line in ast:
         if line[0] == 'macrocall':
-            if line[1][0] in ['cmake_minimum_required',
-                              'rosbuild_init',
-                              'rosbuild_genmsg',
-                              'rosbuild_gensrv',
-                              'rosbuild_find_ros_package',
-                              'genaction']:
+            if line[1][0].lower() in ['cmake_minimum_required',
+                                      'rosbuild_init',
+                                      'rosbuild_genmsg',
+                                      'rosbuild_gensrv',
+                                      'rosbuild_find_ros_package',
+                                      'genaction',
+                                      'install']:
                 continue
 
-            if line[1][0] in ['set', 'Set', 'SET']:
+            if line[1][0].lower() == 'set':
                 if line[1][1] in ['ROS_BUILD_TYPE', 
                                   'EXECUTABLE_OUTPUT_PATH',
                                   'LIBRARY_OUTPUT_PATH',
