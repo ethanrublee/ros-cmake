@@ -1,0 +1,10 @@
+#!/bin/sh
+
+cd @CMAKE_CURRENT_BINARY_DIR@
+mkdir 3rdparty include src
+cd 3rdparty
+wget http://downloads.sourceforge.net/project/smc/smc/6_0_1/smc_6_0_1.tgz
+tar xvzf smc_6_0_1.tgz
+cp smc_6_0_1/lib/C++/statemap.h ../include
+cp smc_6_0_1/lib/Python/statemap.py ../src
+

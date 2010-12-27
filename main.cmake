@@ -3,16 +3,34 @@ message(STATUS "--- main.cmake ---")
 set(ROS_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/ros)
 set(ROS_SETUP ${CMAKE_CURRENT_BINARY_DIR}/setup)
 set(ROSBUILD_SUBSHELL ${CMAKE_CURRENT_BINARY_DIR}/env.sh)
-set(ROS_PACKAGE_PATH $ENV{ROS_PACKAGE_PATH})
+set(ROS_PACKAGE_PATH $ENV{ROS_PACKAGE_PATH}
+  CACHE STRING "Directories to search for packages to build"
+  )
+if (NOT ROS_MASTER_URI)
+  set(ROS_MASTER_URI http://localhost:11311)
+endif()
 
 set(ROSBUILD_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
 file(MAKE_DIRECTORY ${ROSBUILD_GEN_DIR})
-include_directories(${ROSBUILD_GEN_DIR}/cpp/msg)
-include_directories(${ROSBUILD_GEN_DIR}/cpp/srv)
+include_directories(${ROSBUILD_GEN_DIR}/cpp)
 
 if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/common_msgs/actionlib_msgs/cmake/actionbuild.cmake)
   include(${CMAKE_CURRENT_SOURCE_DIR}/common_msgs/actionlib_msgs/cmake/actionbuild.cmake)
 endif()
+
+
+#
+#  apply MACRO to args ARGN
+#
+macro(apply MACRO)
+  set(APPLY_MACRO ${MACRO})
+  set(APPLY_ARGS ${ARGN})
+  set(_APPLY ${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/_apply.cmake)
+  configure_file(_apply.cmake.in
+    ${_APPLY}
+    @ONLY)
+  include(${_APPLY})
+endmacro()
 
 #set_property(GLOBAL 
 #  PROPERTY
@@ -62,7 +80,11 @@ macro(rosbuild_3rdparty PKGNAME DEPFILE)
 endmacro()
 
 add_custom_target(test-results-run)
-
+add_custom_target(tests)
+add_custom_target(test-results
+  COMMAND echo ${rostest_path}/bin/rostest-results --nodeps ${PROJECT_NAME}
+  COMMENT FIXME test-results)
+add_custom_target(clean-test-results)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/private.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/public.cmake)
@@ -75,7 +97,8 @@ include(${CMAKE_CURRENT_BINARY_DIR}/toplevel.cmake)
 foreach(setupfile
     setup.sh
     setup.csh
-    env.sh)
+    env.sh
+    )
   configure_file(
     ${CMAKE_CURRENT_SOURCE_DIR}/cmake/${setupfile}.buildspace.in
     ${CMAKE_CURRENT_BINARY_DIR}/${setupfile}

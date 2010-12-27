@@ -481,6 +481,14 @@ def find_node(pkg, node_type, ros_root=None, ros_package_path=None):
     @rtype: str
     @raise roslib.packages.InvalidROSPkgException: If package does not exist 
     """
+
+    print "rosbuild=", os.environ['ROS_BUILD'], 'node_type=', node_type
+    
+    if 'ROS_BUILD' in os.environ:
+        tst = os.path.join(os.environ['ROS_BUILD'], 'bin', node_type)
+        if os.path.isfile(tst):
+            return tst
+
     dir = get_pkg_dir(pkg, required=True, \
                       ros_root=ros_root, ros_package_path=ros_package_path)
     

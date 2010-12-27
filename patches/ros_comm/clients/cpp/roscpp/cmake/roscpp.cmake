@@ -1,4 +1,4 @@
-set(genmsg_cpp_exe ${CMAKE_SOURCE_DIR}/ros/core/roscpp/scripts/genmsg_cpp.py)
+set(genmsg_cpp_exe ${roscpp_PACKAGE_PATH}/scripts/genmsg_cpp.py)
 # Message-generation support.
 macro(genmsg_cpp TYPE)
 
@@ -17,7 +17,7 @@ macro(genmsg_cpp TYPE)
 
     string(REPLACE ".msg" ".h" _output_cpp_base ${_fname})
 
-    set(_outdir ${ROSBUILD_GEN_DIR}/cpp/msg)
+    set(_outdir ${ROSBUILD_GEN_DIR}/cpp)
     set(_output_cpp ${_outdir}/${PROJECT_NAME}/${_output_cpp_base})
 
     list(APPEND ${PROJECT_NAME}_generated ${_output_cpp})
@@ -37,14 +37,14 @@ macro(genmsg_cpp TYPE)
       -o ${_outdir}
       -I${CMAKE_CURRENT_BINARY_DIR} ${_incflags} -I${CMAKE_CURRENT_SOURCE_DIR}
       DEPENDS ${_input} ${genmsg_cpp_exe} ${gendeps_exe}
-      COMMENT "Generating C++ message from ${_input}"
+      COMMENT "${PROJECT_NAME}: generating ${_output_cpp_base}"
       )
   endforeach(_msg)
 
 endmacro(genmsg_cpp)
 
 
-set(gensrv_cpp_exe ${CMAKE_SOURCE_DIR}/ros/core/roscpp/scripts/gensrv_cpp.py)
+set(gensrv_cpp_exe ${CMAKE_SOURCE_DIR}/ros_comm/clients/cpp/roscpp/scripts/gensrv_cpp.py)
 # Service-generation support.
 macro(gensrv_cpp TYPE)
 
@@ -63,7 +63,7 @@ macro(gensrv_cpp TYPE)
     get_filename_component(_fname ${_srv} NAME)
     string(REPLACE ".srv" ".h" _output_cpp_base ${_fname})
 
-    set(_outdir ${ROSBUILD_GEN_DIR}/cpp/srv)
+    set(_outdir ${ROSBUILD_GEN_DIR}/cpp)
     set(_output_cpp ${_outdir}/${PROJECT_NAME}/${_output_cpp_base})
     
     list(APPEND ${PROJECT_NAME}_generated ${_output_cpp})
@@ -83,7 +83,7 @@ macro(gensrv_cpp TYPE)
       -o ${_outdir}
       ${_incflags} -I${CMAKE_CURRENT_SOURCE_DIR}
       DEPENDS ${_input} ${gensrv_cpp_exe} ${genmsg_cpp_exe} ${gendeps_exe} 
-      COMMENT "Generating C++ service from ${_input}"
+      COMMENT "${PROJECT_NAME}: generating ${_output_cpp_base}"
       )
 
   endforeach(_srv)
@@ -93,4 +93,9 @@ endmacro(gensrv_cpp)
 macro(gentargets_cpp)
   add_custom_target(${PROJECT_NAME}_gen_cpp
     DEPENDS ${${PROJECT_NAME}_generated})
+  install(DIRECTORY ${ROSBUILD_GEN_DIR}/cpp/${PROJECT_NAME} 
+    DESTINATION include
+    OPTIONAL
+    COMPONENT ${PROJECT_NAME})
+
 endmacro()

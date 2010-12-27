@@ -10,8 +10,16 @@ index = pickle.load(ifile)
 
 out = open(sys.argv[2] +'/toplevel.cmake', 'w')
 
+src_pythonpath = []
+for (pkgname, version), d in index.iteritems():
+    if pkgname != '__langs':
+        print >>out, "set(%s_PACKAGE_PATH %s)" % (pkgname, d['srcdir'])
+    if 'pythondir' in d:
+        src_pythonpath += [d['pythondir']]
+
 print >>out, "include(${CMAKE_CURRENT_BINARY_DIR}/toplevel.static.cmake)"
 
+print >>out, "set(ROSBUILD_PYTHONPATH " + ':'.join(src_pythonpath) + ")"
 def msg(format, *args):
     global out
     print >>out, ("message(STATUS \"" + format + "\")") % args
@@ -55,9 +63,6 @@ del index[('__langs', None)]
 
 print >>out, '#\n#\n#'
 
-for (pkgname, version), d in index.iteritems():
-    print >>out, "set(%s_PACKAGE_PATH %s)" % (pkgname, d['srcdir'])
-
 def write_project_cmake(name, d, index=index):
     print ">>>", name, '                    \r',
     sys.stdout.flush()
@@ -66,9 +71,9 @@ def write_project_cmake(name, d, index=index):
         os.mkdir(bindir)
     ofile = open(bindir + '/package.cmake', 'w')
     print >>ofile, 'project(%s)' % name
-    print >>ofile, 'message(STATUS "***** %s *****")' % name
-    print >>ofile, 'set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin)'
-    print >>ofile, 'set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib)'
+    print >>ofile, 'message(STATUS " + %s")' % name
+    print >>ofile, 'set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)'
+    print >>ofile, 'set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)'
     # print >>ofile, 'add_custom_target(%s_codegen)' % name
     print >>ofile, 'include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)'
     if 'depend' in d:
@@ -76,7 +81,7 @@ def write_project_cmake(name, d, index=index):
                                                                    for pkgname in d['depend']])
     if len(d['actions']) > 0:
         print >>ofile, 'rosbuild_actions(GENERATED_ACTIONS %s)' % ' '.join(d['actions'])
-        print >>ofile, 'message("GENERATED_ACTIONS=${GENERATED_ACTIONS}")'
+        # print >>ofile, 'message("GENERATED_ACTIONS=${GENERATED_ACTIONS}")'
         print >>ofile, 'rosbuild_msgs(GENERATED ${GENERATED_ACTIONS})'
 
     if len(d['msgs']) > 0:
@@ -86,7 +91,7 @@ def write_project_cmake(name, d, index=index):
         print >>ofile, 'rosbuild_srvs(STATIC %s)' % ' '.join(d['srvs'])
 
     print >>ofile, 'rosbuild_gentargets()'
-    print >>ofile, 'message("DEPENDS: ${%s_generated}")' % name
+    # print >>ofile, 'message("DEPENDS: ${%s_generated}")' % name
 #    print >>ofile, 'add_dependencies(roscpp_codegen %s_codegen)'%name
     if 'export' in d:
         if 'include_dirs' in d['export']:
@@ -115,7 +120,10 @@ def write_project_cmake(name, d, index=index):
         print >>ofile, 'add_definitions(%s)' % ' '.join(['-D'+x for x in defines])
 
     subdir(d['srcdir'], name)
-
+    pysrcdir = os.path.join(d['srcdir'], 'src')
+    if 'pythondir' in d:
+        print >>ofile, 'install(DIRECTORY %s/${PROJECT_NAME} DESTINATION python COMPONENT %s PATTERN ".svn" EXCLUDE REGEX ".*\\\.py$")' \
+            % (d['pythondir'], name)
 
 def dump(index, written = set([])):
 

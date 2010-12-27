@@ -5,13 +5,14 @@ cd @CMAKE_CURRENT_BINARY_DIR@
 mkdir -p 3rdparty
 cd 3rdparty
 
-TARBALL_NAME=kdl-31715.tar.gz
+#TARBALL_NAME=kdl-31715.tar.gz
+TARBALL_NAME=kdl-32171.tar.gz
 TARBALL=build/${TARBALL_NAME}.tar.gz
 TARBALL_URL=http://pr.willowgarage.com/downloads/${TARBALL_NAME}.tar.gz
 BULLET_TARGETS="LinearMath BulletCollision BulletDynamics BulletSoftBody"
 
-wget -c http://pr.willowgarage.com/downloads/kdl-31715.tar.gz
-tar xzf kdl-31715.tar.gz
+wget -c http://pr.willowgarage.com/downloads/kdl-32171.tar.gz
+tar xzf kdl-32171.tar.gz
 cd kdl-tar
 
 patch -p0 < @CMAKE_CURRENT_SOURCE_DIR@/total.patch
