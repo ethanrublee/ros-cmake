@@ -20,7 +20,7 @@
     local-name: common_msgs
 
 - hg:
-    uri: http://ros-geometry.google.com/hg/
+    uri: http://ros-geometry.googlecode.com/hg/
     local-name: geometry
 
 - svn:
