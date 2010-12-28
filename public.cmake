@@ -274,8 +274,6 @@ macro(rosbuild_init)
   # before we try to run tests.
   add_dependencies(tests clean-test-results)
   # The 'test-future' target runs the future tests
-  add_custom_target(test-future)
-
 
   add_custom_target(test-results-run)
   add_custom_target(test-results
@@ -393,6 +391,8 @@ macro(rosbuild_init)
 
 endmacro(rosbuild_init)
 ###############################################################################
+
+
 
 # A wrapper around add_executable(), using info from the rospack
 # invocation to set up compiling and linking.
@@ -575,7 +575,7 @@ macro(rosbuild_add_gtest_future exe)
   # Create a legal target name, in case the target name has slashes in it
   string(REPLACE "/" "_" _testname ${exe})
 
-  add_dependencies(test-future test_${_testname})
+  # add_dependencies(test-future test_${_testname})
 endmacro(rosbuild_add_gtest_future)
 
 # A helper to run rostests. It generates a command to run rostest on
@@ -602,7 +602,7 @@ endmacro(rosbuild_add_rostest_labeled)
 macro(rosbuild_add_rostest_future file)
   string(REPLACE "/" "_" _testname ${file})
   _rosbuild_add_rostest(${file})
-  add_dependencies(test-future rostest_${_testname})
+  # add_dependencies(test-future rostest_${_testname})
 endmacro(rosbuild_add_rostest_future)
 
 # A helper to run Python unit tests. It generates a command to run python
@@ -628,7 +628,7 @@ endmacro(rosbuild_add_pyunit_labeled)
 macro(rosbuild_add_pyunit_future file)
   string(REPLACE "/" "_" _testname ${file})
   _rosbuild_add_pyunit(${file})
-  add_dependencies(test-future pyunit_${_testname})
+  # add_dependencies(test-future pyunit_${_testname})
 endmacro(rosbuild_add_pyunit_future)
 
 # Declare as a unit test a check of a roslaunch file, or a directory
