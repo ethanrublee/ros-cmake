@@ -39,13 +39,13 @@ fi
 #rosinstall -n ri/src ./ros-cmake.rosinstall
 #cd ri/src
 
+rsync -a $WORK/cmake/patches/ $WORK/
+
 ./cmake/build_index.py $INDEX $ROS_PACKAGE_PATH
 ./cmake/sanitize_manifest.py $INDEX
 ./cmake/sanitize_cmakelists.py -i $INDEX
 
-rsync -a $WORK/cmake/patches/ $WORK/
-
-# rm -rf $BUILD
+rm -rf $BUILD
 rm -rf $INSTALL
 if [ ! -d $WORK/build ] ; then
     mkdir $WORK/build/
