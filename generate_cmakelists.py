@@ -97,7 +97,7 @@ def write_project_cmake(name, d, index=index):
         if 'include_dirs' in d['export']:
             print >>ofile, 'include_directories(%s)' % ' '.join(d['export']['include_dirs'])
             for idir in d['export']['include_dirs']:
-                print >>ofile, 'install(DIRECTORY %s/ DESTINATION include/ COMPONENT %s OPTIONAL)' % (idir, name)
+                print >>ofile, 'install(DIRECTORY %s/ DESTINATION include/ COMPONENT %s OPTIONAL PATTERN .svn EXCLUDE)' % (idir, name)
     libs_i_need = []
     defines = []
     assert 'recursive_depends' in d

@@ -1,5 +1,27 @@
 message(STATUS "--- main.cmake ---")
 
+project(ROS)
+
+set(CPACK_GENERATOR DEB)  
+set(CPACK_PACKAGE_CONTACT "Your friends at Willow Garage")
+set(CPACK_PACKAGE_NAME "ros-unstable-cpacked"
+set(CPACK_PACKAGE_VENDOR "Willow Garage")
+set(CPACK_PACKAGE_VERSION "dback")
+set(CPACK_PACKAGE_VERSION_MAJOR 1)
+set(CPACK_PACKAGE_VERSION_MINOR 7)
+set(CPACK_PACKAGE_VERSION_PATCH 0)
+set(CPACK_DEBIAN_PACKAGE_SECTION unstable)
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Somebody Smart <smartguy@willowgarage.com>")
+set(CPACK_PACKAGE_INSTALL_DIRECTORY /opt/ros/dbag)
+
+execute_process(COMMAND dpkg --print-architecture
+  OUTPUT_VARIABLE 
+  CPACK_DEBIAN_PACKAGE_ARCHITECTURE
+  OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+include(CPack)
+
+
 set(ROS_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/ros)
 set(ROS_SETUP ${CMAKE_CURRENT_BINARY_DIR}/setup)
 set(ROSBUILD_SUBSHELL ${CMAKE_CURRENT_BINARY_DIR}/env.sh)

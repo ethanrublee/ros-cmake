@@ -47,7 +47,7 @@ rsync -a $WORK/cmake/patches/ $WORK/
 
 rsync -a $WORK/cmake/patches/ $WORK/
 
-rm -rf $BUILD
+# rm -rf $BUILD
 rm -rf $INSTALL
 if [ ! -d $WORK/build ] ; then
     mkdir $WORK/build/
@@ -60,6 +60,6 @@ cd $BUILD
 echo CMAKESTART
 cmake -DROS_BUILD_SHARED_LIBS=TRUE -DCMAKE_INSTALL_PREFIX=$INSTALL $WORK/
 
-make -j8
-make install
+make -j8 
+make package
 

@@ -498,11 +498,13 @@ macro(rosbuild_install_directories)
     install(DIRECTORY ${_var_DEFAULT_ARGS}
       DESTINATION ${CMAKE_INSTALL_PREFIX}
       COMPONENT ${PROJECT_NAME}
+      PATTERN .svn EXCLUDE
       )
   else()
     install(DIRECTORY ${_var_DEFAULT_ARGS}
       DESTINATION ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}
       COMPONENT ${PROJECT_NAME}
+      PATTERN .svn EXCLUDE
       )
   endif()
 endmacro()
