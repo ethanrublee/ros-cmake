@@ -45,7 +45,7 @@ rsync -a $WORK/cmake/patches/ $WORK/
 ./cmake/sanitize_manifest.py $INDEX
 ./cmake/sanitize_cmakelists.py -i $INDEX
 
-rsync -a $WORK/cmake/patches/common/smclib/ $WORK/common/smclib/
+rsync -a $WORK/cmake/patches/ $WORK/
 
 rm -rf $BUILD
 rm -rf $INSTALL
