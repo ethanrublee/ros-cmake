@@ -1,0 +1,20 @@
+
+export ROS_ROOT=@CMAKE_INSTALL_PREFIX@/ros
+
+export PATH=@CMAKE_INSTALL_PREFIX@/bin:$PATH
+export LD_LIBRARY_PATH=@CMAKE_INSTALL_PREFIX@/lib:$LD_LIBRARY_PATH
+export PYTHONPATH=@CMAKE_INSTALL_PREFIX@/python:$PYTHONPATH
+export ROS_PACKAGE_PATH=@CMAKE_INSTALL_PREFIX@
+if [ -z "$ROS_MASTER_URI" ] ; then
+  export ROS_MASTER_URI=@ROS_MASTER_URI@
+fi
+
+# load rosbash goodies if available
+#_ROSBASH_GOODIES=$ROS_ROOT/tools/rosbash/ros$(basename $SHELL)
+#if [ -f $_ROSBASH_GOODIES ] ; then
+#    echo "Loading rosbash goodies from $ROSBASH_GOODIES"
+#    . $_ROSBASH_GOODIES
+#else
+#    unset _ROSBASH_GOODIES
+#fi
+

@@ -130,3 +130,28 @@ foreach(setupfile
     @ONLY)
 endforeach()
 
+foreach(installfile
+    setup.sh
+    env.sh
+    )
+  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/${installfile}.install.in
+    ${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${installfile}.install
+    @ONLY)
+
+  install(PROGRAMS 
+    ${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/${installfile}.install
+    DESTINATION bin
+    RENAME ${installfile})
+endforeach()
+  
+
+#
+# fixme:  this doesn't belong here
+# 
+
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/ros/bin/
+  DESTINATION bin/
+  FILE_PERMISSIONS 
+  WORLD_EXECUTE WORLD_READ GROUP_EXECUTE GROUP_READ OWNER_EXECUTE OWNER_READ
+  )
+  
