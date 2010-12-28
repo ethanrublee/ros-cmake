@@ -1,3 +1,3 @@
 
-rosbuild_3rdparty(kdl path/to/some/file)
+rosbuild_3rdparty(kdl include/kdl/kdl.hpp)
 
