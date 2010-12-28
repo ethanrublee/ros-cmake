@@ -2,9 +2,9 @@ message(STATUS "--- main.cmake ---")
 
 project(ROS)
 
-set(CPACK_GENERATOR DEB)  
+set(CPACK_GENERATOR DEB)
 set(CPACK_PACKAGE_CONTACT "Your friends at Willow Garage")
-set(CPACK_PACKAGE_NAME "ros-unstable-cpacked"
+set(CPACK_PACKAGE_NAME "ros-unstable-cpacked")
 set(CPACK_PACKAGE_VENDOR "Willow Garage")
 set(CPACK_PACKAGE_VERSION "dback")
 set(CPACK_PACKAGE_VERSION_MAJOR 1)
