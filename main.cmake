@@ -13,6 +13,9 @@ set(CPACK_PACKAGE_VERSION_PATCH 0)
 set(CPACK_DEBIAN_PACKAGE_SECTION unstable)
 set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Somebody Smart <smartguy@willowgarage.com>")
 set(CPACK_PACKAGE_INSTALL_DIRECTORY /opt/ros/dbag)
+set(CPACK_SET_DESTDIR ON)
+set(CPACK_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX})
+
 
 execute_process(COMMAND dpkg --print-architecture
   OUTPUT_VARIABLE 
