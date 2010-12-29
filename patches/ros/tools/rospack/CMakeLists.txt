@@ -1,4 +1,5 @@
 project(rospack)
+include(${CMAKE_CURRENT_BINARY_DIR}/package.cmake)
 include_directories(include ${PROJECT_SOURCE_DIR})
 
 add_definitions(-DTIXML_USE_STL)
@@ -78,11 +79,11 @@ if(ROS_BUILD_STATIC_EXES AND ${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
                         LINK_FLAGS "-static-libgcc -Wl,-Bstatic")
 endif(ROS_BUILD_STATIC_EXES AND ${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 
-#install(TARGETS rospack rosstack rospackexe rosstackexe
-#        RUNTIME DESTINATION bin
-#        LIBRARY DESTINATION lib)
-#install(FILES include/rospack/rospack.h
-#        DESTINATION include/rospack)
+install(TARGETS rospack rosstack rospackexe rosstackexe
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION lib)
+install(FILES include/rospack/rospack.h
+        DESTINATION include/rospack)
 
 # Prevent warnings about duplicate definition of the targets mentioned
 # below
