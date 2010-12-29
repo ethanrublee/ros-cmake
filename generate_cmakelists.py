@@ -14,8 +14,8 @@ src_pythonpath = []
 for (pkgname, version), d in index.iteritems():
     if pkgname != '__langs':
         print >>out, "set(%s_PACKAGE_PATH %s)" % (pkgname, d['srcdir'])
-    if 'pythondir' in d:
-        src_pythonpath += [d['pythondir']]
+    if 'pythondirs' in d:
+        src_pythonpath += d['pythondirs']
 
 print >>out, "include(${CMAKE_CURRENT_BINARY_DIR}/toplevel.static.cmake)"
 
@@ -123,9 +123,10 @@ def write_project_cmake(name, d, index=index):
 
     subdir(d['srcdir'], name)
     pysrcdir = os.path.join(d['srcdir'], 'src')
-    if 'pythondir' in d:
-        print >>ofile, 'install(DIRECTORY %s/${PROJECT_NAME} DESTINATION python COMPONENT %s PATTERN ".svn" EXCLUDE REGEX ".*\\\.py$")' \
-            % (d['pythondir'], name)
+    if 'pythondirs' in d:
+        for pdir in d['pythondirs']:
+            print >>ofile, 'install(DIRECTORY %s DESTINATION python COMPONENT %s PATTERN ".svn" EXCLUDE REGEX ".*\\\.py$")' \
+            % (pdir, name)
 
 def dump(index, written = set([])):
 

@@ -51,8 +51,9 @@ def load_manifest(path, main_index):
     entry['srcdir'] = path
     main_index[key] = entry
     
-    if os.path.isfile(path + '/src/' + pkgname + '/__init__.py'):
-        entry['pythondir'] = path + '/src'
+    pyinits = glob.glob(path + '/src/*/__init__.py')
+    if len(pyinits) > 0:
+        entry['pythondirs'] = map(os.path.dirname, pyinits)
 
     entry['msgs'] = get_idlspecs('msg', path)
     entry['srvs'] = get_idlspecs('srv', path)
