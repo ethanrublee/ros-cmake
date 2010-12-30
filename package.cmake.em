@@ -70,6 +70,12 @@ install(DIRECTORY @pydir
   )
 @[end for]
 
+include_directories(
+  @asitems(includes_i_need)
+  )
 
+link_directories(
+  @asitems(link_dirs)
+  )
 
 

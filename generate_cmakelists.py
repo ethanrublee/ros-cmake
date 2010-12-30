@@ -91,34 +91,34 @@ def write_project_cmake(name, d, index=index):
         if 'include_dirs' in d['export']:
             pkgdict['exported_include_dirs'] = d['export']['include_dirs']
 
-    libs_i_need = []
+    libs_i_need = pkgdict['libs_i_need'] = []
+    includes_i_need = pkgdict['includes_i_need'] = []
+    link_dirs = pkgdict['link_dirs'] = []
     defines = []
+
     assert 'recursive_depends' in d
     for pkgname in d['recursive_depends']:
         pkg = index[(pkgname, None)]
         if 'export' in pkg:
             if 'include_dirs' in pkg['export']:
-                print >>ofile, 'include_directories(%s)' % \
-                    ' '.join(pkg['export']['include_dirs'])
+                includes_i_need += pkg['export']['include_dirs']
+
             if 'libs' in pkg['export']:
                 libs_i_need += pkg['export']['libs']
+
             if 'lib_dirs' in pkg['export']:
-                print >>ofile, 'link_directories(%s)' % ' '.join(pkg['export']['lib_dirs'])
+                link_dirs += pkg['export']['lib_dirs']
+
             if 'defines' in pkg['export']:
                 defines += pkg['export']['defines']
 
     pkgdict['recursive_depends'] = d['recursive_depends']
 
-    pkgdict['libs_i_need'] = libs_i_need
     pkgdict['defines'] = ['-D'+x for x in defines]
 
     subdir(d['srcdir'], name)  # print to toplevel
 
     pkgdict['pythondirs'] = d.get('pythondirs', [])
-    if 'pythondirs' in d:
-        for pdir in d['pythondirs']:
-            print >>ofile, 'install(DIRECTORY %s DESTINATION python COMPONENT %s PATTERN ".svn" EXCLUDE REGEX ".*\\\.py$")' \
-            % (pdir, name)
 
 #    print >>ofile, 'install(DIRECTORY %s DESTINATION share COMPONENT %s PATTERN ".svn" EXCLUDE REGEX ".*\\.(launch|xml|yaml|dox|srv|msg|cmake")' \
     #% (d['srcdir'], name)
