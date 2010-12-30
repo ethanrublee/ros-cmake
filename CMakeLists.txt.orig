@@ -123,18 +123,6 @@ if(COMMAND cmake_policy)
   endif(POLICY CMP0011)
 endif(COMMAND cmake_policy)
 
-##############################################################################
-#
-#  Well the env variable handling is awful, it is true.
-#
-if("$ENV{ROS_INSTALL_PREFIX}" STREQUAL "")
-  set(ROS_INSTALL_PREFIX "/tmp/default-ros-install-prefix")
-else()
-  set(ROS_INSTALL_PREFIX $ENV{ROS_INSTALL_PREFIX})
-endif()
-set(CMAKE_INSTALL_PREFIX ${ROS_INSTALL_PREFIX})
-
-
 # Load private macros (not to be used externally)
 include($ENV{ROS_ROOT}/core/rosbuild/private.cmake)
 # Load public macros (developer's API)
