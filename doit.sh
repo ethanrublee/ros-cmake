@@ -54,12 +54,13 @@ if [ ! -d $WORK/build ] ; then
 fi
 rm -f $BUILD/CMakeCache.txt
 
-./cmake/generate_cmakelists.py $INDEX build/
+./cmake/generate_cmakelists.py $INDEX build/ ./cmake
 cd $BUILD
 
 echo CMAKESTART
 cmake -DROS_BUILD_SHARED_LIBS=TRUE -DCMAKE_INSTALL_PREFIX=$INSTALL $WORK/
 
-make -j8 
-make package
+# make -j8 
+# make install
+
 

@@ -4,6 +4,7 @@ set(genmsg_py_exe ${rospy_PACKAGE_PATH}/scripts/genmsg_py.py)
 macro(genmsg_py TYPE)
   set(_inlist "") # accumulator for __init__.py generation step
   set(_outdir ${ROSBUILD_GEN_DIR}/py/${PROJECT_NAME}/msg)
+  set(_autogen "")
   install(DIRECTORY ${_outdir} DESTINATION python/${PROJECT_NAME} OPTIONAL COMPONENT ${PROJECT_NAME})
 
   foreach(_msg ${ARGN})
@@ -44,12 +45,11 @@ macro(genmsg_py TYPE)
       COMMENT "${PROJECT_NAME}: generating msg/_${_output_py_base}")
 
     list(APPEND ${PROJECT_NAME}_generated ${_output_py})
+    list(APPEND _autogen ${_output_py})
     list(APPEND _inlist ${_input})
   endforeach(_msg)
 
-
-
-  if(${PROJECT_NAME}_generated)
+  if(_autogen)
     # Set up to create the __init__.py file that will import the .py
     # files created by the above loop.  It can't run until those files are
     # generated, so it depends on them.
@@ -61,7 +61,7 @@ macro(genmsg_py TYPE)
       -s ${CMAKE_CURRENT_SOURCE_DIR}/src
       -o ${_outdir}
       ${_inlist}
-      DEPENDS ${_inlist} ${${PROJECT_NAME}_generated}
+      DEPENDS ${_inlist} ${_autogen}
       COMMENT "${PROJECT_NAME}: generating msg/__init__.py")
     list(APPEND ${PROJECT_NAME}_generated ${_output_py})
   endif()

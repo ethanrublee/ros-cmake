@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import os, os.path, sys, pprint, pickle, glob
+import os, os.path, sys, pprint, pickle, glob, em
 
 print "\nIndex@ sys.argv[1]:\n"
 
@@ -9,6 +9,8 @@ ifile = open(sys.argv[1])
 index = pickle.load(ifile)
 
 out = open(sys.argv[2] +'/toplevel.cmake', 'w')
+
+package_em = open(sys.argv[3] + '/package.cmake.em').read()
 
 src_pythonpath = []
 for (pkgname, version), d in index.iteritems():
@@ -70,32 +72,36 @@ def write_project_cmake(name, d, index=index):
     if not os.path.isdir(bindir):
         os.mkdir(bindir)
     ofile = open(bindir + '/package.cmake', 'w')
-    print >>ofile, 'project(%s)' % name
-    print >>ofile, 'message(STATUS " + %s")' % name
-    print >>ofile, 'set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)'
-    print >>ofile, 'set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)'
-    # print >>ofile, 'add_custom_target(%s_codegen)' % name
-    print >>ofile, 'include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)'
+
+    pkgdict = dict(PROJECT = name)
+
+    print >>ofile, 'include(${CMAKE_CURRENT_BINARY_DIR}/pkg.cmake)'
+
     if 'depend' in d:
-        print >>ofile, 'set(DEPENDED_PACKAGE_PATHS %s)' % ' '.join([index[(pkgname, None)]['srcdir']
-                                                                   for pkgname in d['depend']])
-    if len(d['actions']) > 0:
-        print >>ofile, 'rosbuild_actions(GENERATED_ACTIONS %s)' % ' '.join(d['actions'])
-        # print >>ofile, 'message("GENERATED_ACTIONS=${GENERATED_ACTIONS}")'
-        print >>ofile, 'rosbuild_msgs(GENERATED ${GENERATED_ACTIONS})'
+        pkgdict['DEPENDED_PACKAGE_PATHS'] = [index[(pkgname, None)]['srcdir']
+                                             for pkgname in d['depend']]
+#    else:
+#        pkgdict['DEPENDED_PACKAGE_PATHS'] = []
 
-    if len(d['msgs']) > 0:
-        print >>ofile, 'rosbuild_msgs(STATIC %s)' % ' '.join(d['msgs'])
+    pkgdict['GENERATED_ACTIONS'] = d['actions']
 
-    if len(d['srvs']) > 0:
-        print >>ofile, 'rosbuild_srvs(STATIC %s)' % ' '.join(d['srvs'])
+    pkgdict['msgs'] = d['msgs']
+    pkgdict['srvs'] = d['srvs']
+    #if len(d['msgs']) > 0:
+    #print >>ofile, 'rosbuild_msgs(STATIC %s)' % ' '.join(d['msgs'])
 
-    print >>ofile, 'rosbuild_gentargets()'
+    #if len(d['srvs']) > 0:
+    #print >>ofile, 'rosbuild_srvs(STATIC %s)' % ' '.join(d['srvs'])
+
+    #print >>ofile, 'rosbuild_gentargets()'
     # print >>ofile, 'message("DEPENDS: ${%s_generated}")' % name
 #    print >>ofile, 'add_dependencies(roscpp_codegen %s_codegen)'%name
+    pkgdict['exported_include_dirs'] = []
     if 'export' in d:
         if 'include_dirs' in d['export']:
-            print >>ofile, 'include_directories(%s)' % ' '.join(d['export']['include_dirs'])
+            pkgdict['exported_include_dirs'] = d['export']['include_dirs']
+
+            # print >>ofile, 'include_directories(%s)' % ' '.join(d['export']['include_dirs'])
             for idir in d['export']['include_dirs']:
                 print >>ofile, 'install(DIRECTORY %s/ DESTINATION include/ COMPONENT %s OPTIONAL PATTERN .svn EXCLUDE)' % (idir, name)
     libs_i_need = []
@@ -123,11 +129,19 @@ def write_project_cmake(name, d, index=index):
 
     subdir(d['srcdir'], name)
     pysrcdir = os.path.join(d['srcdir'], 'src')
+    
     if 'pythondirs' in d:
         for pdir in d['pythondirs']:
             print >>ofile, 'install(DIRECTORY %s DESTINATION python COMPONENT %s PATTERN ".svn" EXCLUDE REGEX ".*\\\.py$")' \
             % (pdir, name)
 
+#    print >>ofile, 'install(DIRECTORY %s DESTINATION share COMPONENT %s PATTERN ".svn" EXCLUDE REGEX ".*\\.(launch|xml|yaml|dox|srv|msg|cmake")' \
+    #% (d['srcdir'], name)
+
+    em_ofile = open(bindir + '/pkg.cmake', 'w')
+    print >>em_ofile, em.expand(package_em, pkgdict)
+    
+    
 def dump(index, written = set([])):
 
     for (pkgname, version), d in index.iteritems():

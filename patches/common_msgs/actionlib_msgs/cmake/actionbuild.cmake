@@ -34,8 +34,6 @@ macro(rosbuild_actions OUTPUT_VAR)
     set(_output_feedback ${_output_dir}/${_base_output_feedback})
     set(_output_action_feedback ${_output_dir}/${_base_output_action_feedback})
 
-    message(STATUS ${_output_action})
-
     add_custom_command(
       OUTPUT ${_output_action} ${_output_goal} ${_output_action_goal} 
       ${_output_result} ${_output_action_result} ${_output_feedback} 
@@ -54,6 +52,8 @@ macro(rosbuild_actions OUTPUT_VAR)
       ${_base_output_action} ${_base_output_goal} ${_base_output_action_goal} ${_base_output_result} 
       ${_base_output_action_result} ${_base_output_feedback} ${_base_output_action_feedback})
     list(APPEND ${OUTPUT_VAR} "${_output_action};${_output_goal};${_output_action_goal};${_output_result};${_output_action_result};${_output_feedback};${_output_action_feedback}")
+
+    message(STATUS ${_autogen_msg_list})
 
   endforeach(_action)
 
