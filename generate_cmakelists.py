@@ -8,64 +8,26 @@ print "\nIndex@ sys.argv[1]:\n"
 ifile = open(sys.argv[1])
 index = pickle.load(ifile)
 
-out = open(sys.argv[2] +'/toplevel.cmake', 'w')
+langs = index.pop(('__langs', None))
+print "LANGS=", langs
 
 package_em = open(sys.argv[3] + '/package.cmake.em').read()
 
 src_pythonpath = []
+
 for (pkgname, version), d in index.iteritems():
-    if pkgname != '__langs':
-        print >>out, "set(%s_PACKAGE_PATH %s)" % (pkgname, d['srcdir'])
     if 'pythondirs' in d:
         src_pythonpath += d['pythondirs']
-
-print >>out, "include(${CMAKE_CURRENT_BINARY_DIR}/toplevel.static.cmake)"
-
-print >>out, "set(ROSBUILD_PYTHONPATH " + ':'.join(src_pythonpath) + ")"
-def msg(format, *args):
-    global out
-    print >>out, ("message(STATUS \"" + format + "\")") % args
 
 def subdir(srcdir, bindir):
     global out
     print >>out, "if(EXISTS %s/CMakeLists.txt)\n  add_subdirectory(%s %s)\nendif()" \
         % (srcdir, srcdir, bindir)
 
-langs = []
-for k,v in index[('__langs', None)].iteritems():
-    msg("... %s", k)
-    print >>out, 'include(%s)' % v
-    langs += [k]
-
-print >>out, 'set(ROSBUILD_LANGS\n  %s\n  CACHE STRING "List of enabled languages")' % ' '.join(langs)
-msg("Enabled lanaguages (ROSBUILD_LANGS) = ${ROSBUILD_LANGS}")
-
-#print >>out, "set(ROSBUILD_GEN_TARGETS\n  ", \
-#    ' '.join(["%s_msggen %s_srvgen" % (x,x) for x in langs]), ')'
-
-print >>out, 'macro(rosbuild_msgs)'
-for j in langs:
-    print >>out, '  genmsg_%s(${ARGV})' % j[3:]
-print >>out, 'endmacro()'
-
-print >>out, 'macro(rosbuild_srvs)'
-for j in langs:
-    print >>out, '  gensrv_%s(${ARGV})' % j[3:]
-print >>out, 'endmacro()'
-
-print >>out, 'macro(rosbuild_gentargets)'
-for j in langs:
-    print >>out, '  gentargets_%s(${ARGV})' % j[3:]
-print >>out, 'endmacro()'
-
-# for j in langs:
-#     print >>out, 'add_custom_target(%s_codegen)' % j
-
-del index[('__langs', None)]
-
-print >>out, '#\n#\n#'
+topologically_sorted_packages = []
 
 def write_project_cmake(name, d, index=index):
+    global topologically_sorted_packages
     print ">>>", name, '                    \r',
     sys.stdout.flush()
     bindir = sys.argv[2] + '/' + name
@@ -114,7 +76,9 @@ def write_project_cmake(name, d, index=index):
 
     pkgdict['defines'] = ['-D'+x for x in defines]
 
-    subdir(d['srcdir'], name)  # print to toplevel
+    topologically_sorted_packages += [name]
+
+    # subdir(d['srcdir'], name)  # print to toplevel
 
     pkgdict['pythondirs'] = d.get('pythondirs', [])
 
@@ -174,3 +138,13 @@ while len(depgraph) > 0:
             del depgraph[pkg]
 
 print
+
+
+toplevel_em = open(sys.argv[3] + '/toplevel.cmake.em').read()
+toplevel_out = open(sys.argv[2] + '/toplevel.cmake', 'w')
+toplevel_out.write(em.expand(toplevel_em, dict(packages=index,
+                                               langs=langs,
+                                               src_pythonpath=src_pythonpath,
+                                               topologically_sorted_packages=topologically_sorted_packages)))
+
+
