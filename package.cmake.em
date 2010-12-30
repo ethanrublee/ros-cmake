@@ -61,8 +61,14 @@ add_dependencies(@(PROJECT)_gen_cpp
 @[end if]
 
 
-
-
+@[for pydir in pythondirs]
+install(DIRECTORY @pydir
+  DESTINATION python
+  COMPONENT @PROJECT
+  PATTERN ".svn" EXCLUDE
+  REGEX ".*\\.py$"
+  )
+@[end for]
 
 
 

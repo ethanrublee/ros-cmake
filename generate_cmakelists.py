@@ -109,15 +109,12 @@ def write_project_cmake(name, d, index=index):
 
     pkgdict['recursive_depends'] = d['recursive_depends']
 
-    if len(d['recursive_depends']) > 0:
-        print >>ofile, "add_dependencies(%s_gen_cpp "%name + ' '.join(["%s_gen_cpp" % x for x in d['recursive_depends']]) + ")"
-
     pkgdict['libs_i_need'] = libs_i_need
     pkgdict['defines'] = ['-D'+x for x in defines]
 
-    subdir(d['srcdir'], name)
-    pysrcdir = os.path.join(d['srcdir'], 'src')
-    
+    subdir(d['srcdir'], name)  # print to toplevel
+
+    pkgdict['pythondirs'] = d.get('pythondirs', [])
     if 'pythondirs' in d:
         for pdir in d['pythondirs']:
             print >>ofile, 'install(DIRECTORY %s DESTINATION python COMPONENT %s PATTERN ".svn" EXCLUDE REGEX ".*\\\.py$")' \
