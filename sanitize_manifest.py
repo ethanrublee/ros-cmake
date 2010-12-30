@@ -56,6 +56,11 @@ def handle_rosboost(argv, i):
     return ''
 
 def expand_cmdline(s, d, i):
+    # kill extraneous includes
+    print "S=", s
+    s = re.sub(r'-I\$\{prefix\}/msg/cpp', '', s)
+    s = re.sub(r'-I\$\{prefix\}/srv/cpp', '', s)
+    # expand prefix
     s = re.sub(r'\$\{prefix\}', d, s)
     def shexpand(matchobj):
         # split into args
@@ -110,6 +115,8 @@ def sanitize(index):
                 #print ">>>", key, value
                 if key not in v['export']:
                     v['export'][key] = []
+                if key == 'include_dirs' and value == '${prefix}/msg/cpp':
+                    return
                 v['export'][key] += [value]
     
             for m in re.finditer(pattern, cf):
