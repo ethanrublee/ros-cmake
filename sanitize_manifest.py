@@ -57,7 +57,6 @@ def handle_rosboost(argv, i):
 
 def expand_cmdline(s, d, i):
     # kill extraneous includes
-    print "S=", s
     s = re.sub(r'-I\$\{prefix\}/msg/cpp', '', s)
     s = re.sub(r'-I\$\{prefix\}/srv/cpp', '', s)
     # expand prefix

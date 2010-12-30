@@ -18,8 +18,18 @@ message(STATUS " + @PROJECT")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
+if (IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+  install(DIRECTORY include/
+    DESTINATION include/
+    COMPONENT @PROJECT
+    PATTERN ".svn" EXCLUDE
+    )
+
+endif()
 #
 # DEPENDED_PACKAGE_PATHS = @DEPENDED_PACKAGE_PATHS
 #
@@ -37,19 +47,25 @@ rosbuild_srvs(STATIC "@aslist(srvs)")
 rosbuild_gentargets()
 
 @[if len(exported_include_dirs) > 0]
+#
+# exported_include_dirs
+#
 include_directories(
   @asitems(exported_include_dirs)
   )
 @[end if]
 
-@[for d in exported_include_dirs]
-install(DIRECTORY @d/ 
-  DESTINATION include/ 
-  COMPONENT @PROJECT 
-  OPTIONAL 
-  PATTERN .svn EXCLUDE
-  )
-@[end for]
+#
+# These are no good, apparently
+#
+# @[for d in exported_include_dirs]
+# install(DIRECTORY @d/ 
+#   DESTINATION include/ 
+#   COMPONENT @PROJECT 
+#   OPTIONAL 
+#   PATTERN .svn EXCLUDE
+#   )
+# @[end for]
 
 
 @[if len(libs_i_need) > 0]
@@ -88,4 +104,19 @@ link_directories(
   @asitems(link_dirs)
   )
 
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+  DESTINATION share
+  COMPONENT @PROJECT
+  FILES_MATCHING 
+  PATTERN "*.xml" 
+  PATTERN "*.launch" 
+  PATTERN "*.msg" 
+  PATTERN "*.srv" 
+  PATTERN "*.action" 
+  PATTERN "*.cmake" 
+  PATTERN "*.dox" 
+  PATTERN "*.yaml" 
+  PATTERN ".svn" EXCLUDE
+  PATTERN "include" EXCLUDE
+  )
 
