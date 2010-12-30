@@ -77,33 +77,20 @@ def write_project_cmake(name, d, index=index):
 
     print >>ofile, 'include(${CMAKE_CURRENT_BINARY_DIR}/pkg.cmake)'
 
-    if 'depend' in d:
-        pkgdict['DEPENDED_PACKAGE_PATHS'] = [index[(pkgname, None)]['srcdir']
-                                             for pkgname in d['depend']]
-#    else:
-#        pkgdict['DEPENDED_PACKAGE_PATHS'] = []
+    pkgdict['DEPENDED_PACKAGE_PATHS'] = [index[(pkgname, None)]['srcdir']
+                                         for pkgname in d['depend']]
 
     pkgdict['GENERATED_ACTIONS'] = d['actions']
 
     pkgdict['msgs'] = d['msgs']
     pkgdict['srvs'] = d['srvs']
-    #if len(d['msgs']) > 0:
-    #print >>ofile, 'rosbuild_msgs(STATIC %s)' % ' '.join(d['msgs'])
 
-    #if len(d['srvs']) > 0:
-    #print >>ofile, 'rosbuild_srvs(STATIC %s)' % ' '.join(d['srvs'])
-
-    #print >>ofile, 'rosbuild_gentargets()'
-    # print >>ofile, 'message("DEPENDS: ${%s_generated}")' % name
-#    print >>ofile, 'add_dependencies(roscpp_codegen %s_codegen)'%name
     pkgdict['exported_include_dirs'] = []
+
     if 'export' in d:
         if 'include_dirs' in d['export']:
             pkgdict['exported_include_dirs'] = d['export']['include_dirs']
 
-            # print >>ofile, 'include_directories(%s)' % ' '.join(d['export']['include_dirs'])
-            for idir in d['export']['include_dirs']:
-                print >>ofile, 'install(DIRECTORY %s/ DESTINATION include/ COMPONENT %s OPTIONAL PATTERN .svn EXCLUDE)' % (idir, name)
     libs_i_need = []
     defines = []
     assert 'recursive_depends' in d
@@ -121,11 +108,9 @@ def write_project_cmake(name, d, index=index):
                 defines += pkg['export']['defines']
     if len(d['recursive_depends']) > 0:
         print >>ofile, "add_dependencies(%s_gen_cpp "%name + ' '.join(["%s_gen_cpp" % x for x in d['recursive_depends']]) + ")"
-    if len(libs_i_need) > 0:
-        print >>ofile, 'set(EXPORTED_TO_ME_LIBRARIES %s)' % ' '.join(libs_i_need)
 
-    if len(defines) > 0:
-        print >>ofile, 'add_definitions(%s)' % ' '.join(['-D'+x for x in defines])
+    pkgdict['libs_i_need'] = libs_i_need
+    pkgdict['defines'] = ['-D'+x for x in defines]
 
     subdir(d['srcdir'], name)
     pysrcdir = os.path.join(d['srcdir'], 'src')

@@ -43,6 +43,12 @@ install(DIRECTORY @d/
 
 
 
+set(EXPORTED_TO_ME_LIBRARIES "@aslist(libs_i_need)")
+
+add_definitions("@aslist(defines)")
+
+
+
 
 
 
