@@ -106,6 +106,9 @@ def write_project_cmake(name, d, index=index):
                 print >>ofile, 'link_directories(%s)' % ' '.join(pkg['export']['lib_dirs'])
             if 'defines' in pkg['export']:
                 defines += pkg['export']['defines']
+
+    pkgdict['recursive_depends'] = d['recursive_depends']
+
     if len(d['recursive_depends']) > 0:
         print >>ofile, "add_dependencies(%s_gen_cpp "%name + ' '.join(["%s_gen_cpp" % x for x in d['recursive_depends']]) + ")"
 

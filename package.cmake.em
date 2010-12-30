@@ -4,6 +4,9 @@
 @{
 def aslist(x):
     return ';'.join(x)
+def asitems(x):
+    return '\n  '.join(x)
+
 }
 project(@PROJECT)
 
@@ -46,7 +49,15 @@ install(DIRECTORY @d/
 set(EXPORTED_TO_ME_LIBRARIES "@aslist(libs_i_need)")
 
 @[if len(defines) > 0]
-add_definitions(@(' '.join(defines)))
+add_definitions(
+  @asitems(defines)
+  )
+@[end if]
+
+@[if len(recursive_depends) > 0]
+add_dependencies(@(PROJECT)_gen_cpp 
+  @asitems([x + "_gen_cpp" for x in recursive_depends])
+  )
 @[end if]
 
 
