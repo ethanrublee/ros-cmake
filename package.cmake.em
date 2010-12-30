@@ -45,7 +45,9 @@ install(DIRECTORY @d/
 
 set(EXPORTED_TO_ME_LIBRARIES "@aslist(libs_i_need)")
 
-add_definitions("@aslist(defines)")
+@[if len(defines) > 0]
+add_definitions(@(' '.join(defines)))
+@[end if]
 
 
 
