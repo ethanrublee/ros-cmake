@@ -51,3 +51,4 @@ if(EXISTS @(packages[(pkg, None)]['srcdir'])/CMakeLists.txt)
   add_subdirectory(@(packages[(pkg, None)]['srcdir']) @(pkg))
 endif()
 @[end for]
+
