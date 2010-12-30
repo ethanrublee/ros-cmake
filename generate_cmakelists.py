@@ -75,8 +75,6 @@ def write_project_cmake(name, d, index=index):
 
     pkgdict = dict(PROJECT = name)
 
-    print >>ofile, 'include(${CMAKE_CURRENT_BINARY_DIR}/pkg.cmake)'
-
     pkgdict['DEPENDED_PACKAGE_PATHS'] = [index[(pkgname, None)]['srcdir']
                                          for pkgname in d['depend']]
 
@@ -123,8 +121,7 @@ def write_project_cmake(name, d, index=index):
 #    print >>ofile, 'install(DIRECTORY %s DESTINATION share COMPONENT %s PATTERN ".svn" EXCLUDE REGEX ".*\\.(launch|xml|yaml|dox|srv|msg|cmake")' \
     #% (d['srcdir'], name)
 
-    em_ofile = open(bindir + '/pkg.cmake', 'w')
-    print >>em_ofile, em.expand(package_em, pkgdict)
+    print >>ofile, em.expand(package_em, pkgdict)
     
     
 def dump(index, written = set([])):
