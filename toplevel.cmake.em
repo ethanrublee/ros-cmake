@@ -46,7 +46,7 @@ macro(rosbuild_gentargets)
 @[end for]
 endmacro()
 
-@[for pkg in topologically_sorted_packages]
+@[for pkg in topo_pkgs]
 if(EXISTS @(packages[(pkg, None)]['srcdir'])/CMakeLists.txt)
   add_subdirectory(@(packages[(pkg, None)]['srcdir']) @(pkg))
 endif()

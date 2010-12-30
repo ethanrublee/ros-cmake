@@ -24,17 +24,15 @@ def subdir(srcdir, bindir):
     print >>out, "if(EXISTS %s/CMakeLists.txt)\n  add_subdirectory(%s %s)\nendif()" \
         % (srcdir, srcdir, bindir)
 
-topologically_sorted_packages = []
+topo_pkgs = []
 
 def write_project_cmake(name, d, index=index):
-    global topologically_sorted_packages
+    global topo_pkgs
     print ">>>", name, '                    \r',
     sys.stdout.flush()
     bindir = sys.argv[2] + '/' + name
     if not os.path.isdir(bindir):
         os.mkdir(bindir)
-    ofile = open(bindir + '/package.cmake', 'w')
-
     pkgdict = dict(PROJECT = name)
 
     pkgdict['DEPENDED_PACKAGE_PATHS'] = [index[(pkgname, None)]['srcdir']
@@ -76,15 +74,14 @@ def write_project_cmake(name, d, index=index):
 
     pkgdict['defines'] = ['-D'+x for x in defines]
 
-    topologically_sorted_packages += [name]
-
-    # subdir(d['srcdir'], name)  # print to toplevel
+    topo_pkgs += [name]
 
     pkgdict['pythondirs'] = d.get('pythondirs', [])
 
 #    print >>ofile, 'install(DIRECTORY %s DESTINATION share COMPONENT %s PATTERN ".svn" EXCLUDE REGEX ".*\\.(launch|xml|yaml|dox|srv|msg|cmake")' \
     #% (d['srcdir'], name)
 
+    ofile = open(bindir + '/package.cmake', 'w')
     print >>ofile, em.expand(package_em, pkgdict)
     
     
@@ -145,6 +142,6 @@ toplevel_out = open(sys.argv[2] + '/toplevel.cmake', 'w')
 toplevel_out.write(em.expand(toplevel_em, dict(packages=index,
                                                langs=langs,
                                                src_pythonpath=src_pythonpath,
-                                               topologically_sorted_packages=topologically_sorted_packages)))
+                                               topo_pkgs=topo_pkgs)))
 
 
