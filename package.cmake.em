@@ -30,11 +30,11 @@ if (IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include)
     )
 
 endif()
+
 #
 # DEPENDED_PACKAGE_PATHS = @DEPENDED_PACKAGE_PATHS
 #
 set(DEPENDED_PACKAGE_PATHS "@aslist(DEPENDED_PACKAGE_PATHS)")
-
 
 #
 # GENERATED_ACTIONS = @GENERATED_ACTIONS
@@ -66,7 +66,7 @@ include_directories(
 #   PATTERN .svn EXCLUDE
 #   )
 # @[end for]
-
+#
 
 @[if len(libs_i_need) > 0]
 set(EXPORTED_TO_ME_LIBRARIES 
@@ -96,6 +96,14 @@ install(DIRECTORY @pydir
   )
 @[end for]
 
+@[if len(pythondirs) == 0 and (len(msgs) + len(srvs) > 0)]
+install(FILES ${CMAKE_SOURCE_DIR}/cmake/__init__.py
+  DESTINATION python/@PROJECT
+  COMPONENT @PROJECT
+  )
+@[end if]
+
+
 include_directories(
   @asitems(includes_i_need)
   )
@@ -119,4 +127,3 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
   PATTERN ".svn" EXCLUDE
   PATTERN "include" EXCLUDE
   )
-
