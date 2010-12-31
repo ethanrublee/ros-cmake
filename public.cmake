@@ -404,14 +404,15 @@ macro(rosbuild_add_executable exe)
     add_executable(${exe} EXCLUDE_FROM_ALL ${_var_DEFAULT_ARGS})
   else()
     add_executable(${exe} ${_var_DEFAULT_ARGS})
-    install(TARGETS ${exe}
+    install(TARGETS ${exe} 
+      EXPORT ROS
       RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
       COMPONENT ${PROJECT_NAME}
       )
   endif()
 
   get_filename_component(thisexe_path ${exe} PATH)
-  file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/bin/${thisexe_path})
+  file(MAKE_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${thisexe_path})
   rosbuild_add_compile_flags(${exe} ${${PROJECT_NAME}_CFLAGS_OTHER})
   rosbuild_add_link_flags(${exe} ${${PROJECT_NAME}_LDFLAGS_OTHER})
 
@@ -480,6 +481,7 @@ macro(rosbuild_add_library lib)
   target_link_libraries(${lib} ${EXPORTED_TO_ME_LIBRARIES})
 
   install(TARGETS ${lib}
+    EXPORT ROS
     LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib  # shared objects
     ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib  # statics
     COMPONENT ${PROJECT_NAME}
@@ -513,11 +515,13 @@ macro(rosbuild_install_programs)
   parse_arguments(_var "" "INSTALL_TO_ROOT" ${ARGN})
   if (_var_INSTALL_TO_ROOT)
     install(PROGRAMS ${_var_DEFAULT_ARGS}
+      EXPORT ROS
       DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
       COMPONENT ${PROJECT_NAME}
       )
   else()
     install(PROGRAMS ${_var_DEFAULT_ARGS}
+      EXPORT ROS
       DESTINATION ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/bin
       COMPONENT ${PROJECT_NAME}
       )

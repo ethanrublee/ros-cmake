@@ -80,8 +80,10 @@ if(ROS_BUILD_STATIC_EXES AND ${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 endif(ROS_BUILD_STATIC_EXES AND ${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 
 install(TARGETS rospack rosstack rospackexe rosstackexe
-        RUNTIME DESTINATION bin
-        LIBRARY DESTINATION lib)
+  EXPORT ROS
+  RUNTIME DESTINATION bin
+  LIBRARY DESTINATION lib)
+
 install(FILES include/rospack/rospack.h
         DESTINATION include/rospack)
 

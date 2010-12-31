@@ -2,6 +2,9 @@ message(STATUS "--- main.cmake ---")
 
 project(ROS)
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
+
 set(CPACK_GENERATOR DEB)
 set(CPACK_PACKAGE_CONTACT "Your friends at Willow Garage")
 set(CPACK_PACKAGE_NAME "ros-unstable-cpacked")
@@ -148,7 +151,7 @@ endforeach()
 #
 # fixme:  this doesn't belong here
 # 
-
+message("*** fixme, install of ros/bin/")
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/ros/bin/
   DESTINATION bin/
   FILE_PERMISSIONS 
