@@ -26,4 +26,6 @@
     uri: https://code.ros.org/svn/ros/stacks/ros_tutorials/trunk
     local-name: ros_tutorials
 
-
+- svn:
+    uri: https://code.ros.org/svn/ros-pkg/stacks/common_tutorials/trunk
+    local-name: common_tutorials

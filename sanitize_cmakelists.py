@@ -54,9 +54,9 @@ def reconstitute(thing):
         if thing[0] == 'quotedstring':
             return '"' + ''.join(thing[1]) + '"'
         assert False
-    elif isinstance(thing, unicode):
+    elif isinstance(thing, unicode) or isinstance(thing, str):
         return thing
-    print "???", thing, type(thing)
+    print "Uh oh, don't know how to reconstitute", thing, type(thing)
     assert False
 
 def sanitize_one(inlists, pkgname):
@@ -101,6 +101,8 @@ def sanitize_one(inlists, pkgname):
                     continue
                 if line[1][1] == '$ENV{ROS_ROOT}/core/rosbuild/rosconfig.cmake':
                     continue
+                if line[1][1] == '${actionlib_PACKAGE_PATH}/cmake/actionbuild.cmake':
+                    line[1][1] = '${actionlib_msgs_PACKAGE_PATH}/cmake/actionbuild.cmake'
             #print line
             oslist += '%s(%s)\n' % (line[1][0], ' '.join([reconstitute(x) 
                                                           for x in
