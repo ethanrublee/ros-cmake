@@ -8,10 +8,17 @@ def aslist(x):
     return ';'.join(x)
 def asitems(x):
     return '\n  '.join(x)
-
+def get(d, default, args):
+    if len(args) == 0:
+        return d
+    if args[0] in d:
+        return get(d[args[0]], default, args[1:])
+    else:
+        return default
 }
 @[for (pkgname, version), d in packages.iteritems()]
 set(@(pkgname)_PACKAGE_PATH @(d['srcdir']))
+set(@(pkgname)_SWIG_FLAGS "@(get(d, default="", args=('export', 'swig', 'flags')))")
 @[end for]
 
 @[for lang, path in langs.iteritems()]

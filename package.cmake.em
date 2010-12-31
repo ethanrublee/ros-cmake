@@ -13,7 +13,7 @@ def asitems(x):
 
 }
 project(@PROJECT)
-
+add_definitions(-DROS_PACKAGE_NAME="@PROJECT")
 message(STATUS " + @PROJECT")
 
 if (IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include)
