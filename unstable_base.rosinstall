@@ -1,0 +1,110 @@
+- git:
+    uri: git@github.com:straszheim/ros-cmake.git
+    local-name: cmake
+- svn:
+    local-name: ros
+    uri: https://code.ros.org/svn/ros/stacks/ros/tags/unstable
+- svn:
+    local-name: ros_comm
+    uri: https://code.ros.org/svn/ros/stacks/ros_comm/tags/unstable
+- svn:
+    local-name: rx
+    uri: https://code.ros.org/svn/ros/stacks/rx/tags/unstable
+- svn:
+    local-name: camera_drivers
+    uri: https://code.ros.org/svn/ros-pkg/stacks/camera_drivers/tags/unstable
+- svn:
+    local-name: common_msgs
+    uri: https://code.ros.org/svn/ros-pkg/stacks/common_msgs/tags/unstable
+- svn:
+    local-name: common
+    uri: https://code.ros.org/svn/ros-pkg/stacks/common/tags/unstable
+- svn:
+    local-name: common_tutorials
+    uri: https://code.ros.org/svn/ros-pkg/stacks/common_tutorials/tags/unstable
+- svn:
+    local-name: diagnostics
+    uri: https://code.ros.org/svn/ros-pkg/stacks/diagnostics/tags/unstable
+- svn:
+    local-name: documentation
+    uri: https://code.ros.org/svn/ros/stacks/documentation/tags/unstable
+- svn:
+    local-name: driver_common
+    uri: https://code.ros.org/svn/ros-pkg/stacks/driver_common/tags/unstable
+- hg:
+    local-name: geometry
+    uri: https://ros-geometry.googlecode.com/hg/
+    version: unstable
+- svn:
+    local-name: geometry_tutorials
+    uri: https://code.ros.org/svn/ros-pkg/stacks/geometry_tutorials/tags/unstable
+- hg:
+    local-name: geometry_experimental
+    uri: https://ros-geometry-experimental.googlecode.com/hg/
+    version: unstable
+- svn:
+    local-name: image_common
+    uri: https://code.ros.org/svn/ros-pkg/stacks/image_common/tags/unstable
+- svn:
+    local-name: image_transport_plugins
+    uri: https://code.ros.org/svn/ros-pkg/stacks/image_transport_plugins/tags/unstable
+- svn:
+    local-name: image_pipeline
+    uri: https://code.ros.org/svn/ros-pkg/stacks/image_pipeline/tags/unstable
+- svn:
+    local-name: imu_drivers
+    uri: https://code.ros.org/svn/ros-pkg/stacks/imu_drivers/tags/unstable
+- svn:
+    local-name: joystick_drivers_tutorials
+    uri: https://code.ros.org/svn/ros-pkg/stacks/joystick_drivers_tutorials/tags/unstable
+- svn:
+    local-name: joystick_drivers
+    uri: https://code.ros.org/svn/ros-pkg/stacks/joystick_drivers/tags/unstable
+- svn:
+    local-name: laser_drivers
+    uri: https://code.ros.org/svn/ros-pkg/stacks/laser_drivers/tags/unstable
+- svn:
+    local-name: laser_pipeline
+    uri: https://code.ros.org/svn/ros-pkg/stacks/laser_pipeline/tags/unstable
+- svn:
+    local-name: navigation
+    uri: https://code.ros.org/svn/ros-pkg/stacks/navigation/tags/unstable
+- svn:
+    local-name: physics_ode
+    uri: https://code.ros.org/svn/ros-pkg/stacks/physics_ode/tags/unstable
+- svn:
+    local-name: robot_model
+    uri: https://code.ros.org/svn/ros-pkg/stacks/robot_model/tags/unstable
+- svn:
+    local-name: roslisp_support
+    uri: https://code.ros.org/svn/ros/stacks/roslisp_support/tags/unstable
+- svn:
+    local-name: perception_pcl
+    uri: https://code.ros.org/svn/ros-pkg/stacks/perception_pcl/tags/unstable
+- svn:
+    local-name: ros_tutorials
+    uri: https://code.ros.org/svn/ros/stacks/ros_tutorials/tags/unstable
+- svn:
+    local-name: simulator_gazebo
+    uri: https://code.ros.org/svn/ros-pkg/stacks/simulator_gazebo/tags/unstable
+- svn:
+    local-name: simulator_stage
+    uri: https://code.ros.org/svn/ros-pkg/stacks/simulator_stage/tags/unstable
+- svn:
+    local-name: slam_gmapping
+    uri: https://code.ros.org/svn/ros-pkg/stacks/slam_gmapping/tags/unstable
+- svn:
+    local-name: sound_drivers
+    uri: https://code.ros.org/svn/ros-pkg/stacks/sound_drivers/tags/unstable
+- svn:
+    local-name: vision_opencv
+    uri: https://code.ros.org/svn/ros-pkg/stacks/vision_opencv/tags/unstable
+- svn:
+    local-name: visualization_common
+    uri: https://code.ros.org/svn/ros-pkg/stacks/visualization_common/tags/unstable
+- svn:
+    local-name: visualization
+    uri: https://code.ros.org/svn/ros-pkg/stacks/visualization/tags/unstable
+- svn:
+    local-name: visualization_tutorials
+    uri: https://code.ros.org/svn/ros-pkg/stacks/visualization_tutorials/tags/unstable
