@@ -32,14 +32,13 @@
 
 from __future__ import with_statement
 
-import os, re, sys, string, glob, subprocess, time
-import threading
-import traceback
-import math
-import signal
+import os, re, sys, glob, subprocess
 import exceptions
 from pprint import pprint
-import pickle
+import pickle, pyPEG
+pyPEG.print_trace = True
+
+import manifest_parse
 
 # -I
 # ${prefix}
@@ -47,6 +46,15 @@ import pickle
 # -l
 # -Wl,-rpath,
 # `something`
+
+def parse(s):
+    ast = []
+    print "parsing: >>>%s<<<" % s
+    if len(s) == 0:
+        return ast
+    ast, remaining = pyPEG.parseLine(s, manifest_parse._start(), ast, False)
+    assert remaining == ''
+    return ast
 
 def handle_rosboost(argv, i):
     d = dict()
@@ -88,14 +96,21 @@ def sanitize(index):
             if 'cpp' in v['export']:
                 if 'cflags' in v['export']['cpp']:
                     cf = v['export']['cpp']['cflags']
+                    print cf, parse(cf)
                     cf = expand_cmdline(cf, v['srcdir'], v)
                 if 'lflags' in v['export']['cpp']:
                     lf = v['export']['cpp']['lflags']
+                    print lf, parse(lf)
                     lf = expand_cmdline(lf, v['srcdir'], v)
             if 'roslang' in v['export']:
                 cmake = v['export']['roslang']['cmake']
                 index[('__langs',None)][k[0]] = expand_cmdline(cmake, v['srcdir'], v)
-
+            if 'swig' in v['export']:
+                swigflags = v['export']['swig']['flags']
+                print "swigflags=", swigflags
+                ast = parse(swigflags)
+                print ast
+                # sys.exit(1)
             #exp['include_dirs'] = []
             #exp['lib_dirs'] = []
             #exp['libs'] = []

@@ -86,7 +86,13 @@ macro(rosbuild_remove_link_flags target)
 endmacro(rosbuild_remove_link_flags)
 
 macro(rosbuild_invoke_rospack pkgname _prefix _varname)
-  message(FATAL_ERROR "Don't invoke rospack.")
+  message(STATUS "*** FIXME: rosbuild_invoke_rospack(${pkgname} ${_prefix} ${_varname} ${ARGN})")
+  if (NOT DEFINED ${_prefix}_${_varname})
+    message(STATUS "Ouch, rospack, it hurts us.")
+    message(SEND_ERROR "cmake variable ${_prefix}_${_varname} isn't set.  :(")
+  else()
+    set(${_varname} ${${_prefix}_${_varname}})
+  endif()
 endmacro()
 
 ###############################################################################

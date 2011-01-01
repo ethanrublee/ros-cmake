@@ -227,7 +227,7 @@ class parser(object):
                 syntaxError()
 
         else:
-            raise SyntaxError(u"illegal type in grammar: " + unicde(pattern_type))
+            raise SyntaxError(u"illegal type in grammar: " + unicode(pattern_type))
 
     def lineNo(self):
         if not(self.lines): return u""

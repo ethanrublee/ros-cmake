@@ -8,7 +8,8 @@ INSTALL=$WORK/inst
 
 rm -f $INDEX 
 export ROS_PACKAGE_PATH=$WORK/ros:$WORK/ros_comm:$WORK/common:$WORK/common_msgs:$WORK/geometry:$WORK/ros_tutorials:$WORK/common_tutorials
-# export ROS_PACKAGE_PATH=$WORK/ros:$WORK/geometry:$WORK/common:$WORK/ros_comm:$WORK/common_msgs
+#:$WORK/rx
+
 cd $WORK
 # chmod 000 ros/core/rosbuild
 
