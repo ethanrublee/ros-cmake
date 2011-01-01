@@ -3,6 +3,7 @@
 from pprint import pprint
 import pyPEG, re
 pyPEG.print_trace = False
+from pyPEG import ignore, keyword
 
 STAR = -1
 PLUS = -2
@@ -12,13 +13,13 @@ def REPEAT(x):
 # lists are alternatives
 
 def _ws():
-    return pyPEG.ignore(r'\s+')
+    return ignore(r'\s+')
 
 def identifier():
     return re.compile(r'\w+')
 
 def _bare():
-    return re.compile(r'[\w\-/\+=]+')
+    return re.compile(r'[\w\-/\+=,]+')
 
 def dollar_brace_var():
     return '${', re.compile(r'\w+'), '}'
@@ -26,8 +27,15 @@ def dollar_brace_var():
 def _path():
     return PLUS, [dollar_brace_var, backtick, _bare]
 
+def _cflags():
+    return ignore('--cflags')
+
+def boost():
+    return 'rosboost-cfg', _ws, [ignore('--cflags'), 
+                                 (ignore('--lflags'), _ws, re.compile(r'\w+'), STAR, (',', re.compile(r'\w+')))]
+
 def backtick():
-    return r'`', re.compile(r'(\\`|[^`])+'), r'`'
+    return r'`', PLUS, [boost, dollar_brace_var, _bare, _ws], r'`'
 
 def flagarg():
     return PLUS, [_path(), backtick]
@@ -35,7 +43,7 @@ def flagarg():
 def includeflag():
     return '-I', PLUS, [_path(), backtick]
 
-def link_dir():
+def lib_dir():
     return '-L', flagarg()
 
 def link_lib():
@@ -48,7 +56,7 @@ def rpath():
     return '-Wl,-rpath,', flagarg()
 
 def arg():
-    return [includeflag, link_dir, link_lib, define, rpath, _path]
+    return [includeflag, lib_dir, link_lib, define, rpath, _path]
 
 def _start():
     return STAR, _ws(), arg(), STAR, (_ws(), arg()), STAR, _ws()
@@ -66,6 +74,7 @@ def test_one():
 
 
 def check(txt, expect_unparsed, expect_ast = []):
+    print '\n\n\n'
     ast = []
     ast, unparsed = pyPEG.parseLine(txt, _start, ast, False)
     eq_(unparsed, expect_unparsed)
@@ -74,16 +83,21 @@ def check(txt, expect_unparsed, expect_ast = []):
     pprint(ast)
 
 def test_gen():
-    examples = [('-Llibdir -llibname -Iincdir barestring', '', [(u'link_dir', [(u'bare', 'libdir')]),
-                                                                (u'link_lib', [(u'bare', 'libname')]),
-                                                                (u'includeflag', [(u'bare', 'incdir')]),
-                                                                (u'path', [(u'bare', 'barestring')])]),
+    examples = [('-Llibdir -llibname -Iincdir barestring', '', [(u'lib_dir', ['libdir']),
+                                                                (u'link_lib', ['libname']),
+                                                                (u'includeflag', ['incdir']),
+                                                                'barestring']),
                 ('-I${prefix}/src', '', [(u'includeflag', 
                                           [(u'dollar_brace_var', ['prefix']), 
-                                           (u'bare', '/src')])]),
+                                           '/src'])]),
                 (' -Wl,-rpath,${prefix}/boom   ', '', [(u'rpath', 
                                                         [(u'dollar_brace_var', ['prefix']), 
-                                                         (u'bare', '/boom')])])
+                                                         '/boom'])]),
+                ('`rosboost-cfg --cflags`', '', [(u'backtick', [(u'boost', [])])]),
+                ('`rosboost-cfg --lflags thread,system`', '', [(u'backtick', [(u'boost', ['thread', 'system'])])])
+
                 ]
     for e,u,a in examples:
         yield check, e, u, a
+
+        

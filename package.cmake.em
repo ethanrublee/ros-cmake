@@ -65,24 +65,25 @@ include_directories(
 # @[end for]
 #
 
+# libs_i_need
 @[if len(libs_i_need) > 0]
 set(EXPORTED_TO_ME_LIBRARIES 
   @asitems(libs_i_need)
   )
 @[end if]
-
+# swig_flags
 @[if len(swig_flags) > 0]
 set(EXPORTED_TO_ME_SWIG_FLAGS
   @asitems(swig_flags)
   )
 @[end if]
-
+# defines
 @[if len(defines) > 0]
 add_definitions(
   @asitems(defines)
   )
 @[end if]
-
+# recursive_depends
 @[if len(recursive_depends) > 0]
 add_dependencies(@(PROJECT)_gen_cpp 
   @asitems([x + "_gen_cpp" for x in recursive_depends])
@@ -108,10 +109,12 @@ install(FILES ${CMAKE_SOURCE_DIR}/cmake/__init__.py
 @[end if]
 
 
+# includes_i_need
 include_directories(
   @asitems(includes_i_need)
   )
 
+# link_dirs
 link_directories(
   @asitems(link_dirs)
   )

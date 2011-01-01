@@ -53,15 +53,9 @@ def parse(s):
     if len(s) == 0:
         return ast
     ast, remaining = pyPEG.parseLine(s, manifest_parse._start(), ast, False)
-    assert remaining == ''
+    assert remaining == '', "oops remaining is %s" % remaining
     return ast
 
-def handle_rosboost(argv, i):
-    d = dict()
-    i['tools']['boost'] = d
-    if argv[0] == '--lflags':
-        d['COMPONENTS'] = argv[1].split(',')
-    return ''
 
 def expand_cmdline(s, d, i):
     # kill extraneous includes
@@ -74,34 +68,107 @@ def expand_cmdline(s, d, i):
         argv = matchobj.group()[1:-1].split(' ')  
         # run it, get result
         # print "SUBPROC: ", argv
-        if argv[0] == 'rosboost-cfg':
-            if 'tools' not in i:
-                i['tools'] = {}
-            return handle_rosboost(argv[1:], i)
-        else:
-            res = subprocess.Popen(argv, stdout=subprocess.PIPE).communicate()[0]
-            return res.rstrip()
+        res = subprocess.Popen(argv, stdout=subprocess.PIPE).communicate()[0]
+        return res.rstrip()
     return re.sub(r'\`[^\`]*\`', shexpand, s)
     
+def backtick_eval(ast, ctx, d):
+    print "backtick_eval:", ast
+    if isinstance(ast, tuple):
+        if ast[0] == 'boost':
+            if 'tools' not in d:
+                d['tools'] = {}
+            if 'boost' not in d['tools']:
+                d['tools']['boost'] = dict()
+            if len(ast[1]) > 0:
+                d['tools']['boost']['COMPONENTS'] = ast[1]
+        else:
+            assert False, "unknown backtick: " +str(ast)
+    else:
+        assert False, "backtick not a tuple:" +str(ast)
+
+def evaluate(ast, ctx, d):
+    print "evaluate:", ast, "ctx:", ctx
+
+    if isinstance(ast, str):
+        return ast
+
+    if isinstance(ast, list):
+        s = ""
+        for i in ast:
+            s += evaluate(i, ctx, d)
+        return s
+
+    if isinstance(ast, tuple):
+        assert len(ast) == 2
+        if ast[0] == 'dollar_brace_var':
+            s = evaluate(ast[1], ctx, d)
+            if s not in ctx:
+                return s + "_NOTFOUND"
+            return ctx[s]
+
+        if 'export' not in d:
+            d['export'] = {}
+        def handle(ast, ctx, d, dest):
+            if dest not in d['export']:
+                d['export'][dest] = []
+            d['export'][dest] += [evaluate(ast, ctx, d)]
+            return ''
+
+        if ast[0] == 'lib_dir':
+            handle(ast[1], ctx, d, 'lib_dirs')
+            return ''
+
+        if ast[0] == 'define':
+            handle(ast[1], ctx, d, 'defines')
+            return ''
+
+        if ast[0] == 'link_lib':
+            handle(ast[1], ctx, d, 'libs')
+            return ''
+
+        if ast[0] == 'includeflag':
+            if ast[1] == [(u'dollar_brace_var', ['prefix']), '/msg/cpp']:
+                return ''
+            if ast[1] == [(u'dollar_brace_var', ['prefix']), '/srv/cpp']:
+                return ''
+
+            handle(ast[1], ctx, d, 'include_dirs')
+            return ''
+
+        if ast[0] == 'rpath':
+            return ''
+
+        if ast[0] == 'backtick':
+            backtick_eval(ast[1][0], ctx, d)
+            return ''
+        assert False, "meh " + ast[0] 
+        # return '[' + ast[0] + ' skipped]'
+
+
 def sanitize(index):
+
     for k,v in index.iteritems():
         #print '$$$', k, v
 
-        cf = ''
-        lf = ''
         if 'export' in v:
+            context = dict(prefix=v['srcdir'],
+                           CMAKE_BINARY_DIR='${CMAKE_BINARY_DIR}')
+            
             print k[0], '\r',
             sys.stdout.flush()
             exp = v['export']
             if 'cpp' in v['export']:
                 if 'cflags' in v['export']['cpp']:
                     cf = v['export']['cpp']['cflags']
-                    print cf, parse(cf)
-                    cf = expand_cmdline(cf, v['srcdir'], v)
+                    evaluate(parse(cf), context, v)
+                    #print cf, parse(cf)
+                    #cf = expand_cmdline(cf, v['srcdir'], v)
                 if 'lflags' in v['export']['cpp']:
                     lf = v['export']['cpp']['lflags']
-                    print lf, parse(lf)
-                    lf = expand_cmdline(lf, v['srcdir'], v)
+                    evaluate(parse(lf), context, v)
+                    #print lf, parse(lf)
+                    #lf = expand_cmdline(lf, v['srcdir'], v)
             if 'roslang' in v['export']:
                 cmake = v['export']['roslang']['cmake']
                 index[('__langs',None)][k[0]] = expand_cmdline(cmake, v['srcdir'], v)
@@ -110,34 +177,8 @@ def sanitize(index):
                 print "swigflags=", swigflags
                 ast = parse(swigflags)
                 print ast
-                # sys.exit(1)
-            #exp['include_dirs'] = []
-            #exp['lib_dirs'] = []
-            #exp['libs'] = []
-            #exp['rpaths'] = []
 
-            pattern = r'(-D|-I|-L|-Wl,-rpath,|-l)\s*([^\s]+)'
-    
-            def handle(t, value, v=v):
-                flagmap = { u'-I' : 'include_dirs', 
-                            u'-L' : 'lib_dirs',
-                            u'-Wl,-rpath,' : 'rpaths',
-                            u'-l' : 'libs', 
-                            u'-D' : 'defines' 
-                            }
-                key = flagmap[t]
-                #print ">>>", key, value
-                if key not in v['export']:
-                    v['export'][key] = []
-                if key == 'include_dirs' and value == '${prefix}/msg/cpp':
-                    return
-                v['export'][key] += [value]
-    
-            for m in re.finditer(pattern, cf):
-                handle(*m.groups())
-            for m in re.finditer(pattern, lf):
-                handle(*m.groups())
-    
+
 def get_recursive_depends(index, pkgname):
     v = index[(pkgname, None)]
     # print v

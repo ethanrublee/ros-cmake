@@ -67,7 +67,7 @@ class parser(object):
     #
     #                   SyntaxError(reason) if pattern is an illegal language description
 
-    def parseLine(self, textline, pattern, resultSoFar = [], skipWS = True, skipComments = None):
+    def parseLine(self, textline, pattern, resultSoFar = [], skipWS = True, skipComments = None, depth = 0):
         name = None
         _textline = textline
         _pattern = pattern
@@ -79,7 +79,7 @@ class parser(object):
                 if print_trace:
                     try:
                         if _pattern.__name__ != "comment":
-                            sys.stderr.write(u"match: " + _pattern.__name__ + u"\n")
+                            sys.stderr.write(' ' * depth * 2 + ' match ' + _pattern.__name__ + u"\n")
                     except: pass
 
             if self.restlen == -1:
@@ -112,7 +112,7 @@ class parser(object):
                 if print_trace:
                     try:
                         if pattern.__name__ != "comment":
-                            sys.stderr.write(u"testing with " + pattern.__name__ + u": " + textline[:40] + u"\n")
+                            sys.stderr.write(' ' * depth * 2 + pattern.__name__ + u": " + textline[:40] + u"\n")
                     except: pass
 
             if _packrat:
@@ -156,13 +156,13 @@ class parser(object):
 
         elif pattern_type is _not:
             try:
-                r, t = self.parseLine(text, pattern.obj, [], skipWS, skipComments)
+                r, t = self.parseLine(text, pattern.obj, [], skipWS, skipComments, depth + 1)
             except:
                 return resultSoFar, textline
             syntaxError()
 
         elif pattern_type is _and:
-            r, t = self.parseLine(text, pattern.obj, [], skipWS, skipComments)
+            r, t = self.parseLine(text, pattern.obj, [], skipWS, skipComments, depth + 1)
             return resultSoFar, textline
 
         elif pattern_type is type(word_regex) or pattern_type is ignore:
@@ -187,13 +187,13 @@ class parser(object):
                 else:
                     if n>0:
                         for i in range(n):
-                            result, text = self.parseLine(text, p, result, skipWS, skipComments)
+                            result, text = self.parseLine(text, p, result, skipWS, skipComments, depth + 1)
                     elif n==0:
                         if text == "":
                             pass
                         else:
                             try:
-                                newResult, newText = self.parseLine(text, p, result, skipWS, skipComments)
+                                newResult, newText = self.parseLine(text, p, result, skipWS, skipComments, depth + 1)
                                 result, text = newResult, newText
                             except SyntaxError:
                                 pass
@@ -201,7 +201,7 @@ class parser(object):
                         found = False
                         while True:
                             try:
-                                newResult, newText = self.parseLine(text, p, result, skipWS, skipComments)
+                                newResult, newText = self.parseLine(text, p, result, skipWS, skipComments, depth + 1)
                                 result, text, found = newResult, newText, True
                             except SyntaxError:
                                 break
@@ -215,7 +215,7 @@ class parser(object):
             found = False
             for p in pattern:
                 try:
-                    result, text = self.parseLine(text, p, result, skipWS, skipComments)
+                    result, text = self.parseLine(text, p, result, skipWS, skipComments, depth +1)
                     found = True
                 except SyntaxError:
                     pass
