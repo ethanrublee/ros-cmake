@@ -71,6 +71,12 @@ set(EXPORTED_TO_ME_LIBRARIES
   )
 @[end if]
 
+@[if len(swig_flags) > 0]
+set(EXPORTED_TO_ME_SWIG_FLAGS
+  @asitems(swig_flags)
+  )
+@[end if]
+
 @[if len(defines) > 0]
 add_definitions(
   @asitems(defines)
@@ -82,6 +88,7 @@ add_dependencies(@(PROJECT)_gen_cpp
   @asitems([x + "_gen_cpp" for x in recursive_depends])
   )
 @[end if]
+
 
 
 @[for pydir in pythondirs]

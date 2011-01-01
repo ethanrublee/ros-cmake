@@ -17,8 +17,11 @@ def get(d, default, args):
         return default
 }
 @[for (pkgname, version), d in packages.iteritems()]
-set(@(pkgname)_PACKAGE_PATH @(d['srcdir']))
-set(@(pkgname)_SWIG_FLAGS "@(get(d, default="", args=('export', 'swig', 'flags')))")
+set(@(pkgname)_PACKAGE_PATH @(d['srcdir']) CACHE FILEPATH "this should be SOURCE_DIR")
+mark_as_advanced(@(pkgname)_PACKAGE_PATH)
+set(@(pkgname)_SWIG_FLAGS "@(get(d, default="", args=('export', 'swig', 'flags')))" CACHE STRING "swig flags")
+mark_as_advanced(@(pkgname)_SWIG_FLAGS)
+set(@(pkgname)_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/@(pkgname)" CACHE INTERNAL "that pkg's binary dir")
 @[end for]
 
 @[for lang, path in langs.iteritems()]
