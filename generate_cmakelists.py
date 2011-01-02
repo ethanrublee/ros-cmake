@@ -52,27 +52,28 @@ def write_project_cmake(name, d, index=index):
     libs_i_need = pkgdict['libs_i_need'] = []
     includes_i_need = pkgdict['includes_i_need'] = []
     link_dirs = pkgdict['link_dirs'] = []
+    swig_flags = pkgdict['swig_flags'] = []
     defines = []
-    pkgdict['swig_flags'] = swig_flags = []
 
     assert 'recursive_depends' in d
     for pkgname in d['recursive_depends']:
         pkg = index[(pkgname, None)]
+        pkgcomment = [r'# %s' % pkgname]
         if 'export' in pkg:
             if 'include_dirs' in pkg['export']:
                 includes_i_need += pkg['export']['include_dirs']
 
             if 'libs' in pkg['export']:
-                libs_i_need += pkg['export']['libs']
+                libs_i_need += pkgcomment + pkg['export']['libs']
 
             if 'lib_dirs' in pkg['export']:
-                link_dirs += pkg['export']['lib_dirs']
+                link_dirs += pkgcomment + pkg['export']['lib_dirs']
 
             if 'defines' in pkg['export']:
                 defines += pkg['export']['defines']
 
             if 'swig' in pkg['export']:
-                swig_flags += [pkg['export']['swig']['flags']]
+                pkgdict['swig_flags'] += pkgcomment + pkg['export']['swig']['flags']
                 
     pkgdict['recursive_depends'] = d['recursive_depends']
 

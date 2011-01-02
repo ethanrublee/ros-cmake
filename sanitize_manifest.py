@@ -28,8 +28,6 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 
-# Author Tully Foote/tfoote@willowgarage.com
-
 from __future__ import with_statement
 
 import os, re, sys, glob, subprocess
@@ -74,6 +72,7 @@ def expand_cmdline(s, d, i):
     
 def backtick_eval(ast, ctx, d):
     print "backtick_eval:", ast
+
     if isinstance(ast, tuple):
         if ast[0] == 'boost':
             if 'tools' not in d:
@@ -84,7 +83,13 @@ def backtick_eval(ast, ctx, d):
                 d['tools']['boost']['COMPONENTS'] = ast[1]
         else:
             assert False, "unknown backtick: " +str(ast)
-    else:
+
+    elif isinstance(ast, list):
+        if ast[0] == 'wx-config':
+            d['tools']['wxwidgets'] = True
+            if ast[1] == '--cppflags':
+                evaluate(u'')
+
         assert False, "backtick not a tuple:" +str(ast)
 
 def evaluate(ast, ctx, d):
@@ -109,6 +114,11 @@ def evaluate(ast, ctx, d):
 
         if 'export' not in d:
             d['export'] = {}
+
+        if ast[0] == 'backtick':
+            backtick_eval(ast[1][0], ctx, d)
+            return ''
+
         def handle(ast, ctx, d, dest):
             if dest not in d['export']:
                 d['export'][dest] = []
@@ -139,9 +149,6 @@ def evaluate(ast, ctx, d):
         if ast[0] == 'rpath':
             return ''
 
-        if ast[0] == 'backtick':
-            backtick_eval(ast[1][0], ctx, d)
-            return ''
         assert False, "meh " + ast[0] 
         # return '[' + ast[0] + ' skipped]'
 
@@ -162,22 +169,27 @@ def sanitize(index):
                 if 'cflags' in v['export']['cpp']:
                     cf = v['export']['cpp']['cflags']
                     evaluate(parse(cf), context, v)
-                    #print cf, parse(cf)
-                    #cf = expand_cmdline(cf, v['srcdir'], v)
+
                 if 'lflags' in v['export']['cpp']:
                     lf = v['export']['cpp']['lflags']
                     evaluate(parse(lf), context, v)
-                    #print lf, parse(lf)
-                    #lf = expand_cmdline(lf, v['srcdir'], v)
+
             if 'roslang' in v['export']:
                 cmake = v['export']['roslang']['cmake']
                 index[('__langs',None)][k[0]] = expand_cmdline(cmake, v['srcdir'], v)
+
             if 'swig' in v['export']:
                 swigflags = v['export']['swig']['flags']
-                print "swigflags=", swigflags
-                ast = parse(swigflags)
-                print ast
-
+                d = {}
+                evaluate(parse(swigflags), context, d)
+                print k, "D=", d
+                swigflags = []
+                if 'include_dirs' in d['export']:
+                    swigflags += ['-I' + x for x in d['export']['include_dirs']]
+                if 'defines' in d['export']:
+                    swigflags += ['-D' + x for x in d['export']['defines']]
+                v['export']['swig']['flags'] = swigflags
+                print k, "swigflags=", swigflags
 
 def get_recursive_depends(index, pkgname):
     v = index[(pkgname, None)]
