@@ -99,9 +99,7 @@ def evaluate(ast, ctx, d):
         return ast
 
     if isinstance(ast, list):
-        s = ""
-        for i in ast:
-            s += evaluate(i, ctx, d)
+        s = ''.join([evaluate(i, ctx, d) for i in ast])
         return s
 
     if isinstance(ast, tuple):
@@ -114,6 +112,9 @@ def evaluate(ast, ctx, d):
 
         if 'export' not in d:
             d['export'] = {}
+
+        if ast[0] == 'ws':
+            return ' '
 
         if ast[0] == 'backtick':
             backtick_eval(ast[1][0], ctx, d)
@@ -164,15 +165,17 @@ def sanitize(index):
             
             print k[0], '\r',
             sys.stdout.flush()
-            exp = v['export']
+
             if 'cpp' in v['export']:
                 if 'cflags' in v['export']['cpp']:
                     cf = v['export']['cpp']['cflags']
-                    evaluate(parse(cf), context, v)
+                    remain = evaluate(parse(cf), context, v)
+                    assert len(remain) == 0 or remain.isspace(), "remain=<<<%s>>>" % remain
 
                 if 'lflags' in v['export']['cpp']:
                     lf = v['export']['cpp']['lflags']
-                    evaluate(parse(lf), context, v)
+                    remain = evaluate(parse(lf), context, v)
+                    assert len(remain) == 0 or remain.isspace(), "remain=<<<%s>>>" % remain
 
             if 'roslang' in v['export']:
                 cmake = v['export']['roslang']['cmake']
@@ -180,16 +183,19 @@ def sanitize(index):
 
             if 'swig' in v['export']:
                 swigflags = v['export']['swig']['flags']
+                print k, "swigflags=", swigflags
                 d = {}
+                tree = parse(swigflags)
+                print k, "swigflags=", swigflags, "tree=", tree
                 bleh = evaluate(parse(swigflags), context, d)
-                print k, "D=", d, bleh
+                print k, "D=", d, "swigflags=", bleh
                 swigflags = []
                 if 'include_dirs' in d['export']:
                     swigflags += ['-I' + x for x in d['export']['include_dirs']]
                 if 'defines' in d['export']:
                     swigflags += ['-D' + x for x in d['export']['defines']]
-                v['export']['swig']['flags'] = swigflags
-                print k, "swigflags=", swigflags
+                v['export']['swig']['flags'] = swigflags + [' ' + bleh]
+                print k, "tree AFTER swigflags=", swigflags
 
 def get_recursive_depends(index, pkgname):
     v = index[(pkgname, None)]

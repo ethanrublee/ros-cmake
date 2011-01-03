@@ -12,7 +12,7 @@ def REPEAT(x):
 # tuples are sequence
 # lists are alternatives
 
-def _ws():
+def ws():
     return ignore(r'\s+')
 
 def identifier():
@@ -31,11 +31,11 @@ def _cflags():
     return ignore('--cflags')
 
 def boost():
-    return 'rosboost-cfg', _ws, [ignore('--cflags'), 
-                                 (ignore('--lflags'), _ws, re.compile(r'\w+'), STAR, (',', re.compile(r'\w+')))]
+    return 'rosboost-cfg', ws, [ignore('--cflags'), 
+                                 (ignore('--lflags'), ws, re.compile(r'\w+'), STAR, (',', re.compile(r'\w+')))]
 
 def backtick():
-    return r'`', PLUS, [boost, dollar_brace_var, _bare, _ws], r'`'
+    return r'`', PLUS, [boost, dollar_brace_var, _bare, ws], r'`'
 
 def flagarg():
     return PLUS, [_path(), backtick]
@@ -59,7 +59,7 @@ def arg():
     return [includeflag, lib_dir, link_lib, define, rpath, _path]
 
 def _start():
-    return STAR, _ws(), arg(), STAR, (_ws(), arg()), STAR, _ws()
+    return STAR, ws, arg(), STAR, (ws, arg()), STAR, ws
 
 
 from nose.tools import eq_
@@ -94,10 +94,11 @@ def test_gen():
                                                         [(u'dollar_brace_var', ['prefix']), 
                                                          '/boom'])]),
                 ('`rosboost-cfg --cflags`', '', [(u'backtick', [(u'boost', [])])]),
-                ('`rosboost-cfg --lflags thread,system`', '', [(u'backtick', [(u'boost', ['thread', 'system'])])])
+                ('`rosboost-cfg --lflags thread,system`', '', [(u'backtick', [(u'boost', ['thread', 'system'])])]),
+                ('-I${PREFIX}/sth -foo -bar -blam${prefix}blam -Dblah', '', [])
 
                 ]
-    for e,u,a in examples:
+    for e,u,a in examples[-1:]:
         yield check, e, u, a
 
         
