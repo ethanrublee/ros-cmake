@@ -98,7 +98,7 @@ add_dependencies(@(PROJECT)_gen_cpp
 
 
 @[for pydir in pythondirs]
-install(DIRECTORY @pydir
+install(DIRECTORY @pydir/
   DESTINATION python
   COMPONENT @PROJECT
   PATTERN ".svn" EXCLUDE
