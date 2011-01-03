@@ -61,10 +61,45 @@ def arg():
 def _start():
     return STAR, ws, arg(), STAR, (ws, arg()), STAR, ws
 
+#
+# traversal
+#
+def traverse(ast, ctx, tag, callback):
+    print "expand_dollar_vars", ast
+    if isinstance(ast, str):
+        return ast
+
+    if isinstance(ast, pyPEG.Name):
+        return ast
+
+    if isinstance(ast, list):
+        return map(lambda a: traverse(a, ctx, tag, callback), ast)
+
+    if isinstance(ast, tuple):
+        assert len(ast) == 2
+
+        if ast[0] == tag:
+            print tag, ast
+            assert len(ast[1]) == 1
+            print "ctx=", ctx, "ast[1][0]", ast[1][0]
+            result = callback(ast[1][0], ctx)
+            print "result=", result
+            return result
+        return tuple(map(lambda a: traverse(a, ctx, tag, callback), ast))
+ 
+    assert False, "shouldn't be here: type(ast)=%s" % str(type(ast))
+
+def expand_dollar_vars(var, ctx = dict(prefix="FOO")):
+    print "expand_dollar_vars:", var
+    return ctx[var]
+
+def expand_backticks(var, ctx = {}):
+    return 'EXP' + var + 'PXE'
+
 
 from nose.tools import eq_
 
-def test_one():
+def terp_one():
     ast=[]
     ast, unparsed = pyPEG.parseLine(r'''-I${prefix}/bl-Iam/`back \`tiiick`boom    
 -lfunk${prefix}schwing''', 
@@ -95,10 +130,33 @@ def test_gen():
                                                          '/boom'])]),
                 ('`rosboost-cfg --cflags`', '', [(u'backtick', [(u'boost', [])])]),
                 ('`rosboost-cfg --lflags thread,system`', '', [(u'backtick', [(u'boost', ['thread', 'system'])])]),
-                ('-I${PREFIX}/sth -foo -bar -blam${prefix}blam -Dblah', '', [])
-
+                ('-I${PREFIX}/sth -foo -bar -blam${prefix}blam -Dblah', '', 
+                 [(u'includeflag', [(u'dollar_brace_var', ['PREFIX']), '/sth']), 
+                  (u'ws', []), 
+                  '-foo', 
+                  (u'ws', []), 
+                  '-bar', 
+                  (u'ws', []), 
+                  '-blam', 
+                  (u'dollar_brace_var', ['prefix']), 'blam', 
+                  (u'ws', []), 
+                  (u'define', ['blah'])])
                 ]
     for e,u,a in examples[-1:]:
         yield check, e, u, a
 
-        
+
+def test_expand():
+    examples =[('-I${prefix}/sr`voom`c', 
+                [(u'includeflag', ['FOO', '/sr', 'EXPvoomPXE', 'c'])], 
+                dict(prefix='FOO')),
+               ]
+
+    for txt, expected, ctx in examples:
+        print txt, expected, ctx
+        ast,unparsed = pyPEG.parseLine(txt, _start, [], False)
+        result = traverse(ast, ctx, 'dollar_brace_var', expand_dollar_vars)
+        result = traverse(result, ctx, 'backtick', expand_backticks)
+        print "result=", result
+        eq_(result, expected)
+
