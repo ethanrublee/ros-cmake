@@ -41,6 +41,11 @@ rosbuild_msgs(GENERATED ${GENERATED_ACTIONS})
 
 rosbuild_msgs(STATIC "@aslist(msgs)")
 rosbuild_srvs(STATIC "@aslist(srvs)")
+
+rosbuild_cfgs("@aslist(cfgs)")
+
+message("@(PROJECT)_generated: ${@(PROJECT)_generated}")
+
 rosbuild_gentargets()
 
 @[if len(exported_include_dirs) > 0]

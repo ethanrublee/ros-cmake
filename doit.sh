@@ -17,9 +17,8 @@ export ROS_PACKAGE_PATH=$WORK/rosidl\
 :$WORK/common_tutorials\
 :$WORK/rx\
 :$WORK/diagnostics\
+:$WORK/driver_common\
 
-
-#:$WORK/driver_common\
 #:$WORK/perception_pcl\
 #:$WORK/navigation
 
@@ -53,6 +52,7 @@ fi
 rsync -a $WORK/cmake/patches/ $WORK/
 
 ./cmake/build_index.py $INDEX $ROS_PACKAGE_PATH
+
 ./cmake/sanitize_manifest.py $INDEX
 # return 0
 ./cmake/sanitize_cmakelists.py -i $INDEX
@@ -72,7 +72,7 @@ cd $BUILD
 echo CMAKESTART
 cmake -DROS_BUILD_SHARED_LIBS=TRUE -DCMAKE_INSTALL_PREFIX=$INSTALL $WORK/
 
-make -j8 
+make VERBOSE=1
 # make install
 
 

@@ -42,9 +42,28 @@ set(ROSBUILD_GEN_DIR ${CMAKE_CURRENT_BINARY_DIR}/gen)
 file(MAKE_DIRECTORY ${ROSBUILD_GEN_DIR})
 include_directories(${ROSBUILD_GEN_DIR}/cpp)
 
+#
+# FIXME: hack
+#
 if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/common_msgs/actionlib_msgs/cmake/actionbuild.cmake)
   include(${CMAKE_CURRENT_SOURCE_DIR}/common_msgs/actionlib_msgs/cmake/actionbuild.cmake)
+else()
+  macro(rosbuild_actions)
+    message("WARNING:  project ${PROJECT_NAME} contains actions but actionlib is not in the workspace")
+  endmacro()
 endif()
+
+#
+# FIXME: hack
+#
+if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/driver_common/dynamic_reconfigure/cmake/cfgbuild.cmake)
+  include(${CMAKE_CURRENT_SOURCE_DIR}/driver_common/dynamic_reconfigure/cmake/cfgbuild.cmake)
+else()
+  macro(rosbuild_cfgs)
+    message("WARNING:  project ${PROJECT_NAME} contains dynamic reconfigure specs but dynamic_reconfigure is not in the workspace")
+  endmacro()
+endif()
+
 
 
 #

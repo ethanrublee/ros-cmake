@@ -59,6 +59,7 @@ def load_manifest(path, main_index):
     entry['msgs'] = get_idlspecs('msg', path)
     entry['srvs'] = get_idlspecs('srv', path)
     entry['actions'] = get_idlspecs('action', path)
+    entry['cfgs'] = get_idlspecs('cfg', path)
 
     for x in 'author', 'license', 'url':
         if x in obj.__dict__:

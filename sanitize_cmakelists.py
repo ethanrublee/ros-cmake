@@ -74,6 +74,7 @@ def sanitize_one(inlists, pkgname):
                                       'rosbuild_gensrv',
                                       'rosbuild_find_ros_package',
                                       'genaction',
+                                      'gencfg',
                                       'install']:
                 continue
 
@@ -101,8 +102,11 @@ def sanitize_one(inlists, pkgname):
                     continue
                 if line[1][1] == '$ENV{ROS_ROOT}/core/rosbuild/rosconfig.cmake':
                     continue
+                if line[1][1] == '${dynamic_reconfigure_PACKAGE_PATH}/cmake/cfgbuild.cmake':
+                    continue
                 if line[1][1] == '${actionlib_PACKAGE_PATH}/cmake/actionbuild.cmake':
                     line[1][1] = '${actionlib_msgs_PACKAGE_PATH}/cmake/actionbuild.cmake'
+
             #print line
             oslist += '%s(%s)\n' % (line[1][0], ' '.join([reconstitute(x) 
                                                           for x in
