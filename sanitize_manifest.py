@@ -181,8 +181,8 @@ def sanitize(index):
             if 'swig' in v['export']:
                 swigflags = v['export']['swig']['flags']
                 d = {}
-                evaluate(parse(swigflags), context, d)
-                print k, "D=", d
+                bleh = evaluate(parse(swigflags), context, d)
+                print k, "D=", d, bleh
                 swigflags = []
                 if 'include_dirs' in d['export']:
                     swigflags += ['-I' + x for x in d['export']['include_dirs']]

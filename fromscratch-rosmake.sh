@@ -11,7 +11,3 @@ cd work-rosmake
 . ./setup.sh
 rosmake -a
 
-
-
-
-
