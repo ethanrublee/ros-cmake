@@ -36,7 +36,7 @@ from pprint import pprint
 import pickle, pyPEG
 pyPEG.print_trace = True
 
-import manifest_parse
+import manifest_parse as mp
 
 # -I
 # ${prefix}
@@ -50,7 +50,7 @@ def parse(s):
     print "parsing: >>>%s<<<" % s
     if len(s) == 0:
         return ast
-    ast, remaining = pyPEG.parseLine(s, manifest_parse._start(), ast, False)
+    ast, remaining = pyPEG.parseLine(s, mp._start(), ast, False)
     assert remaining == '', "oops remaining is %s" % remaining
     return ast
 
@@ -150,9 +150,8 @@ def evaluate(ast, ctx, d):
         if ast[0] == 'rpath':
             return ''
 
-        assert False, "meh " + ast[0] 
+        assert False, "meh " + ast[0]
         # return '[' + ast[0] + ' skipped]'
-
 
 def sanitize(index):
 
@@ -186,6 +185,10 @@ def sanitize(index):
                 print k, "swigflags=", swigflags
                 d = {}
                 tree = parse(swigflags)
+                tree = mp.traverse(tree, context, mp.expand_dollar_vars, 
+                                   lambda x: x == 'dollar_brace_var')
+                tree = mp.traverse(tree, context, mp.expand_backticks,
+                                   lambda x: x == 'backtick')
                 print k, "swigflags=", swigflags, "tree=", tree
                 bleh = evaluate(parse(swigflags), context, d)
                 print k, "D=", d, "swigflags=", bleh

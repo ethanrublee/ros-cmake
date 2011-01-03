@@ -32,10 +32,10 @@ def _cflags():
 
 def boost():
     return 'rosboost-cfg', ws, [ignore('--cflags'), 
-                                 (ignore('--lflags'), ws, re.compile(r'\w+'), STAR, (',', re.compile(r'\w+')))]
+                                (ignore('--lflags'), ws, re.compile(r'\w+'), STAR, (',', re.compile(r'\w+')))]
 
 def backtick():
-    return r'`', PLUS, [boost, dollar_brace_var, _bare, ws], r'`'
+    return r'`', PLUS, [dollar_brace_var, _bare, ws], r'`'
 
 def flagarg():
     return PLUS, [_path(), backtick]
@@ -64,7 +64,7 @@ def _start():
 #
 # traversal
 #
-def traverse(ast, ctx, tag, callback):
+def traverse(ast, ctx, callback, if_):
     print "expand_dollar_vars", ast
     if isinstance(ast, str):
         return ast
@@ -73,39 +73,40 @@ def traverse(ast, ctx, tag, callback):
         return ast
 
     if isinstance(ast, list):
-        return map(lambda a: traverse(a, ctx, tag, callback), ast)
+        l = map(lambda a: traverse(a, ctx, callback, if_), ast)
+        if if_(list):
+            return callback(l)
+        else:
+            return l
 
     if isinstance(ast, tuple):
         assert len(ast) == 2
 
-        if ast[0] == tag:
-            print tag, ast
-            assert len(ast[1]) == 1
+        if if_(ast[0]):
+            print ast
             print "ctx=", ctx, "ast[1][0]", ast[1][0]
-            result = callback(ast[1][0], ctx)
+            result = callback(ast[1], ctx)
             print "result=", result
             return result
-        return tuple(map(lambda a: traverse(a, ctx, tag, callback), ast))
+        return tuple(map(lambda a: traverse(a, ctx, callback, if_), ast))
  
     assert False, "shouldn't be here: type(ast)=%s" % str(type(ast))
 
 def expand_dollar_vars(var, ctx = dict(prefix="FOO")):
     print "expand_dollar_vars:", var
-    return ctx[var]
+    return ctx[var[0]]
 
-def expand_backticks(var, ctx = {}):
-    return 'EXP' + var + 'PXE'
+def expand_backticks(var, ctx):
+    print "expand_backticks", var 
+    return "fOOO"
 
 
+
+#
+# testiness
+# 
 from nose.tools import eq_
 
-def terp_one():
-    ast=[]
-    ast, unparsed = pyPEG.parseLine(r'''-I${prefix}/bl-Iam/`back \`tiiick`boom    
--lfunk${prefix}schwing''', 
-                                    _start, ast, False)
-    print "unparsed=>>>%s<<<" % unparsed
-    pprint(ast)
 
 
 def check(txt, expect_unparsed, expect_ast = []):

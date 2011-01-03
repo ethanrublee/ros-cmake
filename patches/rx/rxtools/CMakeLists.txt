@@ -46,6 +46,7 @@ set(WXSWIG_EXECUTABLE ${wxswig_BINARY_DIR}/bin/swig)
 # Add a custom command for generating the swig output files
 set(SWIG_INTERFACE_FILE ${PROJECT_SOURCE_DIR}/src/rxtools/rxtools.i)
 set(SWIG_OUTPUT_PYTHON_FILE ${PROJECT_BINARY_DIR}/lib/rxtoolscpp.py)
+file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 
 set(SWIG_OUTPUT_CPP_FILE ${PROJECT_SOURCE_DIR}/src/rxtools/rosout_panel_swig_generated.cpp)
 set(SWIG_COMMAND 
