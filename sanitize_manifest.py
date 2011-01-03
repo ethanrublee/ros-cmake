@@ -86,7 +86,6 @@ def backtick_eval(ast, ctx, d):
         assert False, "unknown backtick: " +str(ast)
 
 def evaluate(ast, ctx, d):
-    # print "evaluate:", ast, "ctx:", ctx
 
     if isinstance(ast, str):
         return ast

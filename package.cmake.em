@@ -44,7 +44,7 @@ rosbuild_srvs(STATIC "@aslist(srvs)")
 
 rosbuild_cfgs("@aslist(cfgs)")
 
-message("@(PROJECT)_generated: ${@(PROJECT)_generated}")
+# message("@(PROJECT)_generated: ${@(PROJECT)_generated}")
 
 rosbuild_gentargets()
 

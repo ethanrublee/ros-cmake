@@ -73,6 +73,6 @@ cmake -DROS_BUILD_SHARED_LIBS=TRUE -DCMAKE_INSTALL_PREFIX=$INSTALL $WORK/
 
 make
 # make VERBOSE=1
-# make install
+make install
 
 
