@@ -47,7 +47,7 @@ import manifest_parse as mp
 
 def parse(s):
     ast = []
-    print "parsing: >>>%s<<<" % s
+    # print "parsing: >>>%s<<<" % s
     if len(s) == 0:
         return ast
     ast, remaining = pyPEG.parseLine(s, mp._start(), ast, False)
@@ -71,29 +71,22 @@ def expand_cmdline(s, d, i):
     return re.sub(r'\`[^\`]*\`', shexpand, s)
     
 def backtick_eval(ast, ctx, d):
-    print "backtick_eval:", ast
 
-    if isinstance(ast, tuple):
-        if ast[0] == 'boost':
+    if isinstance(ast, list):
+        if ast[0] == 'rosboost-cfg':
             if 'tools' not in d:
                 d['tools'] = {}
             if 'boost' not in d['tools']:
                 d['tools']['boost'] = dict()
             if len(ast[1]) > 0:
                 d['tools']['boost']['COMPONENTS'] = ast[1]
-        else:
-            assert False, "unknown backtick: " +str(ast)
-
-    elif isinstance(ast, list):
+            return
         if ast[0] == 'wx-config':
-            d['tools']['wxwidgets'] = True
-            if ast[1] == '--cppflags':
-                evaluate(u'')
-
-        assert False, "backtick not a tuple:" +str(ast)
+            return
+        assert False, "unknown backtick: " +str(ast)
 
 def evaluate(ast, ctx, d):
-    print "evaluate:", ast, "ctx:", ctx
+    # print "evaluate:", ast, "ctx:", ctx
 
     if isinstance(ast, str):
         return ast
@@ -117,7 +110,7 @@ def evaluate(ast, ctx, d):
             return ' '
 
         if ast[0] == 'backtick':
-            backtick_eval(ast[1][0], ctx, d)
+            backtick_eval(ast[1], ctx, d)
             return ''
 
         def handle(ast, ctx, d, dest):
@@ -182,23 +175,23 @@ def sanitize(index):
 
             if 'swig' in v['export']:
                 swigflags = v['export']['swig']['flags']
-                print k, "swigflags=", swigflags
+                # print k, "swigflags=", swigflags
                 d = {}
                 tree = parse(swigflags)
-                tree = mp.traverse(tree, context, mp.expand_dollar_vars, 
-                                   lambda x: x == 'dollar_brace_var')
-                tree = mp.traverse(tree, context, mp.expand_backticks,
-                                   lambda x: x == 'backtick')
-                print k, "swigflags=", swigflags, "tree=", tree
+                tree = mp.traverse(tree, context, mp.expand_dollar_vars, lambda x: x == 'dollar_brace_var')
+                tree = mp.traverse(tree, context, mp.expand_backticks, lambda x: x == 'backtick')
+
+                # print k, "swigflags=", swigflags, "tree=", tree
+
                 bleh = evaluate(parse(swigflags), context, d)
-                print k, "D=", d, "swigflags=", bleh
+                # print k, "D=", d, "swigflags=", bleh
                 swigflags = []
                 if 'include_dirs' in d['export']:
                     swigflags += ['-I' + x for x in d['export']['include_dirs']]
                 if 'defines' in d['export']:
                     swigflags += ['-D' + x for x in d['export']['defines']]
                 v['export']['swig']['flags'] = swigflags + [' ' + bleh]
-                print k, "tree AFTER swigflags=", swigflags
+                # print k, "tree AFTER swigflags=", swigflags
 
 def get_recursive_depends(index, pkgname):
     v = index[(pkgname, None)]

@@ -52,9 +52,7 @@ fi
 rsync -a $WORK/cmake/patches/ $WORK/
 
 ./cmake/build_index.py $INDEX $ROS_PACKAGE_PATH
-
 ./cmake/sanitize_manifest.py $INDEX
-# return 0
 ./cmake/sanitize_cmakelists.py -i $INDEX
 
 rsync -a $WORK/cmake/patches/ $WORK/
@@ -69,10 +67,12 @@ rm -f $BUILD/CMakeCache.txt
 ./cmake/generate_cmakelists.py $INDEX build/ ./cmake
 cd $BUILD
 
+
 echo CMAKESTART
 cmake -DROS_BUILD_SHARED_LIBS=TRUE -DCMAKE_INSTALL_PREFIX=$INSTALL $WORK/
 
-make VERBOSE=1
+make
+# make VERBOSE=1
 # make install
 
 

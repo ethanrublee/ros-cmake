@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from pprint import pprint
-import pyPEG, re
+import pyPEG, re, subprocess
 pyPEG.print_trace = False
 from pyPEG import ignore, keyword
 
@@ -65,7 +65,7 @@ def _start():
 # traversal
 #
 def traverse(ast, ctx, callback, if_):
-    print "expand_dollar_vars", ast
+    # print "expand_dollar_vars", ast
     if isinstance(ast, str):
         return ast
 
@@ -83,24 +83,30 @@ def traverse(ast, ctx, callback, if_):
         assert len(ast) == 2
 
         if if_(ast[0]):
-            print ast
-            print "ctx=", ctx, "ast[1][0]", ast[1][0]
             result = callback(ast[1], ctx)
-            print "result=", result
             return result
         return tuple(map(lambda a: traverse(a, ctx, callback, if_), ast))
  
     assert False, "shouldn't be here: type(ast)=%s" % str(type(ast))
 
 def expand_dollar_vars(var, ctx = dict(prefix="FOO")):
-    print "expand_dollar_vars:", var
     return ctx[var[0]]
 
 def expand_backticks(var, ctx):
-    print "expand_backticks", var 
-    return "fOOO"
+    assert isinstance(var, list)
 
-
+    newargs = []
+    for f in var:
+        if isinstance(f, tuple):
+            assert f[0] == 'ws'
+        else:
+            assert isinstance(f, str)
+            newargs += [f]
+    
+    subproc = subprocess.Popen(newargs, stdout=subprocess.PIPE)
+    res = subproc.communicate()[0]
+    rs = res.rstrip()
+    return [rs]
 
 #
 # testiness
@@ -154,10 +160,10 @@ def test_expand():
                ]
 
     for txt, expected, ctx in examples:
-        print txt, expected, ctx
+        # print txt, expected, ctx
         ast,unparsed = pyPEG.parseLine(txt, _start, [], False)
         result = traverse(ast, ctx, 'dollar_brace_var', expand_dollar_vars)
         result = traverse(result, ctx, 'backtick', expand_backticks)
-        print "result=", result
+        # print "result=", result
         eq_(result, expected)
 

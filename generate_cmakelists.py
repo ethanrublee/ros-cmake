@@ -19,11 +19,6 @@ for (pkgname, version), d in index.iteritems():
     if 'pythondirs' in d:
         src_pythonpath += d['pythondirs']
 
-def subdir(srcdir, bindir):
-    global out
-    print >>out, "if(EXISTS %s/CMakeLists.txt)\n  add_subdirectory(%s %s)\nendif()" \
-        % (srcdir, srcdir, bindir)
-
 topo_pkgs = []
 
 def write_project_cmake(name, d, index=index):
@@ -91,16 +86,6 @@ def write_project_cmake(name, d, index=index):
     print >>ofile, em.expand(package_em, pkgdict)
     
     
-def dump(index, written = set([])):
-
-    for (pkgname, version), d in index.iteritems():
-        print pkgname
-
-    leaves = []
-    for k, v in d['depend']:
-        if len(written.difference(set(v))) == 0 and k not in written:
-            leaves += [k]
-
 def build_depgraph(index, depgraph = {}):
     for (pkg, version), d in index.iteritems():
         if 'depend' in d:
