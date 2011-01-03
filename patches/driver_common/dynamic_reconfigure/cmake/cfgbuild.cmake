@@ -1,9 +1,3 @@
-if(CFGBUILD_CMAKE)
-  message(FATAL_ERROR "cfgbuild.cmake included twice")
-else()
-  set(CFGBUILD_CMAKE TRUE CACHE INTERNAL "cfgbuild include guard.")
-endif()
-
 # add_custom_target(rospack_gencfg ALL)
 # add_dependencies(rospack_genmsg_libexe rospack_gencfg)
 
