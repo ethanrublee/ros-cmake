@@ -7,15 +7,21 @@ INDEX=$WORK/index.pkl
 INSTALL=$WORK/inst
 
 rm -f $INDEX 
-export ROS_PACKAGE_PATH=$WORK/rosidl:\
-$WORK/ros:\
-$WORK/ros_comm:\
-$WORK/common:\
-$WORK/common_msgs:\
-$WORK/geometry:\
-$WORK/ros_tutorials:\
-$WORK/common_tutorials:\
-$WORK/rx
+export ROS_PACKAGE_PATH=$WORK/rosidl\
+:$WORK/ros\
+:$WORK/ros_comm\
+:$WORK/common\
+:$WORK/common_msgs\
+:$WORK/geometry\
+:$WORK/ros_tutorials\
+:$WORK/common_tutorials\
+:$WORK/rx\
+:$WORK/diagnostics\
+
+
+#:$WORK/driver_common\
+#:$WORK/perception_pcl\
+#:$WORK/navigation
 
 cd $WORK
 # chmod 000 ros/core/rosbuild
