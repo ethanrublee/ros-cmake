@@ -34,7 +34,7 @@ rm -f $WORK/ros_comm/clients/roslisp/manifest.xml
 #
 # deprecated file
 #
-rm -rf $WORK/common/actionlib/cmake
+# rm -rf $WORK/common/actionlib/cmake
 
 if [ -d $WORK/ros/core/rosbuild ] ; then
     rm -rf $WORK/ros/core/rosbuild

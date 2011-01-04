@@ -139,3 +139,8 @@ toplevel_out.write(em.expand(toplevel_em, dict(packages=index,
                                                topo_pkgs=topo_pkgs)))
 
 
+cpack_em = open(sys.argv[3] + '/make_debs.sh.em').read()
+cpack_out = open(sys.argv[2] + '/make_debs.sh', 'w')
+cpack_out.write(em.expand(cpack_em, dict(projects = topo_pkgs)))
+
+                                         
