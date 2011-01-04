@@ -13,6 +13,12 @@ def asitems(x):
 
 }
 project(@PROJECT)
+
+cpack_add_component_group(@PROJECT
+  DISPLAY_NAME "@brief_doc"
+  DESCRIPTION "@description"
+  )
+
 add_definitions(-DROS_PACKAGE_NAME="@PROJECT")
 message(STATUS " + @PROJECT")
 
