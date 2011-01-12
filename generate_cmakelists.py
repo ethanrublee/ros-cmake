@@ -30,6 +30,9 @@ def write_project_cmake(name, d, index=index):
         os.mkdir(bindir)
     pkgdict = dict(PROJECT = name)
 
+    pkgdict['brief_doc'] = d.get('brief', "no brief description")
+    pkgdict['description'] = d.get('description', "no description")
+
     pkgdict['DEPENDED_PACKAGE_PATHS'] = [index[(pkgname, None)]['srcdir']
                                          for pkgname in d['depend']]
 
@@ -136,3 +139,8 @@ toplevel_out.write(em.expand(toplevel_em, dict(packages=index,
                                                topo_pkgs=topo_pkgs)))
 
 
+cpack_em = open(sys.argv[3] + '/make_debs.sh.em').read()
+cpack_out = open(sys.argv[2] + '/make_debs.sh', 'w')
+cpack_out.write(em.expand(cpack_em, dict(projects = topo_pkgs)))
+
+                                         

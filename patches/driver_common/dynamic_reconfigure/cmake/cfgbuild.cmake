@@ -50,7 +50,7 @@ macro(rosbuild_cfgs)
       ${ROSBUILD_GEN_DIR}/cpp/${PROJECT_NAME}
       ${ROSBUILD_GEN_DIR}/py/${PROJECT_NAME}
       DEPENDS ${_input} ${gencfg_cpp_exe} ${ROS_MANIFEST_LIST} ${gencfg_build_files} ${gencfg_extra_deps} ${${_input}_AUTODEPS}
-      COMMENT BANGHBANGHBANGH
+      COMMENT Generating dynamic reconfigure stuff from ${_cfg}
       )
 
     list(APPEND ${PROJECT_NAME}_generated 
