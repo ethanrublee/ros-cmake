@@ -1,3 +1,6 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -109,7 +112,7 @@ verbatim it will do something that is probably not what we want.</p>
 <li><p class="first">Now the (black) magic starts.  First we&#8217;ll need to extract the
 <tt class="docutils literal"><span class="pre">ROS_PACKAGE_PATH</span></tt> from the rosinstall-generated <tt class="docutils literal"><span class="pre">setup.sh</span></tt>
 (bash syntax), <strong>and append the ros stack</strong>:</p>
-<div class="highlight-python"><pre>$ $(grep ROS_PACKAGE_PATH)
+<div class="highlight-python"><pre>$ $(grep ROS_PACKAGE_PATH setup.sh)
 $ ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:`pwd`/ros
 $ echo $ROS_PACKAGE_PATH
 /tmp/work/driver_common:/tmp/work/diagnostics:/tmp/work/rx:/tmp/work/common_tutorials:/tmp/work/ros_tutorials:/tmp/work/geometry:/tmp/work/common_msgs:/tmp/work/common:/tmp/work/ros_comm:/tmp/work/rosidl:/tmp/work/cmake:/tmp/work/ros</pre>
@@ -338,7 +341,7 @@ Scanning dependencies of target XmlRpc
       </ul>
     </div>
     <div class="footer">
-      &copy; Copyright 2010, Troy D. Straszheim --  Version c74c8bf5b9da69596de2a62e51d301c000ffd80f, Wed, 12 Jan 2011.
+      &copy; Copyright 2010, Troy D. Straszheim --  Version ac3c08b158d9f23606e26cbf74d5e6ad16d677a7, Wed, 12 Jan 2011.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.4.
     </div>
   </body>

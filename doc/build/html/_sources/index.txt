@@ -63,7 +63,7 @@ same commands run by the script ``fromscratch.sh`` in the ros-cmake
   ``ROS_PACKAGE_PATH`` from the rosinstall-generated ``setup.sh``
   (bash syntax), **and append the ros stack**::
 
-      $ $(grep ROS_PACKAGE_PATH)
+      $ $(grep ROS_PACKAGE_PATH setup.sh)
       $ ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:`pwd`/ros
       $ echo $ROS_PACKAGE_PATH 
       /tmp/work/driver_common:/tmp/work/diagnostics:/tmp/work/rx:/tmp/work/common_tutorials:/tmp/work/ros_tutorials:/tmp/work/geometry:/tmp/work/common_msgs:/tmp/work/common:/tmp/work/ros_comm:/tmp/work/rosidl:/tmp/work/cmake:/tmp/work/ros
