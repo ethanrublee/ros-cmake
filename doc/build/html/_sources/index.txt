@@ -97,7 +97,7 @@ same commands run by the script ``fromscratch.sh`` in the ros-cmake
 
 * Sanitize the ``manifest.xml`` bits::
 
-    % ./cmake/sanitize_manifest.xml   
+    % ./cmake/sanitize_manifest.py index.pkl
     Sanitizing manifest index...
     Generating full recursive dependencies
     r:                                        test_rxdeps
@@ -109,7 +109,7 @@ same commands run by the script ``fromscratch.sh`` in the ros-cmake
   tree; at some point this will have to go away, presumably after
   we've decided what the new CMakeLists.txt will actually look like::
 
-    $ ./cmake/sanitize_cmakelists.txt -i index.pkl
+    $ ./cmake/sanitize_cmakelists.py -i index.pkl
     Sanitizing cmakelists from index index.pkl
 
 * Now you'll see those CMakeLists.txt modifications::
