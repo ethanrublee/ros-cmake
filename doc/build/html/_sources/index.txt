@@ -9,7 +9,8 @@ Code
 
 ros-cmake is in the 'ros-cmake' repository at
 https://github.com/straszheim/ros-cmake.  The git clone url is
-``git@github.com:straszheim/ros-cmake.git``.
+``git://github.com/straszheim/ros-cmake.git``.  But **dont do this
+yet**, follow the directions below.
 
 
 Quickstart

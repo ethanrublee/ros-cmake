@@ -1,9 +1,9 @@
 - git:
-    uri: git@github.com:straszheim/ros-cmake.git
+    uri: git://github.com/straszheim/ros-cmake.git
     local-name: cmake
 
 - git:
-    uri: git@github.com:straszheim/rosidl.git
+    uri: git://github.com/straszheim/rosidl.git
     local-name: rosidl
 
 - svn:
