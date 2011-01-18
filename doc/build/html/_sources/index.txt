@@ -19,6 +19,11 @@ Quickstart
 Eventually these will be the fanciest of docs.  For the moment they
 are only a list of "here's how to try it out" commands.  These are the
 same commands run by the script ``fromscratch.sh`` in the ros-cmake
+project.  You should be able to copy-paste these from this webpage
+verbatim.
+
+Setup build environment
+-----------------------
 
 * Pull down the rosinstall file::
 
@@ -27,13 +32,18 @@ same commands run by the script ``fromscratch.sh`` in the ros-cmake
 * Pick a directory to work in.  I'll assume this is called ``work``.
 
 * Do the rosinstall thing, use the ``-n`` flag to have it only check
-  things out.  Why is this thing called rosinstall? ::
+  things out.  We will need to refer to our work directory, let's set
+  this in an environment variable::
 
-    rosinstall -n work ros-cmake.rosinstall
+    export WORK=`pwd`/work
+
+  and run rosinstall to check things out (only) to ``$WORK``::
+
+    rosinstall -n $WORK ros-cmake.rosinstall
 
 * cd in there::
 
-    cd work
+    cd $WORK
 
 * At this point your environment should be clean... no rosness, no
   ``ROS_ROOT``.  There is a script called ``doit.sh`` in the ``cmake``
@@ -45,6 +55,9 @@ same commands run by the script ``fromscratch.sh`` in the ros-cmake
     cmake_minimum_required(VERSION 2.8)
     include(cmake/main.cmake)
 
+Modify buildspace
+-----------------
+
 * Remove some stuff that hasn't been converted yet.  This is to 'hide'
   it from ros-cmake::
 
@@ -55,7 +68,7 @@ same commands run by the script ``fromscratch.sh`` in the ros-cmake
 * Now apply a bunch of patches to the build tree.  They are stored in
   a subdirectory ``patches`` of cmake::
 
-    rsync -a ./cmake/patches/ ./
+    rsync -a ./cmake/patches/ $WORK/
 
   **watch your slashes there**, if that command isn't executed
   verbatim it will do something that is probably not what we want.
@@ -64,21 +77,25 @@ same commands run by the script ``fromscratch.sh`` in the ros-cmake
   ``ROS_PACKAGE_PATH`` from the rosinstall-generated ``setup.sh``
   (bash syntax), **and append the ros stack**::
 
-      $ $(grep ROS_PACKAGE_PATH setup.sh)
-      $ ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:`pwd`/ros
-      $ echo $ROS_PACKAGE_PATH 
-      /tmp/work/driver_common:/tmp/work/diagnostics:/tmp/work/rx:/tmp/work/common_tutorials:/tmp/work/ros_tutorials:/tmp/work/geometry:/tmp/work/common_msgs:/tmp/work/common:/tmp/work/ros_comm:/tmp/work/rosidl:/tmp/work/cmake:/tmp/work/ros
+    # set ROS_PACKAGE_PATH in your environment
+    `grep ROS_PACKAGE_PATH setup.sh`  
+
+    # append to it
+    ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:$WORK/ros
+
+    echo $ROS_PACKAGE_PATH 
+    /tmp/work/driver_common:/tmp/work/diagnostics:/tmp/work/rx:/tmp/work/common_tutorials:/tmp/work/ros_tutorials:/tmp/work/geometry:/tmp/work/common_msgs:/tmp/work/common:/tmp/work/ros_comm:/tmp/work/rosidl:/tmp/work/cmake:/tmp/work/ros
   
 * Now run ``build_index.py`` to create an "index" (just a pickled
   python dictionary) of what is in the buildspace.  The first argument
   is the name of the file to create, which we will refer to later::
 
-    % ./cmake/build_index.py index.pkl $ROS_PACKAGE_PATH
+    $ ./cmake/build_index.py index.pkl $ROS_PACKAGE_PATH
     Building index of packages in /tmp/work/driver_common:/tmp/work/diagnostics:/tmp/work/rx:/tmp/work/common_tutorials:/tmp/work/ros_tutorials:/tmp/work/geometry:/tmp/work/common_msgs:/tmp/work/common:/tmp/work/ros_comm:/tmp/work/rosidl:/tmp/work/cmake:/tmp/work/ros
 
   You can have a quick look at what is in there::
 
-    % ./cmake/show_index.py index.pkl | head -20
+    $ ./cmake/show_index.py index.pkl | less
 
     Index@ sys.argv[1]:
     
@@ -94,15 +111,20 @@ same commands run by the script ``fromscratch.sh`` in the ros-cmake
     (etc etc)
 
   at this point it has not been 'sanitized' yet... it is not in a form
-  consumable by the rest of the procedure.
+  consumable by the rest of the procedure.  One way to think about
+  what has happened here is that 'rospack' has been run with all
+  possible arguments on all available projects, and the results have
+  been stored in an index.
 
 * Sanitize the ``manifest.xml`` bits::
 
-    % ./cmake/sanitize_manifest.py index.pkl
-    Sanitizing manifest index...
+    $ ./cmake/sanitize_manifest.py index.pkl
+    * Expanding backticks
+    * removing ${prefix}
+    * parsing and reorganizing compiler flags
     Generating full recursive dependencies
-    r:                                        test_rxdeps
-        
+    >>>                    test_rxdeps
+           
   Now there are new fields in the index.pkl containing e.g. expanded
   backticks and replaced ${prefix} variables.
 
@@ -112,6 +134,11 @@ same commands run by the script ``fromscratch.sh`` in the ros-cmake
 
     $ ./cmake/sanitize_cmakelists.py -i index.pkl
     Sanitizing cmakelists from index index.pkl
+
+  Among other things, this script has removed
+  ``set(EXECUTABLE_OUTPUT_PATH ...)``, ``rosbuild_init()``, and
+  various other incantations found in every cmakelistss that are no
+  longer necessary.
 
 * Now you'll see those CMakeLists.txt modifications::
 
@@ -143,7 +170,10 @@ same commands run by the script ``fromscratch.sh`` in the ros-cmake
   onto the build tree earlier.  Do it again::
 
     $ cd $WORK  # $WORK == the directory created by rosinstall
-    $ rsync -a ./cmake/patches/ ./
+    $ rsync -a ./cmake/patches/ $WORK/
+
+Generate CMakeLists.txt and run cmake
+-------------------------------------
 
 * Make a build directory and generate a ton of cmake stuff::
 
@@ -156,8 +186,8 @@ same commands run by the script ``fromscratch.sh`` in the ros-cmake
     >>> tf_conversions                     
 
   in ``build/`` you will now see a file ``toplevel.cmake``, which sets
-  a bunch of variables and most importantly controls the order with
-  which cmake will traverse package directories.  There are also
+  a bunch of variables and, importantly, controls the order with which
+  cmake will traverse package directories.  There are also
   subdirectories, one per package, each containing a file
   ``package.cmake`` which contains cmake code generated from
   ``manifest.xml`` files, among other things.
@@ -165,11 +195,7 @@ same commands run by the script ``fromscratch.sh`` in the ros-cmake
 * Run cmake::
 
     $ cd build
-    $ cmake -DROS_BUILD_SHARED_LIBS=TRUE -DCMAKE_INSTALL_PREFIX=/tmp/installdir ..
-
-  You'll see a *lot* of stuff happen during the cmake run, especially
-  the building of 3rdparty dependencies: eigen, smclib, bullet,
-  orocos-kdl.  This is to be somehow fixed later.::
+    $ cmake -DCMAKE_INSTALL_PREFIX=/tmp/installdir ..
 
     -- --- main.cmake ---
     -- Boost version: 1.40.0
@@ -203,6 +229,12 @@ same commands run by the script ``fromscratch.sh`` in the ros-cmake
     Resolving pr.willowgarage.com... 157.22.19.18
     Connecting to pr.willowgarage.com|157.22.19.18|:80... connected.
     
+  .. warning::
+
+     You'll see a *lot* of stuff happen here, mostly
+     the building of 3rdparty dependencies: eigen, smclib, bullet,
+     orocos-kdl, wxswig.  It won't stay this way.
+
   At the end you'll see the traversal of the ROS packages...
 
   ::
@@ -263,7 +295,11 @@ same commands run by the script ``fromscratch.sh`` in the ros-cmake
      -- Generating done
      -- Build files have been written to: /tmp/work/build
    
-  If you see the `Build files have been written` bit, rejoice.  
+  If you see the last line, ``Build files have been written to: ...``,
+  you may rejoice momentarily.
+
+Build
+-----
 
 * Now you can build::
 

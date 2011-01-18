@@ -41,7 +41,7 @@ def load_manifest(path, main_index):
     obj = lxml.objectify.fromstring(s)
     # print lxml.objectify.dump(obj)
     pkgname = os.path.basename(path)
-    print pkgname, '\r',
+    print ">>> %30s\r" % pkgname, ; sys.stdout.flush()
     sys.stdout.flush()
     version = None
 
