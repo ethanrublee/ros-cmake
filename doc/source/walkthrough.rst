@@ -1,10 +1,13 @@
-Quickstart
-==========
+Walkthrough
+===========
 
-Eventually these will be the fanciest of docs.  For the moment they
-are only a list of "here's how to try it out" commands.  These are the
-same commands run by the script ``fromscratch.sh`` in the ros-cmake
-project.  You should be able to copy-paste these from this webpage
+Here's how to make it go.  Many of these steps will not be necessary
+in the finished product.  The commands below are the same as those run
+by the script
+`https://github.com/straszheim/ros-cmake/raw/master/run_full_build.sh
+run_full_build.sh`_ in the ros-cmake project.  
+
+You should be able to copy-paste the commands below into your terminal
 verbatim.
 
 Setup build environment
@@ -14,15 +17,14 @@ Setup build environment
 
     wget --no-check-certificate  https://github.com/straszheim/ros-cmake/raw/master/ros-cmake.rosinstall
 
-* Pick a directory to work in.  I'll assume this is called ``work``.
-
-* Do the rosinstall thing, use the ``-n`` flag to have it only check
-  things out.  We will need to refer to our work directory, let's set
+* Pick a directory to work in.  I'll assume this is called
+  ``work``. We will need to refer to our work directory, let's set
   this in an environment variable::
 
     export WORK=`pwd`/work
 
-  and run rosinstall to check things out (only) to ``$WORK``::
+* Do the rosinstall thing, use the ``-n`` flag to have it only check
+  things out.::
 
     rosinstall -n $WORK ros-cmake.rosinstall
 
@@ -31,8 +33,7 @@ Setup build environment
     cd $WORK
 
 * At this point your environment should be clean... no rosness, no
-  ``ROS_ROOT``.  There is a script called ``run_full_build.sh`` in the
-  ``cmake`` directory that we'll be walking through.  
+  ``ROS_ROOT``.  
 
 * Create a stub toplevel ``CMakeLists.txt`` that includes
   ``cmake/main.cmake``.  It should contain only::

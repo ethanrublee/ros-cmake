@@ -16,5 +16,5 @@ the directions below.
 
 .. toctree::
    
-   quickstart
+   walkthrough
    notes
