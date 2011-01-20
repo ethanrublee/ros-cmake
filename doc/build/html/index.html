@@ -47,6 +47,9 @@
 <li><a class="reference external" href="#modify-buildspace">Modify buildspace</a></li>
 <li><a class="reference external" href="#generate-cmakelists-txt-and-run-cmake">Generate CMakeLists.txt and run cmake</a></li>
 <li><a class="reference external" href="#build">Build</a></li>
+<li><a class="reference external" href="#use">Use</a></li>
+<li><a class="reference external" href="#install">Install</a></li>
+<li><a class="reference external" href="#id1">Use</a></li>
 </ul>
 </li>
 </ul>
@@ -244,7 +247,7 @@ subdirectories, one per package, each containing a file
 <tt class="docutils literal"><span class="pre">package.cmake</span></tt> which contains cmake code generated from
 <tt class="docutils literal"><span class="pre">manifest.xml</span></tt> files, among other things.</p>
 </li>
-<li><p class="first">Run cmake:</p>
+<li><p class="first">Run cmake (see warning box in output below):</p>
 <div class="highlight-python"><pre>$ cd build
 $ cmake -DCMAKE_INSTALL_PREFIX=/tmp/installdir ..
 
@@ -344,15 +347,16 @@ orocos-kdl, wxswig.  It won&#8217;t stay this way.</p>
  -- Build files have been written to: /tmp/work/build</pre>
 </div>
 <p>If you see the last line, <tt class="docutils literal"><span class="pre">Build</span> <span class="pre">files</span> <span class="pre">have</span> <span class="pre">been</span> <span class="pre">written</span> <span class="pre">to:</span> <span class="pre">...</span></tt>,
-you may rejoice momentarily.</p>
+you may briefly rejoice.</p>
 </li>
 </ul>
 </div>
 <div class="section" id="build">
 <h2>Build<a class="headerlink" href="#build" title="Permalink to this headline">¶</a></h2>
-<ul>
-<li><p class="first">Now you can build:</p>
-<div class="highlight-python"><pre>$ make
+<p>Now you can build.  Optionally use <tt class="docutils literal"><span class="pre">-jN</span></tt> where N is one greater than
+the number of cores you have on the machine.  <tt class="docutils literal"><span class="pre">ROS_PARALLEL_JOBS</span></tt> is
+ignored.</p>
+<div class="highlight-python"><pre>$ make -j9
 Scanning dependencies of target xmlrpcpp_gen_cpp
 [  0%] Built target xmlrpcpp_gen_cpp
 Scanning dependencies of target XmlRpc
@@ -365,8 +369,89 @@ Scanning dependencies of target XmlRpc
 [100%] Built target selftest_example
 [100%] Built target selftest_rostest</pre>
 </div>
-</li>
-</ul>
+<p>Output will be jumbled due to the -j.  Now type make again and behold
+the speed with which it tells you that there is nothing to do.</p>
+<p>All build artifacts are in the build directory.  Generated code is
+under <tt class="docutils literal"><span class="pre">gen/&lt;LANG&gt;</span></tt>.  Notice the generated <tt class="docutils literal"><span class="pre">__init__.py</span></tt> scripts
+under <tt class="docutils literal"><span class="pre">gen/py/*</span></tt> that extend the search path back to the static
+source directories.  These disappear on installation.</p>
+<p>Note also the generated <tt class="docutils literal"><span class="pre">env.sh</span></tt> script that contains environment
+settings approriate to this buildspace.</p>
+</div>
+<div class="section" id="use">
+<h2>Use<a class="headerlink" href="#use" title="Permalink to this headline">¶</a></h2>
+<p>Now you should be able to use a few things, from the build directory.
+Starting from a completely clean environment (note that so far in the
+process we have defined <strong>no</strong> environment variables whatsoever), run
+the <tt class="docutils literal"><span class="pre">env.sh</span></tt> script:</p>
+<div class="highlight-python"><pre>% ./env.sh
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                                      %
+%                              ROS: Robot Operating System                             %
+%                                                                                      %
+%                                       Version                                        %
+%                                                                                      %
+%                            Visit us at http://www.ros.org                            %
+%                                                                                      %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+ROS environment has:
+   ROS_ROOT       = /home/ros2/ros
+   ROS_BUILD      = /home/ros2/build
+   ROS_MASTER_URI = http://localhost:11311</pre>
+</div>
+<p>Yes, the little banner is gratuitous, but I had the code laying
+around.  This will spawn a subshell; your <tt class="docutils literal"><span class="pre">.bashrc</span></tt> ought not
+clobber your environment variables.</p>
+<div class="admonition-todo admonition " id="todo-1">
+<p class="first admonition-title">Todo</p>
+<p class="last">a version that you just &#8216;source&#8217;.  This is impervious to
+whatever shenanigans might be found in your <tt class="docutils literal"><span class="pre">bashrc</span></tt>.</p>
+</div>
+<p>Now run roscore:</p>
+<div class="highlight-python"><pre>% roscore
+... logging to /u/straszheim/.ros/log/319a5fe0-2434-11e0-9ce0-003048fd853e/roslaunch-hpy-31830.log
+Checking log directory for disk usage. This may take awhile.
+Press Ctrl-C to interrupt
+Done checking log file disk usage. Usage is &lt;1GB.
+
+started roslaunch server http://hpy:35220/
+
+SUMMARY
+========
+
+NODES
+
+auto-starting new master
+process[master]: started with pid [31845]
+ROS_MASTER_URI=http://hpy:11311/
+
+setting /run_id to 319a5fe0-2434-11e0-9ce0-003048fd853e
+process[rosout-1]: started with pid [31875]
+started core service [/rosout]</pre>
+</div>
+<p>Open another terminal, source the env.sh, run the talker demo:</p>
+<div class="highlight-python"><pre>% ./bin/talker
+[ INFO] [1295486800.693401647]: hello world 0
+[ INFO] [1295486800.793485151]: hello world 1
+[ INFO] [1295486800.893499308]: hello world 2
+...</pre>
+</div>
+</div>
+<div class="section" id="install">
+<h2>Install<a class="headerlink" href="#install" title="Permalink to this headline">¶</a></h2>
+<p>Just &#8216;make install&#8217;.  Things will get installed to the
+<tt class="docutils literal"><span class="pre">CMAKE_INSTALL_PREFIX</span></tt> specified when you ran CMake.</p>
+<div class="highlight-python"><pre>% make install
+[lots of stuff]
+-- Installing: /home/ros2/inst/share/cmake/ROS.cmake
+-- Installing: /home/ros2/inst/share/cmake/ROS-noconfig.cmake</pre>
+</div>
+</div>
+<div class="section" id="id1">
+<h2>Use<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>Using the installed version is the same as the buildspace version,
+above, modulo that the <tt class="docutils literal"><span class="pre">env.sh</span></tt> script is in the <tt class="docutils literal"><span class="pre">bin</span></tt> directory.</p>
 </div>
 </div>
 
@@ -389,7 +474,7 @@ Scanning dependencies of target XmlRpc
       </ul>
     </div>
     <div class="footer">
-      &copy; Copyright 2010, Troy D. Straszheim --  Version 60291b746bfba833b40373e1a799d5262eed85ad, Sun, 16 Jan 2011.
+      &copy; Copyright 2010, Troy D. Straszheim --  Version f0ce5e83d404ff66b9c18cf8c7bde82ae4180bd5, Tue, 18 Jan 2011.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.4.
     </div>
   </body>
