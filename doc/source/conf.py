@@ -22,7 +22,7 @@ sys.path.append(os.path.abspath('.'))
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.ifconfig', 'sphinx.ext.todo', 'cmake']
+extensions = ['sphinx.ext.ifconfig', 'sphinx.ext.todo'] #, 'cmake']
 todo_include_todos = True
 
 # Add any paths that contain templates here, relative to this directory.
@@ -48,6 +48,7 @@ lastmod = subprocess.Popen(gitcmd, stdout=subprocess.PIPE).communicate()[0]
 dochash = subprocess.Popen('git log -n1 --pretty=format:%H'.split(),
                            stdout=subprocess.PIPE).communicate()[0]
 
+print "dochash=", dochash
 copyright = u'2010, Troy D. Straszheim -- ' + ' Version ' + dochash + ", " + ' '.join(lastmod.split(' ')[:4])
 
 # The version info for the project you're documenting, acts as replacement for

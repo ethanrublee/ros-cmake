@@ -1,0 +1,169 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>High level view/rationale &mdash; robuild</title>
+    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="robuild" href="index.html" />
+    <link rel="prev" title="Quickstart" href="quickstart.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="quickstart.html" title="Quickstart"
+             accesskey="P">previous</a> |</li>
+    <li><a href="http://www.ros.org/">ROS</a> &raquo;</li>
+    
+        <li><a href="index.html">robuild</a> &raquo;</li>
+ 
+      </ul>
+    </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/ros.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">High level view/rationale</a></li>
+<li><a class="reference internal" href="#notes">Notes</a><ul>
+<li><a class="reference internal" href="#build-detritus">Build detritus</a></li>
+<li><a class="reference internal" href="#code-generators">Code Generators</a></li>
+<li><a class="reference internal" href="#subshelling-and-environment-variables">Subshelling and environment variables</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="quickstart.html"
+                        title="previous chapter">Quickstart</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/notes.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="high-level-view-rationale">
+<h1>High level view/rationale<a class="headerlink" href="#high-level-view-rationale" title="Permalink to this headline">¶</a></h1>
+<p>The build proceeds as follows:</p>
+<ul class="simple">
+<li>Walk the ROS_PACKAGE_PATH, read manifest.xml files, build an index.
+This happens without using rospack.  Build logic that needs to look
+at multiple packages uses this file, not rospack.</li>
+<li>Sanitize the information in the index.  Some information in the
+manifests is in a format that is difficult to consume.</li>
+<li>Sanitize the CMakeLists.txt.  CMakeLists.txt contain certain
+invocations, for instance manual setting of RUNTIME_OUTPUT_DIR to be
+in the source directory, that must be removed.</li>
+<li>Generate cmake files.  A toplevel.cmake file is generated containing
+global information and a topologically sorted list of packages to
+traverse.  Each package contains a package.cmake file that contains
+e.g. information gleaned from manifest.xml files put in to a format
+that is convenient for cmake to consume.</li>
+</ul>
+</div>
+<div class="section" id="notes">
+<h1>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="build-detritus">
+<h2>Build detritus<a class="headerlink" href="#build-detritus" title="Permalink to this headline">¶</a></h2>
+<p>May <strong>not</strong> be placed in the source directory.</p>
+</div>
+<div class="section" id="code-generators">
+<h2>Code Generators<a class="headerlink" href="#code-generators" title="Permalink to this headline">¶</a></h2>
+<p>Decoupling buildsystem components is one of the main goals of this
+project.  This makes them more flexible and easier to use and debug.
+Message generators are one of those.</p>
+<p>In rosbuild2, the python library <tt class="docutils literal"><span class="pre">roslib</span></tt> has been split into two:
+<tt class="docutils literal"><span class="pre">roslib</span></tt>, which may depend on the binary <tt class="docutils literal"><span class="pre">rospack</span></tt>, and another,
+<tt class="docutils literal"><span class="pre">rosidl</span></tt>, that may <strong>not</strong>.  Message generators use only <tt class="docutils literal"><span class="pre">rosidl</span></tt>,
+which parses message files and returns abstract syntax trees, to
+generate libraries.</p>
+<p>Message generator binaries must implement the following interface:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">generatorname</span> <span class="o">&lt;</span><span class="n">filename</span><span class="o">&gt;</span> <span class="o">-</span><span class="n">p</span> <span class="o">&lt;</span><span class="n">packagename</span><span class="o">&gt;</span> <span class="o">-</span><span class="n">o</span> <span class="o">&lt;</span><span class="n">outdir</span><span class="o">&gt;</span> <span class="o">-</span><span class="n">I</span><span class="o">&lt;</span><span class="n">includepath1</span><span class="o">&gt;</span> <span class="o">-</span><span class="n">I</span><span class="o">&lt;</span><span class="n">includepath2</span><span class="o">&gt;</span> <span class="o">...</span>
+</pre></div>
+</div>
+<p>e.g.</p>
+<div class="highlight-python"><pre>genmsg_cpp.py /ssd/wg/ros2/ros/core/roslib/msg/Header.msg  \
+   -p roslib \
+   -o /ssd/wg/ros2/build/gen/cpp \
+   -I /ssd/wg/ros2/build/roslib \
+   -I /ssd/wg/ros2/ros/tools/rospack \
+   -I /ssd/wg/ros2/ros/core/roslib</pre>
+</div>
+<p>where <strong>filename</strong> is the absolute path to the message file,
+<strong>packagename</strong> is the name of the package in which the message
+resides, <strong>outdir</strong> is the directory to which to write the results,
+and the <strong>includepath</strong> arguments specify a search path for code that
+<strong>filename</strong> may include, e.g. nested message types.</p>
+<p>This is all the information a code generator needs to do its job.</p>
+</div>
+<div class="section" id="subshelling-and-environment-variables">
+<h2>Subshelling and environment variables<a class="headerlink" href="#subshelling-and-environment-variables" title="Permalink to this headline">¶</a></h2>
+<p>Environment variables are globals, and globals are to be avoided.  The
+build must work without any particular environment variables being
+set, as all information necessary to build is encoded in
+CMakeCache.txt and makefiles at generation time.</p>
+<p>To achieve this the build system freeze-dries the correct environment
+in a script <tt class="docutils literal"><span class="pre">env.sh</span></tt> that is used to set the environment for any
+subshells that are executed, only for the duration of that subshell,
+via the cmake variable <tt class="docutils literal"><span class="pre">ROSBUILD_SUBSHELL</span></tt>.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="quickstart.html" title="Quickstart"
+             >previous</a> |</li>
+    <li><a href="http://www.ros.org/">ROS</a> &raquo;</li>
+    
+        <li><a href="index.html">robuild</a> &raquo;</li>
+ 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2010, Troy D. Straszheim --  Version 7d62aad1c6a6ff130613dbdc64ec1b8115ffc6de, Wed, 19 Jan 2011.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>

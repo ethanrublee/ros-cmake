@@ -15,7 +15,7 @@
 from docutils import nodes
 import re, string
 from sphinx.util.compat import Directive, make_admonition
-from sphinx.directives import DescDirective, PythonDesc
+from sphinx.directives import DescDirective# , PythonDesc
 from sphinx import addnodes
 
 class CMake(PythonDesc):
