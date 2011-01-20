@@ -1,0 +1,82 @@
+17:38 < straszheim> i'm going the gentoo route for crosscompiling
+17:38 < straszheim> have my gentoo VM up
+17:39 < straszheim> crossdev --target arm-unknown-linux-gnu is finished
+17:39 < straszheim> thought I'd see if there is anything
+17:40 < DanielStonier> you'll have to init the emerge wrapper
+17:40 < straszheim> do you build the entire embedded OS with this?
+17:41 < DanielStonier> emerge-wrapper --init
+17:41 < straszheim> symlinks set up.
+17:41 < DanielStonier> i used it to build the base filesystem a couple of times
+17:41 < DanielStonier> other times if I need to be really lean I stitch it together by hand
+17:43 < DanielStonier> the cross-emerge packages aren't perfect, so depending on what you want, 
+                       you'll get so far...
+17:43 < DanielStonier> the guys on the #gentoo embedded irc are usually pretty good
+17:44 < DanielStonier> you should be able to do a emerge-arm-unknown-linux-gnu --sync now
+17:44  * straszheim watches it spin
+17:45 < DanielStonier> one sec, have to dig up my other brain to remember some stuff :P (wiki at 
+                       home)
+17:45 < straszheim> i figure I want to run a node
+17:46 < straszheim> where do you get the OS'es that you run on your boards?
+17:46 < DanielStonier> been a while now, but you might want to check the issues i had here : 
+http://snorriheim.dnsdojo.com/doku/doku.php/en:programming:ide:crossdev:portage
+17:46 < DanielStonier> i run a gentoo filesystem on my ros testing board for armv6
+17:46 < DanielStonier> on the actual cleaning robot though, we're still using the original os 
+                       from before I joined the project
+17:46 < DanielStonier> its supplied by a linux company here in seoul
+17:47 < DanielStonier> but we've wasted more time dealing with their issues than I would have 
+                       had doing it myself
+17:47 < DanielStonier> we also used a ppc board once....used eldk to build that one
+17:48 < straszheim> this linaro thing looks like it will be interesting, but it just isn't ready 
+                    yet
+17:48 < straszheim> so I figure I'll do whatever you do
+17:48 < straszheim> the gentoo filesystem on ros testing board sounds good
+17:50 < DanielStonier> you'll probably want to edit your cflags before you really start compiling
+17:50 < DanielStonier> what cpu did you end up running?
+17:50 < DanielStonier> ^purchasing?
+17:51 < straszheim> i'm going with qemu for now
+17:51 < straszheim> it is possible to run linux in a chroot on android
+17:51 < straszheim> so my phone is a possiblity
+17:52 < DanielStonier> oh....im curious about rooting android, but haven't investigated it yet
+17:52 < DanielStonier> so if you're crossing for your qemu rootstock, is that like armv7 arch?
+17:53 < straszheim> it has various
+17:53 < straszheim> http://codepad.org/kegCfOsS
+17:54 < straszheim> hmm, the rootstock, indeed.
+17:55 < straszheim> I'd thought I should build the entire OS with the crosscompiler
+17:55 < DanielStonier> ok...so you're not going to use the rootstock
+17:55 < straszheim> so everything matches.  but maybe that will just work.
+17:56 < DanielStonier> just cross a filesystem and then launch that with qemu
+17:56 < DanielStonier> i did that a while ago with a qemu-chroot
+17:56 < DanielStonier> got some notes somewhere, one sec
+18:00 < DanielStonier> are you using a full blown qemu or a qemu root?
+18:01 < DanielStonier> ^qemu chroot?
+18:01 < straszheim> open to either
+18:01 < DanielStonier> i found the chroot easier if you don't need guis
+18:01 < DanielStonier> its faster as well
+18:01 < straszheim> just want to be able to run talker/listener at this point
+18:01 < straszheim> (provided they compile, that's a different issue)
+18:01 < DanielStonier> ok...step by step:
+18:02 < DanielStonier> 1) set up a qemu chroot
+18:02 < DanielStonier> 2) download a stage3 for some arm achitecture you want to test on
+18:02 < DanielStonier> 3) crossdev a toolchain
+18:03 < DanielStonier> then you should be able to compile either inside the chroot or 
+                       cross-compile from crossdev and be matching
+18:03 < DanielStonier> just make sure the CFLAGS in /etc/make in and out match
+18:03 < straszheim> ah
+18:03 < DanielStonier> using the stage3 saves you having to build the whole filesystem, then you 
+                       can just cross-compile ros stuff outside
+18:04 < DanielStonier> i have some rough notes on setting up qemu with a stage3 here:
+18:04 < DanielStonier> http://snorriheim.dnsdojo.com/redmine/wiki/ecl/Qemu_chroot
+18:04 < DanielStonier> qemu chroot that is
+18:05 < straszheim> okay this sounds tractable
+18:05 < straszheim> i didn't realize there were ARM stage3's available
+18:05 < straszheim> big win
+18:06 < straszheim> awesome.  okay thanks.   
+18:06 < DanielStonier> yep, they're still there
+18:07 < DanielStonier> ook...i'll have to copy paste the scripts i use there on that page, you 
+                       can't see them without being logged in to that redmine
+18:14 < DanielStonier> ok, added the scripts to the page
+18:14 < DanielStonier> bug me if you run into problems
+18:15 < DanielStonier> I'm currently retargetting eros for ros trunk, should be finished and 
+                       testing shortly.
+		       =
+
