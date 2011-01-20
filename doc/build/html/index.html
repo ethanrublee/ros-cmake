@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -10,16 +12,18 @@
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '#',
+        URL_ROOT:    '',
         VERSION:     '0.0',
-        COLLAPSE_MODINDEX: false,
+        COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="robuild" href="#" /> 
+    <link rel="top" title="robuild" href="#" />
+    <link rel="next" title="Quickstart" href="quickstart.html" /> 
   </head>
   <body>
     <div class="related">
@@ -28,6 +32,9 @@
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="quickstart.html" title="Quickstart"
+             accesskey="N">next</a> |</li>
     <li><a href="http://www.ros.org/">ROS</a> &raquo;</li>
     
         <li><a href="#">robuild</a> &raquo;</li>
@@ -39,26 +46,14 @@
             <p class="logo"><a href="#">
               <img class="logo" src="_static/ros.png" alt="Logo"/>
             </a></p>
-            <h3><a href="#">Table Of Contents</a></h3>
-            <ul>
-<li><a class="reference external" href="#">Code</a></li>
-<li><a class="reference external" href="#quickstart">Quickstart</a><ul>
-<li><a class="reference external" href="#setup-build-environment">Setup build environment</a></li>
-<li><a class="reference external" href="#modify-buildspace">Modify buildspace</a></li>
-<li><a class="reference external" href="#generate-cmakelists-txt-and-run-cmake">Generate CMakeLists.txt and run cmake</a></li>
-<li><a class="reference external" href="#build">Build</a></li>
-<li><a class="reference external" href="#use">Use</a></li>
-<li><a class="reference external" href="#install">Install</a></li>
-<li><a class="reference external" href="#id1">Use</a></li>
-</ul>
-</li>
-</ul>
-
-            <h3>This Page</h3>
-            <ul class="this-page-menu">
-              <li><a href="_sources/index.txt"
-                     rel="nofollow">Show Source</a></li>
-            </ul>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="quickstart.html"
+                        title="next chapter">Quickstart</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/index.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
         </div>
       </div>
 
@@ -71,387 +66,29 @@
 <h1>Code<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h1>
 <p>ros-cmake is in the &#8216;ros-cmake&#8217; repository at
 <a class="reference external" href="https://github.com/straszheim/ros-cmake">https://github.com/straszheim/ros-cmake</a>.  The git clone url is
-<tt class="docutils literal"><span class="pre">git://github.com/straszheim/ros-cmake.git</span></tt>.  But <strong>dont do this
-yet</strong>, follow the directions below.</p>
-</div>
-<div class="section" id="quickstart">
-<h1>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h1>
-<p>Eventually these will be the fanciest of docs.  For the moment they
-are only a list of &#8220;here&#8217;s how to try it out&#8221; commands.  These are the
-same commands run by the script <tt class="docutils literal"><span class="pre">fromscratch.sh</span></tt> in the ros-cmake
-project.  You should be able to copy-paste these from this webpage
-verbatim.</p>
-<div class="section" id="setup-build-environment">
-<h2>Setup build environment<a class="headerlink" href="#setup-build-environment" title="Permalink to this headline">¶</a></h2>
+<tt class="docutils literal"><span class="pre">git://github.com/straszheim/ros-cmake.git</span></tt>.  Don&#8217;t run off and
+clone it yet; use the quickstart.  But <strong>dont do this yet</strong>, follow
+the directions below.</p>
+<div class="toctree-wrapper compound">
 <ul>
-<li><p class="first">Pull down the rosinstall file:</p>
-<div class="highlight-python"><pre>wget --no-check-certificate  https://github.com/straszheim/ros-cmake/raw/master/ros-cmake.rosinstall</pre>
-</div>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#setup-build-environment">Setup build environment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#modify-buildspace">Modify buildspace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#generate-cmakelists-txt-and-run-cmake">Generate CMakeLists.txt and run cmake</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#build">Build</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#use">Use</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#install">Install</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#id1">Use</a></li>
+</ul>
 </li>
-<li><p class="first">Pick a directory to work in.  I&#8217;ll assume this is called <tt class="docutils literal"><span class="pre">work</span></tt>.</p>
-</li>
-<li><p class="first">Do the rosinstall thing, use the <tt class="docutils literal"><span class="pre">-n</span></tt> flag to have it only check
-things out.  We will need to refer to our work directory, let&#8217;s set
-this in an environment variable:</p>
-<div class="highlight-python"><pre>export WORK=`pwd`/work</pre>
-</div>
-<p>and run rosinstall to check things out (only) to <tt class="docutils literal"><span class="pre">$WORK</span></tt>:</p>
-<div class="highlight-python"><pre>rosinstall -n $WORK ros-cmake.rosinstall</pre>
-</div>
-</li>
-<li><p class="first">cd in there:</p>
-<div class="highlight-python"><pre>cd $WORK</pre>
-</div>
-</li>
-<li><p class="first">At this point your environment should be clean... no rosness, no
-<tt class="docutils literal"><span class="pre">ROS_ROOT</span></tt>.  There is a script called <tt class="docutils literal"><span class="pre">doit.sh</span></tt> in the <tt class="docutils literal"><span class="pre">cmake</span></tt>
-directory that we&#8217;ll be walking through.</p>
-</li>
-<li><p class="first">Create a stub toplevel <tt class="docutils literal"><span class="pre">CMakeLists.txt</span></tt> that includes
-<tt class="docutils literal"><span class="pre">cmake/main.cmake</span></tt>.  It should contain only:</p>
-<div class="highlight-python"><pre>cmake_minimum_required(VERSION 2.8)
-include(cmake/main.cmake)</pre>
-</div>
+<li class="toctree-l1"><a class="reference internal" href="notes.html">High level view/rationale</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notes.html#notes">Notes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notes.html#build-detritus">Build detritus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notes.html#code-generators">Code Generators</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notes.html#subshelling-and-environment-variables">Subshelling and environment variables</a></li>
+</ul>
 </li>
 </ul>
-</div>
-<div class="section" id="modify-buildspace">
-<h2>Modify buildspace<a class="headerlink" href="#modify-buildspace" title="Permalink to this headline">¶</a></h2>
-<ul>
-<li><p class="first">Remove some stuff that hasn&#8217;t been converted yet.  This is to &#8216;hide&#8217;
-it from ros-cmake:</p>
-<div class="highlight-python"><pre>rm ros_comm/clients/roslisp/manifest.xml
-rm -rf ros/core/rosbuild
-rm -rf ros/core/mk</pre>
-</div>
-</li>
-<li><p class="first">Now apply a bunch of patches to the build tree.  They are stored in
-a subdirectory <tt class="docutils literal"><span class="pre">patches</span></tt> of cmake:</p>
-<div class="highlight-python"><pre>rsync -a ./cmake/patches/ $WORK/</pre>
-</div>
-<p><strong>watch your slashes there</strong>, if that command isn&#8217;t executed
-verbatim it will do something that is probably not what we want.</p>
-</li>
-<li><p class="first">Now the (black) magic starts.  First we&#8217;ll need to extract the
-<tt class="docutils literal"><span class="pre">ROS_PACKAGE_PATH</span></tt> from the rosinstall-generated <tt class="docutils literal"><span class="pre">setup.sh</span></tt>
-(bash syntax), <strong>and append the ros stack</strong>:</p>
-<div class="highlight-python"><pre># set ROS_PACKAGE_PATH in your environment
-`grep ROS_PACKAGE_PATH setup.sh`
-
-# append to it
-ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:$WORK/ros
-
-echo $ROS_PACKAGE_PATH
-/tmp/work/driver_common:/tmp/work/diagnostics:/tmp/work/rx:/tmp/work/common_tutorials:/tmp/work/ros_tutorials:/tmp/work/geometry:/tmp/work/common_msgs:/tmp/work/common:/tmp/work/ros_comm:/tmp/work/rosidl:/tmp/work/cmake:/tmp/work/ros</pre>
-</div>
-</li>
-<li><p class="first">Now run <tt class="docutils literal"><span class="pre">build_index.py</span></tt> to create an &#8220;index&#8221; (just a pickled
-python dictionary) of what is in the buildspace.  The first argument
-is the name of the file to create, which we will refer to later:</p>
-<div class="highlight-python"><pre>$ ./cmake/build_index.py index.pkl $ROS_PACKAGE_PATH
-Building index of packages in /tmp/work/driver_common:/tmp/work/diagnostics:/tmp/work/rx:/tmp/work/common_tutorials:/tmp/work/ros_tutorials:/tmp/work/geometry:/tmp/work/common_msgs:/tmp/work/common:/tmp/work/ros_comm:/tmp/work/rosidl:/tmp/work/cmake:/tmp/work/ros</pre>
-</div>
-<p>You can have a quick look at what is in there:</p>
-<div class="highlight-python"><pre>$ ./cmake/show_index.py index.pkl | less
-
-Index@ sys.argv[1]:
-
-{('actionlib', None): {'actions': ['action/TwoInts.action',
-                                   'action/Test.action'],
-                       'author': 'Eitan Marder-Eppstein, Vijay Pradeep',
-                       'brief': 'Provides a standardized interface for a task',
-                       'cfgs': [],
-                       'depend': ['roscpp',
-                                  'rospy',
-                                  'rostest',
-                                  'actionlib_msgs'],
-(etc etc)</pre>
-</div>
-<p>at this point it has not been &#8216;sanitized&#8217; yet... it is not in a form
-consumable by the rest of the procedure.  One way to think about
-what has happened here is that &#8216;rospack&#8217; has been run with all
-possible arguments on all available projects, and the results have
-been stored in an index.</p>
-</li>
-<li><p class="first">Sanitize the <tt class="docutils literal"><span class="pre">manifest.xml</span></tt> bits:</p>
-<div class="highlight-python"><pre>$ ./cmake/sanitize_manifest.py index.pkl
-* Expanding backticks
-* removing ${prefix}
-* parsing and reorganizing compiler flags
-Generating full recursive dependencies
-&gt;&gt;&gt;                    test_rxdeps</pre>
-</div>
-<p>Now there are new fields in the index.pkl containing e.g. expanded
-backticks and replaced ${prefix} variables.</p>
-</li>
-<li><p class="first">Sanitize the assorted CMakeLists.txt.  This modifies the source
-tree; at some point this will have to go away, presumably after
-we&#8217;ve decided what the new CMakeLists.txt will actually look like:</p>
-<div class="highlight-python"><pre>$ ./cmake/sanitize_cmakelists.py -i index.pkl
-Sanitizing cmakelists from index index.pkl</pre>
-</div>
-<p>Among other things, this script has removed
-<tt class="docutils literal"><span class="pre">set(EXECUTABLE_OUTPUT_PATH</span> <span class="pre">...)</span></tt>, <tt class="docutils literal"><span class="pre">rosbuild_init()</span></tt>, and
-various other incantations found in every cmakelistss that are no
-longer necessary.</p>
-</li>
-<li><p class="first">Now you&#8217;ll see those CMakeLists.txt modifications:</p>
-<div class="highlight-python"><pre>$ cd ros
-$ svn status
-M       test/test_rosmake/CMakeLists.txt
-M       test/test_rospack/CMakeLists.txt
-M       test/test_roscreate/CMakeLists.txt
-M       test/test_roslib/CMakeLists.txt
-M       test/test_rosdep/CMakeLists.txt
-?       tools/rosbash/CMakeLists.txt
-M       tools/rosmake/CMakeLists.txt
-M       tools/rospack/CMakeLists.txt
-M       tools/rosunit/CMakeLists.txt
-M       tools/rosclean/CMakeLists.txt
-M       tools/roscreate/CMakeLists.txt
-?       tools/rosboost_cfg/CMakeLists.txt
-?       tools/rosdep/CMakeLists.txt
-?       tools/rosemacs/CMakeLists.txt
-!       core/rosbuild
-?       core/roslang/CMakeLists.txt
-!       core/mk
-M       core/roslib/CMakeLists.txt</pre>
-</div>
-<p>Some new files have been created, some modified, a couple others
-were deleted earlier.</p>
-</li>
-<li><p class="first">In this last step we clobbered a few CMakeLists.txt that we rsynced
-onto the build tree earlier.  Do it again:</p>
-<div class="highlight-python"><pre>$ cd $WORK  # $WORK == the directory created by rosinstall
-$ rsync -a ./cmake/patches/ $WORK/</pre>
-</div>
-</li>
-</ul>
-</div>
-<div class="section" id="generate-cmakelists-txt-and-run-cmake">
-<h2>Generate CMakeLists.txt and run cmake<a class="headerlink" href="#generate-cmakelists-txt-and-run-cmake" title="Permalink to this headline">¶</a></h2>
-<ul>
-<li><p class="first">Make a build directory and generate a ton of cmake stuff:</p>
-<div class="highlight-python"><pre>$ mkdir build
-$ ./cmake/generate_cmakelists.py index.pkl build ./cmake
-
-Index@ sys.argv[1]:
-
-LANGS= {'rospy': '/tmp/work/ros_comm/clients/rospy/cmake/rospy.cmake', 'roscpp': '/tmp/work/ros_comm/clients/cpp/roscpp/cmake/roscpp.cmake'}
-&gt;&gt;&gt; tf_conversions</pre>
-</div>
-<p>in <tt class="docutils literal"><span class="pre">build/</span></tt> you will now see a file <tt class="docutils literal"><span class="pre">toplevel.cmake</span></tt>, which sets
-a bunch of variables and, importantly, controls the order with which
-cmake will traverse package directories.  There are also
-subdirectories, one per package, each containing a file
-<tt class="docutils literal"><span class="pre">package.cmake</span></tt> which contains cmake code generated from
-<tt class="docutils literal"><span class="pre">manifest.xml</span></tt> files, among other things.</p>
-</li>
-<li><p class="first">Run cmake (see warning box in output below):</p>
-<div class="highlight-python"><pre>$ cd build
-$ cmake -DCMAKE_INSTALL_PREFIX=/tmp/installdir ..
-
--- --- main.cmake ---
--- Boost version: 1.40.0
--- Found the following Boost libraries:
---   date_time
---   filesystem
---   graph
---   iostreams
---   math_c99
---   math_tr1
---   prg_exec_monitor
---   program_options
---   python
---   regex
---   serialization
---   signals
---   system
---   thread
---   unit_test_framework
---   wave
---   wserialization
---  * rospy
---  * roscpp
-  ROSBUILD_LANGS = rospy;roscpp
-*
-*
-* building eigen
-*
-*
---2011-01-12 06:28:19--  http://pr.willowgarage.com/downloads/eigen2-2.0.15.tar.bz2
-Resolving pr.willowgarage.com... 157.22.19.18
-Connecting to pr.willowgarage.com|157.22.19.18|:80... connected.</pre>
-</div>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">You&#8217;ll see a <em>lot</em> of stuff happen here, mostly
-the building of 3rdparty dependencies: eigen, smclib, bullet,
-orocos-kdl, wxswig.  It won&#8217;t stay this way.</p>
-</div>
-<p>At the end you&#8217;ll see the traversal of the ROS packages...</p>
-<div class="highlight-python"><pre>-- 3rdparty kdl bootstrap returned 0.  Good.
- --  + test_rostest
- --  + topic_tools
- --  + rosbag
- --  + test_roscpp
- --  + test_rosnode
- --  + test_rosbag
- --  + rosmsg
- --  + rosbagmigration
- --  + rosrecord
- --  + rxbag
- --  + roscore_migration_rules
- --  + geometry_msgs
- --  + tf_core
- --  + diagnostic_msgs
- --  + runtime_monitor
- --  + rostopic
- --  + visualization_msgs
- --  + rosservice
- --  + test_rosmsg
- --  + test_rostopic
- --  + diagnostic_analysis
- --  + test_rospy
- --  + test_rosservice
- --  + tf_cpp
- --  + nav_msgs
- --  + diagnostic_aggregator
- --  + sensor_msgs
- --  + test_diagnostic_aggregator
- --  + roswtf
- --  + dynamic_reconfigure
- MSG: gencfg_cpp on:cfg/Test.cfg
- --  + rxgraph
- --  + test_topic_tools
- tf /tmp/work/geometry/tf /tmp/work/build/tf
- --  + tf
- -- Performing Test HAS_SSE3_EXTENSIONS
- -- Performing Test HAS_SSE3_EXTENSIONS - Success
- -- Performing Test HAS_SSE2_EXTENSIONS
- -- Performing Test HAS_SSE2_EXTENSIONS - Success
- -- Performing Test HAS_SSE_EXTENSIONS
- -- Performing Test HAS_SSE_EXTENSIONS - Success
- -- [rosbuild] Found SSE3 extensions, using flags: -msse3 -mfpmath=sse
- --  + diagnostic_updater
- --  + robot_monitor
- --  + self_test
- --  + eigen_conversions
- --  + driver_base
- --  + test_common_msgs
- --  + test_roswtf
- --  + tf_conversions
- *** fixme, install of ros/bin/
- -- Configuring done
- -- Generating done
- -- Build files have been written to: /tmp/work/build</pre>
-</div>
-<p>If you see the last line, <tt class="docutils literal"><span class="pre">Build</span> <span class="pre">files</span> <span class="pre">have</span> <span class="pre">been</span> <span class="pre">written</span> <span class="pre">to:</span> <span class="pre">...</span></tt>,
-you may briefly rejoice.</p>
-</li>
-</ul>
-</div>
-<div class="section" id="build">
-<h2>Build<a class="headerlink" href="#build" title="Permalink to this headline">¶</a></h2>
-<p>Now you can build.  Optionally use <tt class="docutils literal"><span class="pre">-jN</span></tt> where N is one greater than
-the number of cores you have on the machine.  <tt class="docutils literal"><span class="pre">ROS_PARALLEL_JOBS</span></tt> is
-ignored.</p>
-<div class="highlight-python"><pre>$ make -j9
-Scanning dependencies of target xmlrpcpp_gen_cpp
-[  0%] Built target xmlrpcpp_gen_cpp
-Scanning dependencies of target XmlRpc
-[  0%] Building CXX object xmlrpcpp/CMakeFiles/XmlRpc.dir/src/XmlRpcClient.cpp.o
-[  0%] Building CXX object xmlrpcpp/CMakeFiles/XmlRpc.dir/src/XmlRpcDispatch.cpp.o
-
-... lots of stuff ...
-
-[100%] Built target run_selftest
-[100%] Built target selftest_example
-[100%] Built target selftest_rostest</pre>
-</div>
-<p>Output will be jumbled due to the -j.  Now type make again and behold
-the speed with which it tells you that there is nothing to do.</p>
-<p>All build artifacts are in the build directory.  Generated code is
-under <tt class="docutils literal"><span class="pre">gen/&lt;LANG&gt;</span></tt>.  Notice the generated <tt class="docutils literal"><span class="pre">__init__.py</span></tt> scripts
-under <tt class="docutils literal"><span class="pre">gen/py/*</span></tt> that extend the search path back to the static
-source directories.  These disappear on installation.</p>
-<p>Note also the generated <tt class="docutils literal"><span class="pre">env.sh</span></tt> script that contains environment
-settings approriate to this buildspace.</p>
-</div>
-<div class="section" id="use">
-<h2>Use<a class="headerlink" href="#use" title="Permalink to this headline">¶</a></h2>
-<p>Now you should be able to use a few things, from the build directory.
-Starting from a completely clean environment (note that so far in the
-process we have defined <strong>no</strong> environment variables whatsoever), run
-the <tt class="docutils literal"><span class="pre">env.sh</span></tt> script:</p>
-<div class="highlight-python"><pre>% ./env.sh
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%                                                                                      %
-%                              ROS: Robot Operating System                             %
-%                                                                                      %
-%                                       Version                                        %
-%                                                                                      %
-%                            Visit us at http://www.ros.org                            %
-%                                                                                      %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-ROS environment has:
-   ROS_ROOT       = /home/ros2/ros
-   ROS_BUILD      = /home/ros2/build
-   ROS_MASTER_URI = http://localhost:11311</pre>
-</div>
-<p>Yes, the little banner is gratuitous, but I had the code laying
-around.  This will spawn a subshell; your <tt class="docutils literal"><span class="pre">.bashrc</span></tt> ought not
-clobber your environment variables.</p>
-<div class="admonition-todo admonition " id="todo-1">
-<p class="first admonition-title">Todo</p>
-<p class="last">a version that you just &#8216;source&#8217;.  This is impervious to
-whatever shenanigans might be found in your <tt class="docutils literal"><span class="pre">bashrc</span></tt>.</p>
-</div>
-<p>Now run roscore:</p>
-<div class="highlight-python"><pre>% roscore
-... logging to /u/straszheim/.ros/log/319a5fe0-2434-11e0-9ce0-003048fd853e/roslaunch-hpy-31830.log
-Checking log directory for disk usage. This may take awhile.
-Press Ctrl-C to interrupt
-Done checking log file disk usage. Usage is &lt;1GB.
-
-started roslaunch server http://hpy:35220/
-
-SUMMARY
-========
-
-NODES
-
-auto-starting new master
-process[master]: started with pid [31845]
-ROS_MASTER_URI=http://hpy:11311/
-
-setting /run_id to 319a5fe0-2434-11e0-9ce0-003048fd853e
-process[rosout-1]: started with pid [31875]
-started core service [/rosout]</pre>
-</div>
-<p>Open another terminal, source the env.sh, run the talker demo:</p>
-<div class="highlight-python"><pre>% ./bin/talker
-[ INFO] [1295486800.693401647]: hello world 0
-[ INFO] [1295486800.793485151]: hello world 1
-[ INFO] [1295486800.893499308]: hello world 2
-...</pre>
-</div>
-</div>
-<div class="section" id="install">
-<h2>Install<a class="headerlink" href="#install" title="Permalink to this headline">¶</a></h2>
-<p>Just &#8216;make install&#8217;.  Things will get installed to the
-<tt class="docutils literal"><span class="pre">CMAKE_INSTALL_PREFIX</span></tt> specified when you ran CMake.</p>
-<div class="highlight-python"><pre>% make install
-[lots of stuff]
--- Installing: /home/ros2/inst/share/cmake/ROS.cmake
--- Installing: /home/ros2/inst/share/cmake/ROS-noconfig.cmake</pre>
-</div>
-</div>
-<div class="section" id="id1">
-<h2>Use<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
-<p>Using the installed version is the same as the buildspace version,
-above, modulo that the <tt class="docutils literal"><span class="pre">env.sh</span></tt> script is in the <tt class="docutils literal"><span class="pre">bin</span></tt> directory.</p>
 </div>
 </div>
 
@@ -467,6 +104,9 @@ above, modulo that the <tt class="docutils literal"><span class="pre">env.sh</sp
         <li class="right" style="margin-right: 10px">
           <a href="genindex.html" title="General Index"
              >index</a></li>
+        <li class="right" >
+          <a href="quickstart.html" title="Quickstart"
+             >next</a> |</li>
     <li><a href="http://www.ros.org/">ROS</a> &raquo;</li>
     
         <li><a href="#">robuild</a> &raquo;</li>
@@ -474,8 +114,8 @@ above, modulo that the <tt class="docutils literal"><span class="pre">env.sh</sp
       </ul>
     </div>
     <div class="footer">
-      &copy; Copyright 2010, Troy D. Straszheim --  Version f0ce5e83d404ff66b9c18cf8c7bde82ae4180bd5, Tue, 18 Jan 2011.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.4.
+        &copy; Copyright 2010, Troy D. Straszheim --  Version 7d62aad1c6a6ff130613dbdc64ec1b8115ffc6de, Wed, 19 Jan 2011.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
     </div>
   </body>
 </html>

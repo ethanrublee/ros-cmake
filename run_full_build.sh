@@ -23,18 +23,10 @@ export ROS_PACKAGE_PATH=$WORK/rosidl\
 #:$WORK/navigation
 
 cd $WORK
-# chmod 000 ros/core/rosbuild
-
-#echo 'message("actionlib has no cmakelists.  hrm.")' > common/actionlib/test/CMakeLists.txt
 
 echo "cmake_minimum_required(VERSION 2.8)" > CMakeLists.txt
 echo "include(cmake/main.cmake)" >> CMakeLists.txt
 rm -f $WORK/ros_comm/clients/roslisp/manifest.xml
-
-#
-# deprecated file
-#
-# rm -rf $WORK/common/actionlib/cmake
 
 if [ -d $WORK/ros/core/rosbuild ] ; then
     rm -rf $WORK/ros/core/rosbuild
