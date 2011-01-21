@@ -17,7 +17,7 @@ export ROS_PACKAGE_PATH=$WORK/rosidl\
 :$WORK/common_tutorials\
 :$WORK/rx\
 :$WORK/diagnostics\
-:$WORK/driver_common\
+:$WORK/driver_common
 
 #:$WORK/perception_pcl\
 #:$WORK/navigation
@@ -61,7 +61,7 @@ cd $BUILD
 
 
 echo CMAKESTART
-cmake -DROS_BUILD_SHARED_LIBS=TRUE -DCMAKE_INSTALL_PREFIX=$INSTALL $WORK/
+cmake -DCMAKE_INSTALL_PREFIX=$INSTALL $WORK/
 
 make
 # make VERBOSE=1

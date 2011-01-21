@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -12,15 +10,14 @@
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '',
+        URL_ROOT:    '#',
         VERSION:     '0.0',
-        COLLAPSE_INDEX: false,
+        COLLAPSE_MODINDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
       };
     </script>
     <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="robuild" href="#" />
     <link rel="next" title="Walkthrough" href="walkthrough.html" /> 
@@ -46,14 +43,23 @@
             <p class="logo"><a href="#">
               <img class="logo" src="_static/ros.png" alt="Logo"/>
             </a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="walkthrough.html"
-                        title="next chapter">Walkthrough</a></p>
-  <h3>This Page</h3>
-  <ul class="this-page-menu">
-    <li><a href="_sources/index.txt"
-           rel="nofollow">Show Source</a></li>
-  </ul>
+            <h3><a href="#">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference external" href="#">Code</a></li>
+<li><a class="reference external" href="#just-run-it">Just Run It</a></li>
+<li><a class="reference external" href="#contents">Contents</a><ul>
+</ul>
+</li>
+</ul>
+
+            <h4>Next topic</h4>
+            <p class="topless"><a href="walkthrough.html"
+                                  title="next chapter">Walkthrough</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="_sources/index.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
         </div>
       </div>
 
@@ -67,29 +73,41 @@
 <p>ros-cmake is in the &#8216;ros-cmake&#8217; repository at
 <a class="reference external" href="https://github.com/straszheim/ros-cmake">https://github.com/straszheim/ros-cmake</a>.  The git clone url is
 <tt class="docutils literal"><span class="pre">git://github.com/straszheim/ros-cmake.git</span></tt>.  Don&#8217;t run off and
-clone it yet; use the quickstart.  But <strong>dont do this yet</strong>, follow
+clone it yet; use the walkthrough.  But <strong>dont do this yet</strong>, follow
 the directions below.</p>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="walkthrough.html">Walkthrough</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="walkthrough.html#setup-build-environment">Setup build environment</a></li>
-<li class="toctree-l2"><a class="reference internal" href="walkthrough.html#modify-buildspace">Modify buildspace</a></li>
-<li class="toctree-l2"><a class="reference internal" href="walkthrough.html#generate-cmakelists-txt-and-run-cmake">Generate CMakeLists.txt and run cmake</a></li>
-<li class="toctree-l2"><a class="reference internal" href="walkthrough.html#build">Build</a></li>
-<li class="toctree-l2"><a class="reference internal" href="walkthrough.html#use">Use</a></li>
-<li class="toctree-l2"><a class="reference internal" href="walkthrough.html#install">Install</a></li>
-<li class="toctree-l2"><a class="reference internal" href="walkthrough.html#id1">Use</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="notes.html">High level view/rationale</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notes.html#notes">Notes</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="notes.html#build-detritus">Build detritus</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notes.html#code-generators">Code Generators</a></li>
-<li class="toctree-l2"><a class="reference internal" href="notes.html#subshelling-and-environment-variables">Subshelling and environment variables</a></li>
-</ul>
-</li>
-</ul>
 </div>
+<div class="section" id="just-run-it">
+<h1>Just Run It<a class="headerlink" href="#just-run-it" title="Permalink to this headline">¶</a></h1>
+<p>Just Type This:</p>
+<div class="highlight-python"><pre>mkdir tmp
+cd tmp
+wget --no-check-certificate https://github.com/straszheim/ros-cmake/raw/master/ros-cmake.rosinstall
+rosinstall -n $WORK ros-cmake.rosinstall
+./cmake/run_full_build.sh</pre>
+</div>
+<p>See the <cite>walkthrough</cite> for  more details.</p>
+</div>
+<div class="section" id="contents">
+<h1>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h1>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="walkthrough.html">Walkthrough</a><ul>
+<li class="toctree-l2"><a class="reference external" href="walkthrough.html#setup-build-environment">Setup build environment</a></li>
+<li class="toctree-l2"><a class="reference external" href="walkthrough.html#modify-buildspace">Modify buildspace</a></li>
+<li class="toctree-l2"><a class="reference external" href="walkthrough.html#generate-cmakelists-txt-and-run-cmake">Generate CMakeLists.txt and run cmake</a></li>
+<li class="toctree-l2"><a class="reference external" href="walkthrough.html#build">Build</a></li>
+<li class="toctree-l2"><a class="reference external" href="walkthrough.html#use">Use</a></li>
+<li class="toctree-l2"><a class="reference external" href="walkthrough.html#install">Install</a></li>
+<li class="toctree-l2"><a class="reference external" href="walkthrough.html#id1">Use</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="notes.html">High level view/rationale</a></li>
+<li class="toctree-l1"><a class="reference external" href="notes.html#notes">Notes</a><ul>
+<li class="toctree-l2"><a class="reference external" href="notes.html#build-detritus">Build detritus</a></li>
+<li class="toctree-l2"><a class="reference external" href="notes.html#code-generators">Code Generators</a></li>
+<li class="toctree-l2"><a class="reference external" href="notes.html#subshelling-and-environment-variables">Subshelling and environment variables</a></li>
+</ul>
+</li>
+</ul>
 </div>
 
 
@@ -114,8 +132,8 @@ the directions below.</p>
       </ul>
     </div>
     <div class="footer">
-        &copy; Copyright 2010, Troy D. Straszheim --  Version 12f95e5f39805099ab46159aa9a08b6e655bdd63, Thu, 20 Jan 2011.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+      &copy; Copyright 2010, Troy D. Straszheim --  Version 9b3541c7491c458c36e4c4a72dea7853e26d3eec, Fri, 21 Jan 2011.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.4.
     </div>
   </body>
 </html>

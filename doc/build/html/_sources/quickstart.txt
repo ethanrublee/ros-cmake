@@ -26,6 +26,15 @@ Setup build environment
 
     rosinstall -n $WORK ros-cmake.rosinstall
 
+  but do **not** do what it tells you at the end i.e.::
+
+    Checked out revision 35382.
+    
+    done. Now, type 'source /root/ros2/work/setup.sh' to set up your environment.
+    Add that to the bottom of your ~/.bashrc to set it up every time.
+    
+  I don't think it will hurt anything if you do, but you don't need to.
+
 * cd in there::
 
     cd $WORK

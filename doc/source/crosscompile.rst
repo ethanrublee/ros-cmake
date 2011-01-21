@@ -17,8 +17,7 @@ First pick a directory to put all of these chroots in.  We'll call it
 Create your ARM chroot
 ----------------------
 
-Happily, this is easy thanks to
-`https://wiki.ubuntu.com/ARM/RootfsFromScratch rootstock`_. 
+Happily, this is easy thanks to `rootstock https://wiki.ubuntu.com/ARM/RootfsFromScratch`. 
 ::
 
   cd $DIR
