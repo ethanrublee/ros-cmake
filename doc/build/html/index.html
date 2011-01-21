@@ -78,14 +78,14 @@ the directions below.</p>
 </div>
 <div class="section" id="just-run-it">
 <h1>Just Run It<a class="headerlink" href="#just-run-it" title="Permalink to this headline">¶</a></h1>
-<p>Just Type This:</p>
+<p>You can copy these lines one-by-one into a shell buffer:</p>
 <div class="highlight-python"><pre>mkdir tmp
 cd tmp
-wget --no-check-certificate https://github.com/straszheim/ros-cmake/raw/master/ros-cmake.rosinstall
-rosinstall -n $WORK ros-cmake.rosinstall
-./cmake/run_full_build.sh</pre>
+wget --no-check-certificate https://github.com/straszheim/ros-cmake/raw/master/run_full_build_from_scratch.sh
+sh ./run_full_build_from_scratch.sh</pre>
 </div>
-<p>See the <cite>walkthrough</cite> for  more details.</p>
+<p>And you&#8217;ll find the results in subdirectory work-cmake.  See the
+<cite>walkthrough</cite> for more details and the manual version.</p>
 </div>
 <div class="section" id="contents">
 <h1>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h1>
@@ -132,7 +132,7 @@ rosinstall -n $WORK ros-cmake.rosinstall
       </ul>
     </div>
     <div class="footer">
-      &copy; Copyright 2010, Troy D. Straszheim --  Version 9b3541c7491c458c36e4c4a72dea7853e26d3eec, Fri, 21 Jan 2011.
+      &copy; Copyright 2010, Troy D. Straszheim --  Version 1e293a53b7e1536aad3911a00ac038d703790060, Fri, 21 Jan 2011.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.4.
     </div>
   </body>

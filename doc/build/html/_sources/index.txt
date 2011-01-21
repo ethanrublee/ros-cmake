@@ -17,15 +17,15 @@ the directions below.
 Just Run It
 -----------
 
-Just Type This::
+You can copy these lines one-by-one into a shell buffer::
 
    mkdir tmp
    cd tmp
-   wget --no-check-certificate https://github.com/straszheim/ros-cmake/raw/master/ros-cmake.rosinstall
-   rosinstall -n $WORK ros-cmake.rosinstall
-   ./cmake/run_full_build.sh
+   wget --no-check-certificate https://github.com/straszheim/ros-cmake/raw/master/run_full_build_from_scratch.sh 
+   sh ./run_full_build_from_scratch.sh
 
-See the `walkthrough` for  more details.
+And you'll find the results in subdirectory work-cmake.  See the
+`walkthrough` for more details and the manual version.
 
 
 Contents
