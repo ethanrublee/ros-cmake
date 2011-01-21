@@ -198,22 +198,24 @@ endmacro(_rosbuild_check_rostest_result test_name)
 
 macro(_rosbuild_add_rostest file)
 
-  # Check that the file exists, #1621
-  set(_file_name _file_name-NOTFOUND)
-  find_file(_file_name ${file} ${PROJECT_SOURCE_DIR} /)
-  if(NOT _file_name)
-    message(FATAL_ERROR "Can't find rostest file \"${file}\"")
-  endif(NOT _file_name)
+  if (NOT CMAKE_CROSSCOMPILING)
+    # Check that the file exists, #1621
+    set(_file_name _file_name-NOTFOUND)
+    find_file(_file_name ${file} ${PROJECT_SOURCE_DIR} /)
+    if(NOT _file_name)
+      message(FATAL_ERROR "Can't find rostest file \"${file}\"")
+    endif(NOT _file_name)
 
-  # Create a legal target name, in case the target name has slashes in it
-  string(REPLACE "/" "_" _testname ${file})
+    # Create a legal target name, in case the target name has slashes in it
+    string(REPLACE "/" "_" _testname ${file})
+  endif()
 
   # Create target for this test
   add_custom_target(rostest_${_testname}
-                    COMMAND ${ARGN} rostest ${file}
-                    DEPENDS ${file}
-                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-                    VERBATIM)
+    COMMAND ${ARGN} rostest ${file}
+    DEPENDS ${file}
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+    VERBATIM)
 
   # Make sure all test programs are built before running this test
   # but not if rosbuild_test_nobuild is set, #3008
@@ -232,44 +234,46 @@ macro(_rosbuild_add_rostest file)
 endmacro(_rosbuild_add_rostest)
 
 macro(_rosbuild_add_pyunit file)
-  # Look for optional TIMEOUT argument, #2645
-  parse_arguments(_pyunit "TIMEOUT" "" ${ARGN})
-  if(NOT _pyunit_TIMEOUT)
-    set(_pyunit_TIMEOUT 60.0)
-  endif(NOT _pyunit_TIMEOUT)
+  if (NOT CMAKE_CROSSCOMPILING)
+    # Look for optional TIMEOUT argument, #2645
+    parse_arguments(_pyunit "TIMEOUT" "" ${ARGN})
+    if(NOT _pyunit_TIMEOUT)
+      set(_pyunit_TIMEOUT 60.0)
+    endif(NOT _pyunit_TIMEOUT)
 
-  # Check that the file exists, #1621
-  set(_file_name _file_name-NOTFOUND)
-  find_file(_file_name ${file} ${PROJECT_SOURCE_DIR} /)
-  if(NOT _file_name)
-    message(FATAL_ERROR "Can't find pyunit file \"${file}\"")
-  endif(NOT _file_name)
+    # Check that the file exists, #1621
+    set(_file_name _file_name-NOTFOUND)
+    find_file(_file_name ${file} ${PROJECT_SOURCE_DIR} /)
+    if(NOT _file_name)
+      message(FATAL_ERROR "Can't find pyunit file \"${file}\"")
+    endif(NOT _file_name)
 
-  # Create a legal target name, in case the target name has slashes in it
-  string(REPLACE "/" "_" _testname ${file})
+    # Create a legal target name, in case the target name has slashes in it
+    string(REPLACE "/" "_" _testname ${file})
 
-  # We look for ROS_TEST_COVERAGE=1
-  # to indicate that coverage reports are being requested.
-  if("$ENV{ROS_TEST_COVERAGE}" STREQUAL "1")
-    set(_covarg "--cov")
-  else("$ENV{ROS_TEST_COVERAGE}" STREQUAL "1")
-    set(_covarg)
-  endif("$ENV{ROS_TEST_COVERAGE}" STREQUAL "1")
+    # We look for ROS_TEST_COVERAGE=1
+    # to indicate that coverage reports are being requested.
+    if("$ENV{ROS_TEST_COVERAGE}" STREQUAL "1")
+      set(_covarg "--cov")
+    else("$ENV{ROS_TEST_COVERAGE}" STREQUAL "1")
+      set(_covarg)
+    endif("$ENV{ROS_TEST_COVERAGE}" STREQUAL "1")
+
+  endif()
 
   # Create target for this test
   # We use rostest to call the executable to get process control, #1629
   add_custom_target(pyunit_${_testname}
-                    COMMAND rostest --bare --bare-name=${_testname} --bare-limit=${_pyunit_TIMEOUT} -- python ${file} ${_covarg}
-                    DEPENDS ${file}
-                    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-                    VERBATIM)
+    COMMAND rostest --bare --bare-name=${_testname} --bare-limit=${_pyunit_TIMEOUT} -- python ${file} ${_covarg}
+    DEPENDS ${file}
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+    VERBATIM)
 
   # Make sure all test programs are built before running this test
   # but not if rosbuild_test_nobuild is set, #3008
   if(NOT rosbuild_test_nobuild)
     add_dependencies(pyunit_${_testname} tests)
   endif(NOT rosbuild_test_nobuild)
-
 endmacro(_rosbuild_add_pyunit)
 
 # Actual signature:

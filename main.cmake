@@ -1,4 +1,9 @@
 message(STATUS "--- main.cmake ---")
+if (CMAKE_CROSSCOMPILING)
+  message("********* cross-compiling for ${CMAKE_SYSTEM_NAME} **********")
+endif()
+
+
 
 project(ROS)
 
@@ -106,6 +111,10 @@ find_package(Boost
   unit_test_framework 
   wave 
   wserialization)
+
+if (CMAKE_CROSSCOMPILING)
+  include_directories(${CMAKE_FIND_ROOT_PATH}/usr/include)
+endif()
 
 macro(rosbuild_3rdparty PKGNAME DEPFILE)
 
