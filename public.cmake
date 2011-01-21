@@ -4,6 +4,9 @@
 set(ROSBUILD_init_called 0)
 
 find_library(GTEST_LIBRARIES gtest)
+if (NOT GTEST_LIBRARIES)
+  message(FATAL_ERROR "you need to install gtest")
+endif()
 set(GTEST_INCLUDE_DIR /usr/include)
 
 # Use this package to get add_file_dependencies()

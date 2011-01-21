@@ -9,6 +9,6 @@ wget --no-check-certificate https://github.com/straszheim/ros-cmake/raw/master/r
 rosinstall -n $WORK ros-cmake.rosinstall
 cd $WORK
 
-./cmake/doit.sh
+./cmake/run_full_build.sh
 
 
