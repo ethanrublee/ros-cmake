@@ -728,6 +728,14 @@ def generate(args):
     write_traits(s, spec, cpp_prefix, options.includepath)
     write_serialization(s, spec, cpp_prefix)
     write_operations(s, spec, cpp_prefix)
+
+
+    if options.package == "std_msgs" and spec.short_name == "Header":
+        s.write("#define STD_MSGS_INCLUDING_HEADER_DEPRECATED_DEF 1\n")
+        s.write("#include <std_msgs/header_deprecated_def.h>\n")
+        s.write("#undef STD_MSGS_INCLUDING_HEADER_DEPRECATED_DEF\n\n") 
+
+
     write_end(s, spec)
     
     if 'ROS_BUILD' in os.environ:
