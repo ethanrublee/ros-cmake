@@ -1,4 +1,4 @@
 ._*
 *.pyc
 *.cover
-doc/build/doctrees
+doc/build/
