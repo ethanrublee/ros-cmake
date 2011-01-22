@@ -1,14 +1,17 @@
+.. _walkthrough:
+
 Walkthrough
 ===========
 
 Here's how to make it go.  Many of these steps will not be necessary
 in the finished product.  The commands below are the same as those run
-by the script
-`https://github.com/straszheim/ros-cmake/raw/master/run_full_build.sh
-run_full_build.sh`_ in the ros-cmake project.  
+by the script `run_full_build.sh
+<https://github.com/straszheim/ros-cmake/raw/master/run_full_build.sh>`_
+in the ros-cmake project.
 
 You should be able to copy-paste the commands below into your terminal
 verbatim.
+
 
 Setup build environment
 -----------------------
