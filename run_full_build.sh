@@ -22,6 +22,8 @@ export ROS_PACKAGE_PATH=$WORK/rosidl\
 #:$WORK/perception_pcl\
 #:$WORK/navigation
 
+$WORK/cmake/vcs_revert_path.sh $ROS_PACKAGE_PATH
+
 cd $WORK
 
 echo "cmake_minimum_required(VERSION 2.8)" > CMakeLists.txt
