@@ -22,6 +22,7 @@ You can copy these lines one-by-one into a shell buffer::
 
    mkdir tmp
    cd tmp
+
    wget --no-check-certificate https://github.com/straszheim/ros-cmake/raw/master/run_full_build_from_scratch.sh 
    sh ./run_full_build_from_scratch.sh
 
@@ -34,5 +35,6 @@ Contents
 
 .. toctree::
    
+   3rdparty
    walkthrough
    notes
