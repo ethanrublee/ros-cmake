@@ -18,7 +18,9 @@ export ROS_PACKAGE_PATH=$WORK/rosidl\
 :$WORK/rx\
 :$WORK/diagnostics\
 :$WORK/driver_common\
-:$WORK/perception_pcl
+:$WORK/perception_pcl\
+:$WORK/image_common\
+:$WORK/laser_pipeline
 
 #:$WORK/navigation
 
