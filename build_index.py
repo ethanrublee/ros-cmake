@@ -76,7 +76,8 @@ def load_manifest(path, main_index):
 
     if 'depend' in obj.__dict__:
         # print ">>>", [x.attrib for x in obj.depend]
-        entry['depend'] = [x.attrib['package'] for x in obj.depend if x.attrib['package'] != 'rosbuild']
+        entry['depend'] = [x.attrib['package'] for x in obj.depend 
+                           if x.attrib['package'] != 'rosbuild']
     else:
         entry['depend'] = []
 

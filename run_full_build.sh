@@ -20,9 +20,7 @@ export ROS_PACKAGE_PATH=$WORK/rosidl\
 :$WORK/driver_common\
 :$WORK/perception_pcl\
 :$WORK/image_common\
-:$WORK/laser_pipeline
-
-#:$WORK/navigation
+:$WORK/laser_pipeline\
 
 $WORK/cmake/vcs_revert_path.sh $ROS_PACKAGE_PATH
 
