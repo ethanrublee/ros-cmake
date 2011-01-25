@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os, os.path, sys, pprint, pickle, glob
+from rosbuild2 import *
 
 print "\nBuilding index of packages in", sys.argv[2]
 
@@ -41,6 +42,9 @@ def load_manifest(path, main_index):
     obj = lxml.objectify.fromstring(s)
     # print lxml.objectify.dump(obj)
     pkgname = os.path.basename(path)
+    if pkgname in thirdparty_projects:
+        return
+
     print ">>> %30s\r" % pkgname, ; sys.stdout.flush()
     sys.stdout.flush()
     version = None
@@ -60,6 +64,7 @@ def load_manifest(path, main_index):
     entry['srvs'] = get_idlspecs('srv', path)
     entry['actions'] = get_idlspecs('action', path)
     entry['cfgs'] = get_idlspecs('cfg', path)
+    entry['3rdparty'] = set([])
 
     for x in 'author', 'license', 'url':
         if x in obj.__dict__:

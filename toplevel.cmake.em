@@ -25,7 +25,7 @@ set(@(pkgname)_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/@(pkgname)" CACHE INTERNA
 @[end for]
 
 @[for lang, path in langs.iteritems()]
-message(STATUS " * @lang")
+message(STATUS " lang: @lang")
 include(@path)
 @[end for]
 

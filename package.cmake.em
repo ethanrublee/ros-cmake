@@ -14,6 +14,16 @@ def asitems(x):
 }
 project(@PROJECT)
 
+@[for tool in thirdparty]
+find_package(@tool
+  PATHS /opt/ros/unstable/3rdparty/share/cmake)
+message("EENCLUDEEN ${@(tool.upper())_INCLUDE_PATH}")
+include_directories(${@(tool.upper())_INCLUDE_PATH})
+set(3RDPARTY_LIBRARIES ${3RDPARTY_LIBRARIES} ${@(tool.upper())_LIBRARIES})
+set(3RDPARTY_DEFINES   ${3RDPARTY_DEFINES} ${@(tool.upper())_DEFINES})
+
+@[end for]
+
 # cpack_add_component_group(@PROJECT
 #  DISPLAY_NAME "brief_doc"
 #  DESCRIPTION "description"

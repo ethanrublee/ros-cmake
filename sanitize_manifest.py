@@ -37,6 +37,7 @@ import pickle, pyPEG
 pyPEG.print_trace = True
 
 import manifest_parse as mp
+from rosbuild2 import *
 
 # -I
 # ${prefix}
@@ -150,6 +151,19 @@ def sanitize(index):
     for k,v in index.iteritems():
         #print '$$$', k, v
 
+        print ">$>$>$", k[0]
+
+        if k[0] in thirdparty_projects:
+            continue
+
+        if 'depend' in v:
+            if 'smclib' in v['depend']:
+                v['depend'].remove('smclib')
+                if '3rdparty' not in v:
+                    v['3rdparty'] = set([])
+                v['3rdparty'].add('smclib')
+            print v['depend']
+
         if 'export' in v:
             context = dict(prefix=v['srcdir'],
                            CMAKE_BINARY_DIR='${CMAKE_BINARY_DIR}')
@@ -222,6 +236,14 @@ for (k, _) in index:
     rdep = get_recursive_depends(index, k)
     index[(k, None)]['recursive_depends'] = rdep
     
+print "Generating full recursive 3rdparty dependencies"
+for (k, _) in index:
+    key = (k, _)
+    if k == '__langs':
+        continue
+    for proj in index[key]['recursive_depends']:
+        index[key]['3rdparty'].update(index[(proj, None)]['3rdparty'])
+
 
 ofile = open(sys.argv[1], 'w')
 pickle.dump(index, ofile)

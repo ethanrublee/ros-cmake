@@ -41,6 +41,7 @@ def write_project_cmake(name, d, index=index):
     pkgdict['msgs'] = d['msgs']
     pkgdict['srvs'] = d['srvs']
     pkgdict['cfgs'] = d['cfgs']
+    pkgdict['thirdparty'] = d['3rdparty'] if '3rdparty' in d else []
 
     pkgdict['exported_include_dirs'] = []
 

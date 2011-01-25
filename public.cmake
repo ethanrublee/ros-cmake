@@ -432,7 +432,7 @@ macro(rosbuild_add_executable exe)
     rosbuild_add_link_flags(${exe} -static-libgcc -Wl,-Bstatic)
   endif()
 
-  target_link_libraries(${exe} ${${PROJECT_NAME}_LIBRARIES} ${EXPORTED_TO_ME_LIBRARIES})
+  target_link_libraries(${exe} ${${PROJECT_NAME}_LIBRARIES} ${EXPORTED_TO_ME_LIBRARIES} ${3RDPARTY_LIBRARIES})
 
   # Add ROS-wide compile and link flags (usually things like -Wall).  These
   # are set in rosconfig.cmake.
@@ -487,7 +487,7 @@ macro(rosbuild_add_library lib)
     _rosbuild_add_library(${static_lib_name} ${lib} STATIC ${_var_DEFAULT_ARGS})
   endif()
 
-  target_link_libraries(${lib} ${EXPORTED_TO_ME_LIBRARIES})
+  target_link_libraries(${lib} ${EXPORTED_TO_ME_LIBRARIES} ${3RDPARTY_LIBRARIES})
 
   install(TARGETS ${lib}
     EXPORT ROS
