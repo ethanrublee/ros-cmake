@@ -12,6 +12,11 @@ in the ros-cmake project.
 You should be able to copy-paste the commands below into your terminal
 verbatim.
 
+Install 3rdparty packages
+-------------------------
+
+See :ref:`thirdparty`.  
+
 
 Setup build environment
 -----------------------

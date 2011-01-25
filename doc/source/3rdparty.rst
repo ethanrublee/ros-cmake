@@ -1,3 +1,5 @@
+.. _thirdparty:
+
 Third party software
 ====================
 
