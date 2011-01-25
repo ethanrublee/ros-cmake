@@ -40,9 +40,9 @@ def arglist():
     return '(', -1, [quotedstring, re.compile(r'[^\s\(\)]+')], ')'
 
 def macrocall():
-    return re.compile(r'[^\s\(\)]+'), '(', -1, [quotedstring,
+    return re.compile(r'[^\s\(\)]+'), '(', -1, [comment, 
+                                                quotedstring,
                                                 re.compile(r'[^\s\(\)]+')], ')'
-
 def cmake():
     return -2, [comment, macrocall]
 
@@ -53,6 +53,8 @@ def reconstitute(thing):
     if isinstance(thing, tuple):
         if thing[0] == 'quotedstring':
             return '"' + ''.join(thing[1]) + '"'
+        if thing[0] == 'comment':
+            return thing[1] + '\n'
         assert False
     elif isinstance(thing, unicode) or isinstance(thing, str):
         return thing
