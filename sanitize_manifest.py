@@ -149,20 +149,15 @@ def evaluate(ast, ctx, d):
 def sanitize(index):
 
     for k,v in index.iteritems():
-        #print '$$$', k, v
-
-        print ">$>$>$", k[0]
 
         if k[0] in thirdparty_projects:
             continue
 
         if 'depend' in v:
-            if 'smclib' in v['depend']:
-                v['depend'].remove('smclib')
-                if '3rdparty' not in v:
-                    v['3rdparty'] = set([])
-                v['3rdparty'].add('smclib')
-            print v['depend']
+            for p in thirdparty_projects:
+                if p in v['depend']:
+                    v['depend'].remove(p)
+                    v['3rdparty'].add(p)
 
         if 'export' in v:
             context = dict(prefix=v['srcdir'],

@@ -40,8 +40,6 @@ target_link_libraries(${PROJECT_NAME} ${wxWidgets_LIBRARIES})
 rosbuild_link_boost(${PROJECT_NAME} thread regex)
 
 # Find the wxswig executable
-rosbuild_find_ros_package(wxswig)
-set(WXSWIG_EXECUTABLE ${wxswig_BINARY_DIR}/bin/swig)
 
 # Add a custom command for generating the swig output files
 set(SWIG_INTERFACE_FILE ${PROJECT_SOURCE_DIR}/src/rxtools/rxtools.i)
@@ -50,7 +48,7 @@ file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 
 set(SWIG_OUTPUT_CPP_FILE ${PROJECT_SOURCE_DIR}/src/rxtools/rosout_panel_swig_generated.cpp)
 set(SWIG_COMMAND 
-  ${WXSWIG_EXECUTABLE} ${rxtools_SWIG_FLAGS} 
+  ${wxswig_EXECUTABLE} ${wxswig_SWIG_FLAGS} ${rxtools_SWIG_FLAGS} 
   ${EXPORTED_TO_ME_SWIG_FLAGS}
   -o ${SWIG_OUTPUT_CPP_FILE} 
   -outdir ${PROJECT_BINARY_DIR}/lib 

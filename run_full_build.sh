@@ -17,9 +17,9 @@ export ROS_PACKAGE_PATH=$WORK/rosidl\
 :$WORK/common_tutorials\
 :$WORK/rx\
 :$WORK/diagnostics\
-:$WORK/driver_common
+:$WORK/driver_common\
+:$WORK/perception_pcl
 
-#:$WORK/perception_pcl\
 #:$WORK/navigation
 
 $WORK/cmake/vcs_revert_path.sh $ROS_PACKAGE_PATH
