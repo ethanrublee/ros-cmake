@@ -93,6 +93,8 @@ endmacro()
 #
 cmake_policy(SET CMP0002 OLD)
 
+include(cmake/FindPkgConfig.cmake)
+
 find_package(Boost 
   COMPONENTS 
   date_time 

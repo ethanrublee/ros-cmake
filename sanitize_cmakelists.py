@@ -109,6 +109,10 @@ def sanitize_one(inlists, pkgname):
                 if line[1][1] == '${actionlib_PACKAGE_PATH}/cmake/actionbuild.cmake':
                     line[1][1] = '${actionlib_msgs_PACKAGE_PATH}/cmake/actionbuild.cmake'
 
+                if line[1][1] == '$ENV{ROS_ROOT}/core/rosbuild/FindPkgConfig.cmake':
+                    continue
+
+
             #print line
             oslist += '%s(%s)\n' % (line[1][0], ' '.join([reconstitute(x) 
                                                           for x in

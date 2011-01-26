@@ -16,7 +16,7 @@ Third party packages must do the following:
   default ``/opt/ros/DISTRO/3rdparty``.  
 
 * Provide cmake infrastructure: for 3rdparty package ``thirdparty``, a
-  cmake script ``thirdpartyConfig.cmake`` under
+  cmake script ``thirdparty-config.cmake`` under
   ``$THIRDPARTY/share/cmake/<thirdparty>/`` (see cmake documentation
   for ``find_package`` in "config" mode) for details on how cmake
   finds and uses these files.
@@ -37,3 +37,27 @@ how exactly to Do It right.  The script
 `<https://github.com/straszheim/ros-cmake/raw/master/thirdparty_install_from_scratch.sh>`_
 shows how.
 
+
+
+Current Interface
+-----------------
+
+For 3rdparty package ``THIRD``, file ``third-config.cmake`` is
+responsible for defining several variables which must be in the cache,
+(so that developers can redirect them when e.g. chasing bugs or
+testing upgrades).  The package name should be in lowercase in the
+filename, uppercase in the names of variables that it sets.  Example
+``tinyxml-config.cmake``::
+
+  message(STATUS "+ tinyxml")
+  
+  set(TINYXML_ROOT @INSTALL_PREFIX@)
+  set(TINYXML_INCLUDE_PATH ${TINYXML_ROOT}/include
+      CACHE FILEPATH "Tinyxml include path")
+  set(TINYXML_CXXFLAGS -DTIXML_USE_STL
+      CACHE STRING "Tinyxml c++ flags")
+  set(TINYXML_LIBRARIES ${TINYXML_ROOT}/lib/libtinyxml.a
+      CACHE STRING "Tinyxml libraries")
+  
+
+  ``
