@@ -88,7 +88,8 @@ def sanitize_one(inlists, pkgname):
                                   'CMAKE_INSTALL_RPATH',
                                   'CMAKE_INSTALL_RPATH_USE_LINK_PATH',
                                   'CMAKE_BUILD_WITH_INSTALL_RPATH',
-                                  'CMAKE_SKIP_BUILD_RPATH']:
+                                  'CMAKE_SKIP_BUILD_RPATH',
+                                  'WXSWIG_EXECUTABLE']:
                     continue
             # strip leading 'bin/' from executables
             if line[1][0] in ['rosbuild_add_executable', 'target_link_libraries', 'rosbuild_link_boost']:
