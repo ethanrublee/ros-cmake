@@ -165,6 +165,8 @@ def sanitize(index):
                     if p in v['depend']:
                         v['depend'].remove(p)
                         v['3rdparty'].add(p)
+            if '3rdparty' in v and 'kdl' in v['3rdparty']:
+                v['3rdparty'].add('eigen')
 
             if 'export' in v:
                 context = dict(prefix=v['srcdir'],
