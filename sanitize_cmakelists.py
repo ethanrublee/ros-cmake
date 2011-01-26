@@ -106,6 +106,8 @@ def sanitize_one(inlists, pkgname):
                     continue
                 if line[1][1] == '${dynamic_reconfigure_PACKAGE_PATH}/cmake/cfgbuild.cmake':
                     continue
+                if line[1][1] == '$ENV{ROS_ROOT}/core/rosbuild/FindPkgConfig.cmake':
+                    continue
                 if line[1][1] == '${actionlib_PACKAGE_PATH}/cmake/actionbuild.cmake':
                     line[1][1] = '${actionlib_msgs_PACKAGE_PATH}/cmake/actionbuild.cmake'
 

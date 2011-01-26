@@ -21,6 +21,10 @@ export ROS_PACKAGE_PATH=$WORK/rosidl\
 :$WORK/perception_pcl\
 :$WORK/image_common\
 :$WORK/laser_pipeline\
+:$WORK/camera_drivers\
+:$WORK/robot_model\
+:$WORK/visualization\
+:$WORK/visualization_common\
 
 $WORK/cmake/vcs_revert_path.sh $ROS_PACKAGE_PATH
 
@@ -30,12 +34,12 @@ echo "cmake_minimum_required(VERSION 2.8)" > CMakeLists.txt
 echo "include(cmake/main.cmake)" >> CMakeLists.txt
 rm -f $WORK/ros_comm/clients/roslisp/manifest.xml
 
-if [ -d $WORK/ros/core/rosbuild ] ; then
-    rm -rf $WORK/ros/core/rosbuild
-fi
-if [ -d $WORK/ros/core/mk ] ; then
-    rm -rf $WORK/ros/core/mk
-fi
+# if [ -d $WORK/ros/core/rosbuild ] ; then
+#     rm -rf $WORK/ros/core/rosbuild
+# fi
+# if [ -d $WORK/ros/core/mk ] ; then
+#     rm -rf $WORK/ros/core/mk
+# fi
 
 #rm -f ./ros-cmake.rosinstall
 #wget --no-check-certificate https://github.com/straszheim/ros-cmake/raw/master/ros-cmake.rosinstall

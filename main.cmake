@@ -3,6 +3,8 @@ if (CMAKE_CROSSCOMPILING)
   message("********* cross-compiling for ${CMAKE_SYSTEM_NAME} **********")
 endif()
 
+include(cmake/FindPkgConfig.cmake)
+
 option(ROS_BUILD_SHARED_LIBS "build shared libs" ON)
 option(ROS_BUILD_STATIC_LIBS "build static libs" OFF)
 

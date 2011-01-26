@@ -58,3 +58,19 @@
     local-name: laser_pipeline
     uri: https://code.ros.org/svn/ros-pkg/stacks/laser_pipeline/trunk
 
+- svn:
+    local-name: camera_drivers
+    uri: https://code.ros.org/svn/ros-pkg/stacks/camera_drivers/trunk
+
+- svn:
+    local-name: visualization
+    uri: https://code.ros.org/svn/ros-pkg/stacks/visualization/trunk
+
+- svn:
+    local-name: visualization_common
+    uri: https://code.ros.org/svn/ros-pkg/stacks/visualization_common/trunk
+
+- svn:
+    local-name: robot_model
+    uri: https://code.ros.org/svn/ros-pkg/stacks/robot_model/trunk
+

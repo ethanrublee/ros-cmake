@@ -146,62 +146,75 @@ def evaluate(ast, ctx, d):
         assert False, "meh " + ast[0]
         # return '[' + ast[0] + ' skipped]'
 
+def literal(what):
+    def x(that): 
+        return that == x.what
+    x.what = what
+    return x
+
 def sanitize(index):
 
     for k,v in index.iteritems():
 
-        if k[0] in thirdparty_projects:
-            continue
+        try:
+            if k[0] in thirdparty_projects:
+                continue
 
-        if 'depend' in v:
-            for p in thirdparty_projects:
-                if p in v['depend']:
-                    v['depend'].remove(p)
-                    v['3rdparty'].add(p)
+            if 'depend' in v:
+                for p in thirdparty_projects:
+                    if p in v['depend']:
+                        v['depend'].remove(p)
+                        v['3rdparty'].add(p)
 
-        if 'export' in v:
-            context = dict(prefix=v['srcdir'],
-                           CMAKE_BINARY_DIR='${CMAKE_BINARY_DIR}')
-            
-            print k[0], '\r',
-            sys.stdout.flush()
+            if 'export' in v:
+                context = dict(prefix=v['srcdir'],
+                               CMAKE_BINARY_DIR='${CMAKE_BINARY_DIR}')
 
-            if 'cpp' in v['export']:
-                if 'cflags' in v['export']['cpp']:
-                    cf = v['export']['cpp']['cflags']
-                    remain = evaluate(parse(cf), context, v)
-                    assert len(remain) == 0 or remain.isspace(), "remain=<<<%s>>>" % remain
+                print k[0], '\r',
+                sys.stdout.flush()
 
-                if 'lflags' in v['export']['cpp']:
-                    lf = v['export']['cpp']['lflags']
-                    remain = evaluate(parse(lf), context, v)
-                    assert len(remain) == 0 or remain.isspace(), "remain=<<<%s>>>" % remain
+                if 'cpp' in v['export']:
+                    if 'cflags' in v['export']['cpp']:
+                        cf = v['export']['cpp']['cflags']
+                        remain = evaluate(parse(cf), context, v)
+                        assert len(remain) == 0 or remain.isspace(), "remain=<<<%s>>>" % remain
 
-            if 'roslang' in v['export']:
-                cmake = v['export']['roslang']['cmake']
-                index[('__langs',None)][k[0]] = expand_cmdline(cmake, v['srcdir'], v)
+                    if 'lflags' in v['export']['cpp']:
+                        lf = v['export']['cpp']['lflags']
+                        remain = evaluate(parse(lf), context, v)
+                        assert len(remain) == 0 or remain.isspace(), "remain=<<<%s>>>" % remain
 
-            if 'swig' in v['export']:
-                swigflags = v['export']['swig']['flags']
-                # print k, "swigflags=", swigflags
-                d = {}
-                tree = parse(swigflags)
-                tree = mp.traverse(tree, context, mp.expand_dollar_vars, lambda x: x == 'dollar_brace_var')
-                tree = mp.traverse(tree, context, mp.expand_backticks, lambda x: x == 'backtick')
+                if 'roslang' in v['export']:
+                    cmake = v['export']['roslang']['cmake']
+                    index[('__langs',None)][k[0]] = expand_cmdline(cmake, v['srcdir'], v)
 
-                # print k, "swigflags=", swigflags, "tree=", tree
+                if 'swig' in v['export']:
+                    swigflags = v['export']['swig']['flags']
+                    # print k, "swigflags=", swigflags
+                    d = {}
+                    tree = parse(swigflags)
+                    tree = mp.traverse(tree, context, mp.expand_dollar_vars, literal('dollar_brace_var'))
+                    tree = mp.traverse(tree, context, mp.expand_backticks, literal('backtick'))
 
-                bleh = evaluate(parse(swigflags), context, d)
-                # print k, "D=", d, "swigflags=", bleh
-                swigflags = []
-                if 'include_dirs' in d['export']:
-                    swigflags += ['-I' + x for x in d['export']['include_dirs']]
-                if 'defines' in d['export']:
-                    swigflags += ['-D' + x for x in d['export']['defines']]
-                v['export']['swig']['flags'] = swigflags + [' ' + bleh]
-                # print k, "tree AFTER swigflags=", swigflags
+                    # print k, "swigflags=", swigflags, "tree=", tree
 
-def get_recursive_depends(index, pkgname):
+                    bleh = evaluate(parse(swigflags), context, d)
+                    # print k, "D=", d, "swigflags=", bleh
+                    swigflags = []
+                    if 'include_dirs' in d['export']:
+                        swigflags += ['-I' + x for x in d['export']['include_dirs']]
+                    if 'defines' in d['export']:
+                        swigflags += ['-D' + x for x in d['export']['defines']]
+                    v['export']['swig']['flags'] = swigflags + [' ' + bleh]
+                    # print k, "tree AFTER swigflags=", swigflags
+                
+        except Exception, e:
+            print "While sanitizing manifest for %s: %s" %(k[0], e)
+            sys.exit(1)
+
+def get_recursive_depends(index, pkgname, stack=[]):
+    if (pkgname, None) not in index:
+        raise Exception("Uh oh, can't find %s in index to calculate dependencies.  stack=%s" % (pkgname, stack))
     v = index[(pkgname, None)]
     # print v
     rdep = set([])
@@ -210,7 +223,7 @@ def get_recursive_depends(index, pkgname):
     for dep in v['depend']:
         # print ">>>", dep
         rdep.add(dep)
-        rdep.update(get_recursive_depends(index, dep))
+        rdep.update(get_recursive_depends(index, dep), stack + [pkgname])
     return rdep
 
 
