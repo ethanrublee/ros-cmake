@@ -17,9 +17,9 @@ Third party packages must do the following:
 
 * Provide cmake infrastructure: for 3rdparty package ``thirdparty``, a
   cmake script ``thirdparty-config.cmake`` under
-  ``$THIRDPARTY/share/cmake/<thirdparty>/`` (see cmake documentation
-  for ``find_package`` in "config" mode) for details on how cmake
-  finds and uses these files.
+  ``$THIRDPARTY/share/cmake/<thirdparty>/``.  See cmake documentation
+  for ``find_package`` (in `config` mode) for details on how cmake finds
+  and uses these files.
 
 With this accomplished, the interface between rosbuild and these
 3rdparty packages is cmake's ``find_package()``.  ROS's build system
@@ -38,26 +38,63 @@ how exactly to Do It right.  The script
 shows how.
 
 
-
-Current Interface
------------------
+CMake infrastructure tips
+-------------------------
 
 For 3rdparty package ``THIRD``, file ``third-config.cmake`` is
 responsible for defining several variables which must be in the cache,
 (so that developers can redirect them when e.g. chasing bugs or
 testing upgrades).  The package name should be in lowercase in the
-filename, uppercase in the names of variables that it sets.  Example
-``tinyxml-config.cmake``::
+filename, uppercase in the names of variables that it sets.  For example, file 
+``colladadom-config.cmake``::
 
-  message(STATUS "+ tinyxml")
-  
-  set(TINYXML_ROOT @INSTALL_PREFIX@)
-  set(TINYXML_INCLUDE_PATH ${TINYXML_ROOT}/include
-      CACHE FILEPATH "Tinyxml include path")
-  set(TINYXML_CXXFLAGS -DTIXML_USE_STL
-      CACHE STRING "Tinyxml c++ flags")
-  set(TINYXML_LIBRARIES ${TINYXML_ROOT}/lib/libtinyxml.a
-      CACHE STRING "Tinyxml libraries")
-  
+    find_path(COLLADADOM_DOMCOLLADA_INCLUDE_PATH 
+      dom/domCOLLADA.h
+      PATHS /opt/ros/unstable/3rdparty/colladadom/include/1.5
+      NO_DEFAULT_PATH)
+    
+    find_path(COLLADADOM_DAE_INCLUDE_PATH 
+      dae.h
+      PATHS /opt/ros/unstable/3rdparty/colladadom/include
+      NO_DEFAULT_PATH)
+    
+    set(COLLADADOM_INCLUDE_PATH ${COLLADADOM_DOMCOLLADA_INCLUDE_PATH} ${COLLADADOM_DAE_INCLUDE_PATH})
+    
+    find_library(COLLADADOM_LIBRARY
+      collada15dom
+      PATHS /opt/ros/unstable/3rdparty/colladadom/lib
+      NO_DEFAULT_PATH)
+    
+    find_library(COLLADADOM_MINIZIP_LIBRARY
+      minizip
+      PATHS /opt/ros/unstable/3rdparty/colladadom/lib
+      NO_DEFAULT_PATH)
+    
+    set(COLLADADOM_LIBRARIES
+      ${COLLADADOM_LIBRARY} ${COLLADADOM_MINIZIP_LIBRARY})
+    
+We use ``find_library`` and ``find_path``, despite the fact that we
+know where things are.  These will set variables to
+``varname-NOTFOUND`` if they don't find things.  Cmake knows how to
+handles this, and cmake users will be familiar with what this means.
+It gives an extra check that at least a few things are installed
+correctly, and it creates cache variables so that developers can
+modify them e.g. when testing new versions of 3rdparty packages.
 
-  ``
+.. rubric:: Open questions
+
+* Install to individual package directories or one directory?  This
+  has implications for LD_LIBRARY_PATH and/or rpaths.
+
+* What does the rosdep interface look like exactly?
+
+* Macports would install these thirdparty packages (using DESTDIR) to
+  a cache location (``$prefix/var/cache`` I think) and then create
+  hardlinks, which makes uninstall/deactivate operations easier.  I've
+  dreamed of a pure python macports on previous projects that also
+  involved maintaining repositories of 3rdparty packages.
+
+* Integration with 'robotpkg' or the like?  It sure would be nice if
+  this tool were somehow ROS-neutral, if that would help it attract
+  more users.
+
