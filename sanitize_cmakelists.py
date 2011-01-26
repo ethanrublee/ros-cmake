@@ -91,7 +91,7 @@ def sanitize_one(inlists, pkgname):
                                   'CMAKE_SKIP_BUILD_RPATH']:
                     continue
             # strip leading 'bin/' from executables
-            if line[1][0] in ['rosbuild_add_executable', 'target_link_libraries']:
+            if line[1][0] in ['rosbuild_add_executable', 'target_link_libraries', 'rosbuild_link_boost']:
                 while line[1][1].startswith('bin/'):
                     line[1][1] = line[1][1][4:]
 

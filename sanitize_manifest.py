@@ -223,7 +223,7 @@ def get_recursive_depends(index, pkgname, stack=[]):
     for dep in v['depend']:
         # print ">>>", dep
         rdep.add(dep)
-        rdep.update(get_recursive_depends(index, dep), stack + [pkgname])
+        rdep.update(get_recursive_depends(index, dep, stack + [pkgname]))
     return rdep
 
 
