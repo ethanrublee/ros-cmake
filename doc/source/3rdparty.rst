@@ -5,15 +5,15 @@ Third party software
 
 A preprequisite to building various ros packages is third party
 software.  This has been moved out of the 'regular' ros build to an
-external area.  The code to build/isntall third party stuff is now at
+external area.  The code to build/install this stuff is now at
   
 * `<http://github.com/straszheim/ros-3rdparty>`_
 
 Third party packages must do the following:
 
-* Install independently of rosbuild and rospack to some designated
-  (possibly user-specified) area which we'll call ``$THIRDPARTY``, by
-  default ``/opt/ros/DISTRO/3rdparty``.  
+* Install independently of rosbuild and rospack (but not rosdep) to
+  some designated (possibly user-specified) area which we'll call
+  ``$THIRDPARTY``, by default ``/opt/ros/DISTRO/3rdparty``.
 
 * Provide cmake infrastructure: for 3rdparty package ``thirdparty``, a
   cmake script ``thirdparty-config.cmake`` under

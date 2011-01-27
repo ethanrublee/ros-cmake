@@ -11,7 +11,9 @@ do
     then
         echo "hg: $i"
         pushd $i
+        hg pull
         hg revert -a --no-backup
+        hg update
         popd
     fi
     if [ -d "$i/.svn" ]
@@ -19,6 +21,7 @@ do
         echo "svn: $i"
         pushd $i
         svn revert -R .
+        svn update
         popd
     fi
 done
