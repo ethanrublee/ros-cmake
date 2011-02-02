@@ -2,4 +2,3 @@
 *.pyc
 *.cover
 doc/build/
-CMakeLists.txt
