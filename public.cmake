@@ -178,7 +178,7 @@ macro(rosbuild_init)
     set(${_prefix}_LDFLAGS_OTHER "" CACHE INTERNAL "")
     set(${_prefix}_cached_manifest_list "" CACHE INTERNAL "")
 
-    message("[rosbuild] Cached build flags older than manifests; calling rospack to get flags")
+    message("Cached build flags older than manifests; calling rospack to get flags")
     # Get the include dirs
     rosbuild_invoke_rospack(${PROJECT_NAME} ${_prefix} INCLUDE_DIRS cflags-only-I --deps-only)
     #message("${pkgname} include dirs: ${${_prefix}_INCLUDE_DIRS}")
@@ -352,7 +352,7 @@ macro(rosbuild_init)
 
   foreach(_f ${_rosbuild_EXPORTS_stripped})
     list(APPEND _cmake_fragments ${_f})
-    message("\n[rosbuild] WARNING: the file ${_f} is being included automatically.  This behavior is deprecated.  The package containing that file should instead export the directory containing the file, and you should use rosbuild_include() to include the file explicitly.\n")
+    message("\nWARNING: the file ${_f} is being included automatically.  This behavior is deprecated.  The package containing that file should instead export the directory containing the file, and you should use rosbuild_include() to include the file explicitly.\n")
   endforeach(_f)
 
   # Now include them all
@@ -365,7 +365,7 @@ macro(rosbuild_init)
     # might be multiply referenced because of package dependencies
     # dependencies).
     if(NOT ${_f}_INCLUDED)
-      message("[rosbuild] Including ${_f}")
+      message("Including ${_f}")
       include(${_f})
       set(${_f}_INCLUDED Y)
     endif()
@@ -955,11 +955,11 @@ endmacro(rosbuild_add_swigpy_library)
 macro(rosbuild_check_for_sse)
   # check for SSE extensions
   include(CheckCXXSourceRuns)
-  if( CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX )
-   set(SSE_FLAGS)
-  
-   set(CMAKE_REQUIRED_FLAGS "-msse3")
-   check_cxx_source_runs("
+  if (NOT SSE_CHECKED)
+    if( CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX )
+      
+      set(CMAKE_REQUIRED_FLAGS "-msse3")
+      check_cxx_source_runs("
     #include <pmmintrin.h>
   
     int main()
@@ -973,8 +973,8 @@ macro(rosbuild_check_for_sse)
     }"
     HAS_SSE3_EXTENSIONS)
   
-   set(CMAKE_REQUIRED_FLAGS "-msse2")
-   check_cxx_source_runs("
+  set(CMAKE_REQUIRED_FLAGS "-msse2")
+  check_cxx_source_runs("
     #include <emmintrin.h>
   
     int main()
@@ -987,7 +987,7 @@ macro(rosbuild_check_for_sse)
         return 0;
      }"
      HAS_SSE2_EXTENSIONS)
-  
+   
    set(CMAKE_REQUIRED_FLAGS "-msse")
    check_cxx_source_runs("
     #include <xmmintrin.h>
@@ -1003,20 +1003,23 @@ macro(rosbuild_check_for_sse)
     }"
     HAS_SSE_EXTENSIONS)
   
-   set(CMAKE_REQUIRED_FLAGS)
+  set(CMAKE_REQUIRED_FLAGS)
   
-   if(HAS_SSE3_EXTENSIONS)
-    set(SSE_FLAGS "-msse3 -mfpmath=sse")
-    message(STATUS "[rosbuild] Found SSE3 extensions, using flags: ${SSE_FLAGS}")
-   elseif(HAS_SSE2_EXTENSIONS)
-    set(SSE_FLAGS "-msse2 -mfpmath=sse")
-    message(STATUS "[rosbuild] Found SSE2 extensions, using flags: ${SSE_FLAGS}")
-   elseif(HAS_SSE_EXTENSIONS)
-    set(SSE_FLAGS "-msse -mfpmath=sse")
-    message(STATUS "[rosbuild] Found SSE extensions, using flags: ${SSE_FLAGS}")
-   endif()
-  elseif(MSVC)
-   check_cxx_source_runs("
+  if(HAS_SSE3_EXTENSIONS)
+    set(SSE_FLAGS "-msse3 -mfpmath=sse" CACHE STRING "sse flags")
+    message(STATUS "Found SSE3 extensions, using flags: ${SSE_FLAGS}")
+  elseif(HAS_SSE2_EXTENSIONS)
+    set(SSE_FLAGS "-msse2 -mfpmath=sse"  CACHE STRING "sse flags")
+    message(STATUS "Found SSE2 extensions, using flags: ${SSE_FLAGS}")
+  elseif(HAS_SSE_EXTENSIONS)
+    set(SSE_FLAGS "-msse -mfpmath=sse"  CACHE STRING "sse flags")
+    message(STATUS "Found SSE extensions, using flags: ${SSE_FLAGS}")
+  else()
+    set(SSE_FLAGS "" CACHE STRING "sse flags")
+    message(STATUS "No SSE extensions found.")
+  endif()
+elseif(MSVC)
+  check_cxx_source_runs("
     #include <emmintrin.h>
   
     int main()
@@ -1030,10 +1033,14 @@ macro(rosbuild_check_for_sse)
      }"
      HAS_SSE2_EXTENSIONS)
    if( HAS_SSE2_EXTENSIONS )
-    message(STATUS "[rosbuild] Found SSE2 extensions")
-    set(SSE_FLAGS "/arch:SSE2 /fp:fast -D__SSE__ -D__SSE2__" )
+     message(STATUS "Found SSE2 extensions")
+     set(SSE_FLAGS "/arch:SSE2 /fp:fast -D__SSE__ -D__SSE2__" CACHE STRING "sse flags")
+   else()
+     set(SSE_FLAGS "" CACHE STRING "sse flags")
    endif()
-  endif()
+ endif()
+ set(SSE_CHECKED TRUE)
+endif()
 endmacro(rosbuild_check_for_sse)
 
 macro(rosbuild_include pkg module)
@@ -1048,7 +1055,7 @@ macro(rosbuild_include pkg module)
     math(EXPR _idx "${_idx} + 1")
     list(GET _rosbuild_EXPORTS_stripped ${_idx} _dir)
     if("${_pkg}" STREQUAL "${pkg}")
-      # message("[rosbuild] Including ${_dir}/${module}.cmake")
+      # message("Including ${_dir}/${module}.cmake")
       include(${_dir}/${module}.cmake)
       # Poor man's break
       set(_found True)
@@ -1056,7 +1063,7 @@ macro(rosbuild_include pkg module)
     math(EXPR _idx "${_idx} + 1")
   endwhile(_idx LESS ${_rosbuild_EXPORTS_stripped_length} AND NOT _found)
   if(NOT _found)
-    message(FATAL_ERROR "[rosbuild] Failed to include ${module} from ${pkg}")
+    message(FATAL_ERROR "Failed to include ${module} from ${pkg}")
   endif()
 endmacro(rosbuild_include)
 

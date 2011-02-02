@@ -77,7 +77,8 @@ def sanitize_one(inlists, pkgname):
                                       'rosbuild_find_ros_package',
                                       'genaction',
                                       'gencfg',
-                                      'install']:
+                                      'install',
+                                      'rosbuild_check_for_sse']:
                 continue
 
             if line[1][0].lower() == 'set':
