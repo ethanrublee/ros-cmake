@@ -41,38 +41,37 @@ shows how.
 CMake infrastructure tips
 -------------------------
 
+CMake's readme for cmake Modules:
+`<http://cmake.org/gitweb?p=cmake.git;a=blob;f=Modules/readme.txt>`_. 
+
+With the exception of keeping the cache clean: set XXX_INCLUDE_DIRS,
+XXX_LIBRARIES and XXX_DEFINITIONS in the cache.
+
 For 3rdparty package ``THIRD``, file ``third-config.cmake`` is
 responsible for defining several variables which must be in the cache,
 (so that developers can redirect them when e.g. chasing bugs or
 testing upgrades).  The package name should be in lowercase in the
 filename, uppercase in the names of variables that it sets.  For example, file 
-``colladadom-config.cmake``::
+``kdl-config.cmake``::
 
-    find_path(COLLADADOM_DOMCOLLADA_INCLUDE_PATH 
-      dom/domCOLLADA.h
-      PATHS /opt/ros/unstable/3rdparty/colladadom/include/1.5
-      NO_DEFAULT_PATH)
-    
-    find_path(COLLADADOM_DAE_INCLUDE_PATH 
-      dae.h
-      PATHS /opt/ros/unstable/3rdparty/colladadom/include
-      NO_DEFAULT_PATH)
-    
-    set(COLLADADOM_INCLUDE_PATH ${COLLADADOM_DOMCOLLADA_INCLUDE_PATH} ${COLLADADOM_DAE_INCLUDE_PATH})
-    
-    find_library(COLLADADOM_LIBRARY
-      collada15dom
-      PATHS /opt/ros/unstable/3rdparty/colladadom/lib
-      NO_DEFAULT_PATH)
-    
-    find_library(COLLADADOM_MINIZIP_LIBRARY
-      minizip
-      PATHS /opt/ros/unstable/3rdparty/colladadom/lib
-      NO_DEFAULT_PATH)
-    
-    set(COLLADADOM_LIBRARIES
-      ${COLLADADOM_LIBRARY} ${COLLADADOM_MINIZIP_LIBRARY})
-    
+  find_path(KDL_INCLUDE_DIRS
+    kdl/kdl.hpp  
+    PATHS /opt/ros/unstable/3rdparty/kdl/include
+    NO_DEFAULT_PATH
+    )
+  
+  set(KDL_DEFINITIONS "" CACHE STRING "kdl definitions")
+  
+  find_library(KDL_LIBRARIES 
+    orocos-kdl
+    PATHS /opt/ros/unstable/3rdparty/kdl/lib
+    NO_DEFAULT_PATH
+    )
+  
+  if (KDL_INCLUDE_DIRS AND KDL_LIBRARIES) 
+    set(KDL_FOUND TRUE) 
+  endif()
+  
 We use ``find_library`` and ``find_path``, despite the fact that we
 know where things are.  These will set variables to
 ``varname-NOTFOUND`` if they don't find things.  Cmake knows how to
