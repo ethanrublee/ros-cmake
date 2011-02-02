@@ -117,6 +117,10 @@ find_package(Boost
   wave 
   wserialization)
 
+set(CMAKE_THREAD_PREFER_PTHREAD TRUE CACHE BOOL "prefer pthread")
+
+find_package(Threads)
+
 if (CMAKE_CROSSCOMPILING)
   include_directories(${CMAKE_FIND_ROOT_PATH}/usr/include)
 endif()
