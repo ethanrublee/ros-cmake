@@ -4,6 +4,7 @@ IFS=':'
 
 read -ra PATHS <<< "$1"
 
+IFS=" "
 for i in ${PATHS[@]}
 do
     echo $i
@@ -22,8 +23,12 @@ do
         pushd $i
         svn revert -R .
         svn update
+	for j in `svn status | awk 'BEGIN {ORS=" ";} /^\?/ { print $2 }'` ; do
+	    rm -r $j
+	done
         popd
     fi
 done
 
 
+rm rosidl/CMakeLists.txt
