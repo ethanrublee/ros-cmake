@@ -36,3 +36,41 @@ Happily, this is easy thanks to `rootstock https://wiki.ubuntu.com/ARM/RootfsFro
 
 
 
+
+
+Beagleboard
+-----------
+
+Install ubuntu maverick per these instructions:
+https://wiki.ubuntu.com/ARM/OMAPMaverickInstall
+
+Test board: beagleboard-xM rev B.  I got a 16GB microsd card.
+
+The directions are backwards on that page where you overwrite vmlinuz
+and uImage with files retrieved from wget.  Do ``vmlinuz`` first,
+(you're overwriting the original), then mount ``boot`` and do
+``uImage``.
+
+You'll need a DVI Female End to HDMI Male end adapter, usb keyboard
+and mouse.  It is regular sized HDMI.  You need an ethernet cable
+plugged in to something with a DHCP server as well.
+
+After that is all said and done you'll boot (sloowly) into ubuntu
+maverick netbook remix.  Rejoice that you didn't have to build all of
+that yourself.  
+
+I added a user named ``ros``.
+
+Log in, ``ifconfig`` to get the IP of the machine.  Install
+``openssh-server``.  Ssh in from your desktop.  Now we can get some
+work done.
+
+Install and run ``tasksel``::
+
+  apt-get install tasksel         
+  sudo tasksel
+
+and uncheck everything but ``openssh-server``.  This will remove all
+of the extraneous "netbook" stuff.  This will take a **long** time,
+like hours.  Go do something else.
+
