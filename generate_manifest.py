@@ -36,25 +36,25 @@ import pyPEG
 pyPEG.print_trace = False
 
 def generate(index):
+    index.pop(('__langs', None))
     for k, v in index.iteritems():
-        if k == ('__langs', None):
-            continue
 
+        def mv(key):
+            if key in v and len(v[key]) > 0:
+                data[key] = v[key]
         data = {}
+
         pprint(k)
         pprint(v)
         na = 'not available'
-        data['url'] = v.get('url', na)
-        data['author'] = v.get('author', na)
-        data['brief'] = v.get('brief', na)
-        data['license'] = v.get('license', na)
-        data['msgs'] = v.get('msgs', na)
-        data['srvs'] = v.get('srvs', na)
-        
-        if len(v['actions']) > 0:
-            data['actions'] = v['actions']
-
-        data['depend'] = v.get('depend', na)
+        mv('url')
+        mv('author')
+        mv('brief')
+        mv('license')
+        mv('msgs')
+        mv('srvs')
+        mv('actions')
+        mv('depend')
 
         data['description'] = v.get('description', na)
         if data['description'] == None:
@@ -64,6 +64,9 @@ def generate(index):
         e = v.get('export', {})
         e.pop('lib_dirs', None)
         e.pop('cpp', None)
+
+        if len(e) > 0:
+            data['export'] = e
 
         if len(v['3rdparty']) > 0:
             data['3rdparty'] = list(v.get('3rdparty'))

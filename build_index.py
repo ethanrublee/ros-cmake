@@ -29,7 +29,6 @@ for path in pkgpath:
 
 # print pkgdirs
 
-
 import lxml.objectify
 
 def get_idlspecs(idltype, srcdir):

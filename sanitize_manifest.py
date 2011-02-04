@@ -188,7 +188,9 @@ def sanitize(index):
 
                 if 'roslang' in v['export']:
                     cmake = v['export']['roslang']['cmake']
-                    index[('__langs',None)][k[0]] = expand_cmdline(cmake, v['srcdir'], v)
+                    exp = expand_cmdline(cmake, '${' + k[0] + '_PACKAGE_PATH}', v)
+                    index[('__langs',None)][k[0]] = exp
+                    v['export']['roslang']['cmake'] = exp
 
                 if 'swig' in v['export']:
                     swigflags = v['export']['swig']['flags']

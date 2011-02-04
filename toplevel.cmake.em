@@ -14,7 +14,7 @@ def get(d, default, args):
     else:
         return default
 }
-@[for (pkgname, version), d in packages.iteritems()]
+@[for pkgname, d in packages.iteritems()]
 set(@(pkgname)_PACKAGE_PATH @(d['srcdir']) CACHE FILEPATH "this should be SOURCE_DIR")
 mark_as_advanced(@(pkgname)_PACKAGE_PATH)
 set(@(pkgname)_SWIG_FLAGS "@(get(d, default="", args=('export', 'swig', 'flags')))" CACHE STRING "swig flags")
@@ -55,8 +55,8 @@ macro(rosbuild_gentargets)
 endmacro()
 
 @[for pkg in topo_pkgs]
-if(EXISTS @(packages[(pkg, None)]['srcdir'])/CMakeLists.txt)
-  add_subdirectory(@(packages[(pkg, None)]['srcdir']) @(pkg))
+if(EXISTS @(packages[pkg]['srcdir'])/CMakeLists.txt)
+  add_subdirectory(@(packages[pkg]['srcdir']) @(pkg))
 endif()
 @[end for]
 

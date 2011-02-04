@@ -138,9 +138,9 @@ include_directories(
   )
 
 # link_dirs
-link_directories(
-  @asitems(link_dirs)
-  )
+#link_directories(
+#  @asitems(link_dirs)
+#  )
 
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
   DESTINATION share

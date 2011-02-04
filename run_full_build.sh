@@ -63,9 +63,9 @@ if [ ! -d $WORK/build ] ; then
 fi
 rm -f $BUILD/CMakeCache.txt
 
-./cmake/generate_cmakelists.py $INDEX build/ ./cmake
+#./cmake/generate_cmakelists.py $INDEX build/ ./cmake
+./cmake/generate.py $ROS_PACKAGE_PATH ./cmake ./build
 cd $BUILD
-
 
 echo CMAKESTART
 cmake -DCMAKE_INSTALL_PREFIX=$INSTALL $WORK/
