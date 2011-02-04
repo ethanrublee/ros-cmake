@@ -7,24 +7,46 @@ INDEX=$WORK/index.pkl
 INSTALL=$WORK/inst
 
 rm -f $INDEX 
-export ROS_PACKAGE_PATH=$WORK/rosidl\
-:$WORK/ros\
-:$WORK/ros_comm\
-:$WORK/common\
-:$WORK/common_msgs\
-:$WORK/geometry\
-:$WORK/ros_tutorials\
-:$WORK/common_tutorials\
-:$WORK/rx\
-:$WORK/diagnostics\
-:$WORK/driver_common\
-:$WORK/perception_pcl\
-:$WORK/image_common\
-:$WORK/laser_pipeline\
-:$WORK/camera_drivers\
-:$WORK/robot_model\
-:$WORK/visualization\
-:$WORK/visualization_common\
+read PKGS <<EOF 
+rosidl \
+ros \
+ros_comm \
+common \
+common_msgs \
+geometry \
+ros_tutorials \
+common_tutorials \
+rx \
+diagnostics \
+driver_common \
+perception_pcl \
+image_common \
+laser_pipeline \
+camera_drivers \
+robot_model \
+visualization \
+visualization_common
+EOF
+
+do_rsync () 
+{
+    echo $PKGS
+    for dir in $PKGS
+    do
+        if [ -d $WORK/$dir -a -d $WORK/cmake/patches/$dir/ ] ; then
+            rsync -a $WORK/cmake/patches/$dir/ $WORK/$dir/
+        fi
+    done
+}
+
+ROS_PACKAGE_PATH=""
+echo $PKGS
+for dir in $PKGS
+do
+    ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:$WORK/$dir
+done
+
+echo $ROS_PACKAGE_PATH
 
 $WORK/cmake/vcs_revert_path.sh $ROS_PACKAGE_PATH
 
@@ -47,13 +69,13 @@ fi
 #rosinstall -n ri/src ./ros-cmake.rosinstall
 #cd ri/src
 
-rsync -a $WORK/cmake/patches/ $WORK/
+do_rsync
 
 ./cmake/build_index.py $INDEX $ROS_PACKAGE_PATH
 ./cmake/sanitize_manifest.py $INDEX
 ./cmake/sanitize_cmakelists.py -i $INDEX
 
-rsync -a $WORK/cmake/patches/ $WORK/
+do_rsync
 
 # rm -rf $BUILD
 rm -rf $INSTALL

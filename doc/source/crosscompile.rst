@@ -74,3 +74,37 @@ and uncheck everything but ``openssh-server``.  This will remove all
 of the extraneous "netbook" stuff.  This will take a **long** time,
 like hours.  Go do something else.
 
+Now you have to ``aptitude update``, but you don't want to simply
+safe-upgrade, just install::
+
+  git-core
+  subversion
+  gcc
+  libboost1.42-all-dev
+  libapr-dev
+  libaprutil1-dev
+  g++
+  python-setuptools
+  python-yaml
+  python-lxml
+  python-nose
+  
+  easy_install -U rosinstall
+
+my favorite optionals::
+
+  emacs 
+  aptitude
+  zsh
+
+
+
+
+Misc usecases
+-------------
+
+I want to compile with syslog, not log4cxx
+
+I don't have wxwidgets but want to compile ros_tutorials.  Turtlesim
+uses wxwidgets.
+
