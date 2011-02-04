@@ -52,6 +52,7 @@ rsync -a $WORK/cmake/patches/ $WORK/
 ./cmake/build_index.py $INDEX $ROS_PACKAGE_PATH
 ./cmake/sanitize_manifest.py $INDEX
 ./cmake/sanitize_cmakelists.py -i $INDEX
+./cmake/generate_manifest.py -i $INDEX
 
 rsync -a $WORK/cmake/patches/ $WORK/
 

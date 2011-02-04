@@ -66,9 +66,6 @@ def write_project_cmake(name, d, index=index):
             if 'libs' in pkg['export']:
                 libs_i_need += pkgcomment + pkg['export']['libs']
 
-            if 'lib_dirs' in pkg['export']:
-                link_dirs += pkgcomment + pkg['export']['lib_dirs']
-
             if 'defines' in pkg['export']:
                 defines += pkg['export']['defines']
 

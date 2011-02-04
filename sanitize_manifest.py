@@ -169,7 +169,7 @@ def sanitize(index):
                 v['3rdparty'].add('eigen')
 
             if 'export' in v:
-                context = dict(prefix=v['srcdir'],
+                context = dict(prefix="${" + k[0] + "_PACKAGE_PATH}",
                                CMAKE_BINARY_DIR='${CMAKE_BINARY_DIR}')
 
                 print k[0], '\r',
