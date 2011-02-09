@@ -35,4 +35,10 @@ Happily, this is easy thanks to `rootstock https://wiki.ubuntu.com/ARM/RootfsFro
 					       
 
 
+I found a machine where a usb reader works with a 16G microsd card,
+but the black plastic microsd->sd adapter sleeve does not.
 
+This page explains how to get the serial console going, if you have
+problems with no video on boot:
+
+https://wiki.ubuntu.com/ARM/BeagleEditBootscr
