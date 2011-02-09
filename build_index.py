@@ -3,6 +3,8 @@
 import os, os.path, sys, pprint, pickle, glob
 from rosbuild2 import *
 
+dot = open('dependencies.dot', 'w')
+
 print "\nBuilding index of packages in", sys.argv[2]
 
 if len(sys.argv) == 1:

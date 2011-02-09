@@ -154,6 +154,8 @@ add_custom_target(clean-test-results)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/private.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/public.cmake)
 
+rosbuild_check_for_sse()
+
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/toplevel.static.cmake.in
   ${CMAKE_CURRENT_BINARY_DIR}/toplevel.static.cmake)
 
