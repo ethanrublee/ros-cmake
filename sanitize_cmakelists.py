@@ -66,7 +66,7 @@ def sanitize_one(inlists, pkgname):
     ast = parse(cmake(), finput, True)
 
     oslist = ''
-    oslist += 'include(${CMAKE_CURRENT_BINARY_DIR}/package.cmake)\n'
+    oslist += 'if(EXISTS ${CMAKE_CURRENT_BINARY_DIR}/package.cmake)\n  include(${CMAKE_CURRENT_BINARY_DIR}/package.cmake)\nendif()\n'
 
     for line in ast:
         if line[0] == 'macrocall':
