@@ -88,6 +88,9 @@ safe-upgrade, just install::
   python-yaml
   python-lxml
   python-nose
+  avahi-daemon
+  avahi-utils
+  
   
   easy_install -U rosinstall
 
@@ -98,6 +101,26 @@ my favorite optionals::
   zsh
 
 
+enable a console on ttyS2:
+
+start networking on boot, add to /etc/network/interfaces::
+
+  auto usb0
+  iface usb0 inet dhcp
+
+in /etc/init, create a file ttyS2.conf containing::
+
+  # ttyS2 - getty
+  #
+  # This service maintains a getty on ttyS2 from the point the system is
+  # started until it is shut down again.
+  
+  start on stopped rc RUNLEVEL=[2345]
+  stop on runlevel [!2345]
+  
+  respawn
+  exec /sbin/getty -8 115200 ttyS2
+  
 
 
 Misc usecases
