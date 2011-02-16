@@ -89,4 +89,4 @@ doctest:
 	      "results in $(BUILDDIR)/doctest/output.txt."
 
 deploy: 
-	rsync -va build/html/ potassium.resophonic.com:/var/www/ros-cmake/
+	rsync -va build/html/ hpy.willowgarage.com:public_html/ros-cmake/
