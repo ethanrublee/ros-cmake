@@ -31,4 +31,4 @@ do
 done
 
 
-rm rosidl/CMakeLists.txt
+rm -f rosidl/CMakeLists.txt
