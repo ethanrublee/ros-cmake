@@ -1,5 +1,28 @@
 message(STATUS "--- main.cmake ---")
 
+if (ROS_PACKAGE_PATH)
+  set(ROS_PACKAGE_PATH ${ROS_PACKAGE_PATH} CACHE STRING "ros pkg path")
+else()
+  set(ROS_PACKAGE_PATH $ENV{ROS_PACKAGE_PATH}
+    CACHE STRING "Directories to search for packages to build"
+    )
+endif()
+
+try_run(CLANG CLANG_COMPRESULT
+  ${CMAKE_BINARY_DIR}
+  ${CMAKE_SOURCE_DIR}/cmake/platform/clang.c
+  )
+if(CLANG)
+  message("You're using clang")
+endif()
+
+#
+# this shouldn't really be here
+#
+if (CLANG)
+  add_definitions(-DGTEST_USE_OWN_TR1_TUPLE)
+endif()
+
 execute_process(COMMAND
   ${CMAKE_SOURCE_DIR}/cmake/generate.py ${ROS_PACKAGE_PATH}
   ${CMAKE_SOURCE_DIR}/cmake
@@ -46,9 +69,6 @@ include(CPack)
 set(ROS_ROOT ${CMAKE_CURRENT_SOURCE_DIR}/ros)
 set(ROS_SETUP ${CMAKE_CURRENT_BINARY_DIR}/setup)
 set(ROSBUILD_SUBSHELL ${CMAKE_CURRENT_BINARY_DIR}/env.sh)
-set(ROS_PACKAGE_PATH $ENV{ROS_PACKAGE_PATH}
-  CACHE STRING "Directories to search for packages to build"
-  )
 if (NOT ROS_MASTER_URI)
   set(ROS_MASTER_URI http://localhost:11311)
 endif()

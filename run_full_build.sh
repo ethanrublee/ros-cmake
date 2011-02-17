@@ -72,10 +72,14 @@ fi
 rm -f $BUILD/CMakeCache.txt
 
 #./cmake/generate.py $ROS_PACKAGE_PATH ./cmake ./build
+echo "#!/bin/sh" > run_cmake.sh
+echo "cmake -DCMAKE_INSTALL_PREFIX=$INSTALL -DROS_PACKAGE_PATH=$ROS_PACKAGE_PATH -DROS_3RDPARTY_PATH=$WORK/3rdparty $WORK/ $*" >> run_cmake.sh
+chmod 755 run_cmake.sh
+
 cd $BUILD
 
 echo CMAKESTART
-cmake -DCMAKE_INSTALL_PREFIX=$INSTALL -DROS_PACKAGE_PATH=$ROS_PACKAGE_PATH -DROS_3RDPARTY_PATH=$WORK/3rdparty $WORK/
+$WORK/run_cmake.sh
 
 make
 # make VERBOSE=1
