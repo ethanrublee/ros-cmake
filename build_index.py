@@ -43,7 +43,8 @@ def load_manifest(path, main_index):
     obj = lxml.objectify.fromstring(s)
     # print lxml.objectify.dump(obj)
     pkgname = os.path.basename(path)
-    if pkgname in thirdparty_projects:
+
+    if pkgname in thirdparty_projects + broken_projects:
         return
 
     print ">>> %30s\r" % pkgname, ; sys.stdout.flush()

@@ -15,7 +15,7 @@ thirdparty_projects = [
     # visualization
     'ogre', 'wxpropgrid']
 
-
+broken_projects = [ 'roslisp' ]
 
 
 

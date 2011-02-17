@@ -133,7 +133,7 @@ def add_rosbuild_header(fname):
     txt = open(fname).read()
     ofile = open(fname, 'w')
     print >>ofile, "if(ROSBUILD)\n  include(rosbuild.cmake)\n  return()\nendif()"
-    print >>ofile, txt
+    print >>ofile, txt,
     ofile.close()
 
 def sanitize(index):

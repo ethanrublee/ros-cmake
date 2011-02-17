@@ -54,20 +54,6 @@ cd $WORK
 
 echo "cmake_minimum_required(VERSION 2.8)" > CMakeLists.txt
 echo "include(cmake/main.cmake)" >> CMakeLists.txt
-rm -f $WORK/ros_comm/clients/roslisp/manifest.xml
-
-if [ -d $WORK/ros/core/rosbuild ] ; then
-    rm -rf $WORK/ros/core/rosbuild
-fi
-if [ -d $WORK/ros/core/mk ] ; then
-    rm -rf $WORK/ros/core/mk
-fi
-
-#rm -f ./ros-cmake.rosinstall
-#wget --no-check-certificate https://github.com/straszheim/ros-cmake/raw/master/ros-cmake.rosinstall
-
-#rosinstall -n ri/src ./ros-cmake.rosinstall
-#cd ri/src
 
 do_rsync
 
@@ -85,12 +71,11 @@ if [ ! -d $WORK/build ] ; then
 fi
 rm -f $BUILD/CMakeCache.txt
 
-#./cmake/generate_cmakelists.py $INDEX build/ ./cmake
-./cmake/generate.py $ROS_PACKAGE_PATH ./cmake ./build
+#./cmake/generate.py $ROS_PACKAGE_PATH ./cmake ./build
 cd $BUILD
 
 echo CMAKESTART
-cmake -DCMAKE_INSTALL_PREFIX=$INSTALL -DROS_3RDPARTY_PATH=$WORK/3rdparty $WORK/
+cmake -DCMAKE_INSTALL_PREFIX=$INSTALL -DROS_PACKAGE_PATH=$ROS_PACKAGE_PATH -DROS_3RDPARTY_PATH=$WORK/3rdparty $WORK/
 
 make
 # make VERBOSE=1
