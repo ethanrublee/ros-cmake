@@ -38,4 +38,5 @@ Contents
    3rdparty
    walkthrough
    notes
+   beagleboard
    todo
