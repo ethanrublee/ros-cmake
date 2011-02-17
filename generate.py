@@ -26,7 +26,7 @@ pkgdirs = []
 for path in pkgpath:
     pkgdirs += get_package_dirs(path)
 
-print pkgdirs
+#print pkgdirs
 
 index = {}
 for pkgdir in pkgdirs:
@@ -59,8 +59,8 @@ for k, v in index.iteritems():
     if 'export' in v and 'roslang' in v['export']:
         langs[k] = v['export']['roslang']['cmake']
 
-pprint.pprint(index)
-print "langs=", langs
+#pprint.pprint(index)
+#print "langs=", langs
 # sys.exit(0)
 
 # langs = index.pop(('__langs', None))
@@ -80,7 +80,7 @@ def write_project_cmake(name, d, index=index):
     global topo_pkgs
     print ">>>", name, '                    \r',
     sys.stdout.flush()
-    bindir = sys.argv[2] + '/' + name
+    bindir = sys.argv[3] + '/' + name
     if not os.path.isdir(bindir):
         os.mkdir(bindir)
     pkgdict = dict(PROJECT = name)

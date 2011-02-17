@@ -13,7 +13,9 @@ project(@PROJECT)
 
 @[for tool in thirdparty]
 find_package(@tool
-  PATHS /opt/ros/unstable/3rdparty/share/cmake)
+  PATHS /opt/ros/unstable/3rdparty/share/cmake
+  ${ROS_3RDPARTY_PATH}
+  )
 include_directories(${@(tool.upper())_INCLUDE_DIRS})
 add_definitions(${@(tool.upper())_DEFINITIONS})
 set(3RDPARTY_LIBRARIES ${3RDPARTY_LIBRARIES} ${@(tool.upper())_LIBRARIES})
