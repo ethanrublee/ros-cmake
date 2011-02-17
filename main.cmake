@@ -2,6 +2,7 @@ message(STATUS "--- main.cmake ---")
 if (CMAKE_CROSSCOMPILING)
   message("********* cross-compiling for ${CMAKE_SYSTEM_NAME} **********")
 endif()
+set(ROSBUILD TRUE CACHE INTERNAL "Flag for building under rosbuild2.")
 
 include(cmake/FindPkgConfig.cmake)
 

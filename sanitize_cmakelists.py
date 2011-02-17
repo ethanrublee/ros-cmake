@@ -126,6 +126,16 @@ def sanitize_one(inlists, pkgname):
 
     return oslist
 
+def add_rosbuild_header(fname):
+    """
+    add rosbuild prefix
+    """
+    txt = open(fname).read()
+    ofile = open(fname, 'w')
+    print >>ofile, "if(ROSBUILD)\n  include(rosbuild.cmake)\n  return()\nendif()"
+    print >>ofile, txt
+    ofile.close()
+
 def sanitize(index):
     for k, v in index.iteritems():
         if k == ('__langs', None):
@@ -138,8 +148,10 @@ def sanitize(index):
         os.chdir(v['srcdir'])
 
         otxt = sanitize_one(v['srcdir'] + '/CMakeLists.txt', k[0])
-        oslistfile = open(v['srcdir'] + '/CMakeLists.txt', 'w')
+        oslistfile = open(v['srcdir'] + '/rosbuild.cmake', 'w')
         print >>oslistfile, otxt
+        add_rosbuild_header(v['srcdir'] + '/CMakeLists.txt')
+
 
 from optparse import OptionParser
 parser = OptionParser("options")
