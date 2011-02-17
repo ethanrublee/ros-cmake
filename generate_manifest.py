@@ -53,6 +53,7 @@ def generate(index):
         mv('license')
         mv('msgs')
         mv('srvs')
+        mv('cfgs')
         mv('actions')
         mv('depend')
 
