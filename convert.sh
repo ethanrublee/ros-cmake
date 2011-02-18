@@ -39,16 +39,7 @@ do_rsync ()
     done
 }
 
-#ROS_PACKAGE_PATH=""
-#echo $STACKS
-#for dir in $STACKS
-#do
-ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:$WORK/ros
-#done
-
-#echo $ROS_PACKAGE_PATH
-
-$WORK/cmake/vcs_revert_path.sh $ROS_PACKAGE_PATH
+$WORK/cmake/vcs_revert_path.sh $ROS_PACKAGE_PATH:$ROS_ROOT
 
 cd $WORK
 
@@ -57,7 +48,7 @@ echo "include(cmake/main.cmake)" >> CMakeLists.txt
 
 do_rsync
 
-./cmake/build_index.py $INDEX $ROS_PACKAGE_PATH
+./cmake/build_index.py $INDEX $ROS_PACKAGE_PATH:$ROS_ROOT
 ./cmake/sanitize_manifest.py $INDEX
 ./cmake/sanitize_cmakelists.py -i $INDEX
 ./cmake/generate_manifest.py -i $INDEX
@@ -73,15 +64,9 @@ rm -f $BUILD/CMakeCache.txt
 
 #./cmake/generate.py $ROS_PACKAGE_PATH ./cmake ./build
 echo "#!/bin/sh" > run_cmake.sh
-echo "cmake -DCMAKE_INSTALL_PREFIX=$INSTALL -DROS_PACKAGE_PATH=$ROS_PACKAGE_PATH -DROS_3RDPARTY_PATH=$WORK/3rdparty $WORK/ $*" >> run_cmake.sh
+echo "cmake -DCMAKE_INSTALL_PREFIX=$INSTALL $WORK/ $*" >> run_cmake.sh
 chmod 755 run_cmake.sh
 
-cd $BUILD
-
-echo CMAKESTART
-$WORK/run_cmake.sh
-
-make
-make install
+echo "now run 'run_cmake.sh' in the build directory of your choice"
 
 

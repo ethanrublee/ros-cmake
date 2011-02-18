@@ -44,7 +44,7 @@ def load_manifest(path, main_index):
     # print lxml.objectify.dump(obj)
     pkgname = os.path.basename(path)
 
-    if pkgname in thirdparty_projects + broken_projects:
+    if pkgname in thirdparty_projects + broken_projects + ['cmake']:
         return
 
     print ">>> %30s\r" % pkgname, ; sys.stdout.flush()

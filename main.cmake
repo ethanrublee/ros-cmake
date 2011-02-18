@@ -3,7 +3,7 @@ message(STATUS "--- main.cmake ---")
 if (ROS_PACKAGE_PATH)
   set(ROS_PACKAGE_PATH ${ROS_PACKAGE_PATH} CACHE STRING "ros pkg path")
 else()
-  set(ROS_PACKAGE_PATH $ENV{ROS_PACKAGE_PATH}
+  set(ROS_PACKAGE_PATH $ENV{ROS_PACKAGE_PATH}:$ENV{ROS_ROOT}
     CACHE STRING "Directories to search for packages to build"
     )
 endif()
