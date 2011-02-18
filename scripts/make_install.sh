@@ -6,14 +6,16 @@ mkdir $WORK
 cd $WORK
 ROSINSTALL=ros-cmake-small.rosinstall
 
-wget --no-check-certificate https://github.com/straszheim/ros-cmake/raw/master/$ROSINSTALL
+wget --no-check-certificate https://github.com/straszheim/ros-cmake/raw/master/rosinstalls/$ROSINSTALL
 
 rosinstall -n . $ROSINSTALL
 
+. ./setup.sh
+
 ./cmake/convert.sh
 
-mkdir build
+mkdir -p build
 cd build
-#cmake .. -DCMAKE_INSTALL_PREFIX=/tmp/installed
+../run_cmake.sh
 
 
