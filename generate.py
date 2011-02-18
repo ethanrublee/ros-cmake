@@ -68,6 +68,7 @@ for k, v in index.iteritems():
 
 package_em = open(sys.argv[2] + '/package.cmake.em').read()
 config_em = open(sys.argv[2] + '/package-config.cmake.em').read()
+pkgconfig_em = open(sys.argv[2] + '/pkgconfig.pc.em').read()
 
 src_pythonpath = []
 
@@ -117,6 +118,7 @@ def write_project_cmake(name, d, index=index):
     pkgdict['config_libraries'] = d.get('export', {}).get('libs', [])
     pkgdict['config_definitions'] = d.get('export', {}).get('defines', [])
 
+    pkgdict['depend'] = d.get('depend', [])
     assert 'recursive_depends' in d
     for pkgname in d['recursive_depends']:
         pkg = index[pkgname]
@@ -150,6 +152,9 @@ def write_project_cmake(name, d, index=index):
     
     oconfig_file = open(bindir + '/' + name + '-config.cmake.in', 'w')
     print >>oconfig_file, em.expand(config_em, pkgdict)
+    
+    pkgconfig_file = open(bindir + '/' + name + '.pc.in', 'w')
+    print >>pkgconfig_file, em.expand(pkgconfig_em, pkgdict)
     
     
 def build_depgraph(index, depgraph = {}):

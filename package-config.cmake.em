@@ -7,7 +7,10 @@ def aslist(x, transform=lambda x: x):
 def asitems(x, transform=lambda x: x):
     return '\n  '.join(map(transform, x))
 }
-include(@@CMAKE_INSTALL_PREFIX@@/share/cmake/ros-exports.cmake)
+if(NOT ROS_EXPORTS_INCLUDED)
+  include(@@CMAKE_INSTALL_PREFIX@@/share/cmake/ros-exports.cmake)
+  set(ROS_EXPORTS_INCLUDED TRUE CACHE BOOL "includeguard" FORCE)
+endif()
 set(@(PROJECT.upper())_INCLUDE_DIRS @@CMAKE_INSTALL_PREFIX@@/include)
 @[if len(config_definitions) > 0]
 set(@(PROJECT.upper())_DEFINITIONS

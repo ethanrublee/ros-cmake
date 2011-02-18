@@ -414,7 +414,6 @@ macro(rosbuild_add_executable exe)
   else()
     add_executable(${exe} ${_var_DEFAULT_ARGS})
     install(TARGETS ${exe} 
-      EXPORT ROS
       RUNTIME DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
       COMPONENT ${PROJECT_NAME}
       )
@@ -524,13 +523,11 @@ macro(rosbuild_install_programs)
   parse_arguments(_var "" "INSTALL_TO_ROOT" ${ARGN})
   if (_var_INSTALL_TO_ROOT)
     install(PROGRAMS ${_var_DEFAULT_ARGS}
-      EXPORT ROS
       DESTINATION ${CMAKE_INSTALL_PREFIX}/bin
       COMPONENT ${PROJECT_NAME}
       )
   else()
     install(PROGRAMS ${_var_DEFAULT_ARGS}
-      EXPORT ROS
       DESTINATION ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}/bin
       COMPONENT ${PROJECT_NAME}
       )
