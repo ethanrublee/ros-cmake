@@ -160,4 +160,24 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
   PATTERN "include" EXCLUDE
   )
 
-install(EXPORT ROS NAMESPACE @PROJECT DESTINATION share/cmake)
+#install(EXPORT ROS 
+#  NAMESPACE @PROJECT 
+#  FILE @(PROJECT).cmake
+#  DESTINATION share/cmake/@PROJECT
+#  COMPONENT @PROJECT
+#  )
+
+configure_file(${CMAKE_SOURCE_DIR}/cmake/Findpackage.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_FILES_DIRECTORY}/Find@(PROJECT).cmake
+  @@ONLY)
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_FILES_DIRECTORY}/Find@(PROJECT).cmake
+  DESTINATION share/cmake
+  )
+configure_file(${CMAKE_CURRENT_BINARY_DIR}/@(PROJECT)-config.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/@(PROJECT)-config.cmake
+  @@ONLY)
+  
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/@(PROJECT)-config.cmake
+  DESTINATION share/cmake/@(PROJECT)
+  )

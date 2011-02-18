@@ -1,0 +1,5 @@
+message("BANG FINDING @PROJECT_NAME@")
+find_package(@PROJECT_NAME@ NO_MODULE
+  PATHS @CMAKE_INSTALL_PREFIX@/share/cmake
+  )
+set(@PROJECT_NAME@_FOUND TRUE)

@@ -60,3 +60,7 @@ if(EXISTS @(packages[pkg]['srcdir'])/CMakeLists.txt)
 endif()
 @[end for]
 
+install(EXPORT ROS
+  FILE ros-exports.cmake
+  DESTINATION share/cmake
+  )

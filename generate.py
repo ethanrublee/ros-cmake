@@ -2,7 +2,7 @@
 
 import os, os.path, sys, pprint, pickle, glob, em, yaml
 
-print "\nBuilding index of packages in", sys.argv[1]
+print "\nGenerating cmakelists in", sys.argv[1]
 
 MANIFEST="rosbuild.manifest"
 
@@ -67,6 +67,7 @@ for k, v in index.iteritems():
 # print "LANGS=", langs
 
 package_em = open(sys.argv[2] + '/package.cmake.em').read()
+config_em = open(sys.argv[2] + '/package-config.cmake.em').read()
 
 src_pythonpath = []
 
@@ -113,6 +114,9 @@ def write_project_cmake(name, d, index=index):
     swig_flags = pkgdict['swig_flags'] = []
     defines = []
 
+    pkgdict['config_libraries'] = d.get('export', {}).get('libs', [])
+    pkgdict['config_definitions'] = d.get('export', {}).get('defines', [])
+
     assert 'recursive_depends' in d
     for pkgname in d['recursive_depends']:
         pkg = index[pkgname]
@@ -143,6 +147,9 @@ def write_project_cmake(name, d, index=index):
 
     ofile = open(bindir + '/package.cmake', 'w')
     print >>ofile, em.expand(package_em, pkgdict)
+    
+    oconfig_file = open(bindir + '/' + name + '-config.cmake.in', 'w')
+    print >>oconfig_file, em.expand(config_em, pkgdict)
     
     
 def build_depgraph(index, depgraph = {}):
