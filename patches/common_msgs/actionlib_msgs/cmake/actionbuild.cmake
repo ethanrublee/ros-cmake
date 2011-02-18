@@ -6,7 +6,7 @@ macro(rosbuild_actions OUTPUT_VAR)
   set(_autogen "")
   set(_autogen_msg_list "")
   foreach(_action ${ARGN})
-    message(STATUS "Generating Messages for Action" ${_action})
+    # message(STATUS "Generating Messages for Action" ${_action})
     #construct the path to the .action file
     set(_input ${PROJECT_SOURCE_DIR}/${_action})
 

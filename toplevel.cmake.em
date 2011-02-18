@@ -23,12 +23,11 @@ set(@(pkgname)_BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/@(pkgname)" CACHE INTERNA
 @[end for]
 
 @[for lang, path in langs.iteritems()]
-message(STATUS " lang: @lang")
+message(STATUS " Language: @lang enabled.")
 include(@path)
 @[end for]
 
 set(ROSBUILD_LANGS @aslist(langs) CACHE STRING "List of enabled languages")
-message("  ROSBUILD_LANGS = ${ROSBUILD_LANGS}")
 
 include(${CMAKE_CURRENT_BINARY_DIR}/toplevel.static.cmake)
 

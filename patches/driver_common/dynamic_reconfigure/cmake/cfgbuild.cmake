@@ -9,8 +9,6 @@ macro(rosbuild_cfgs)
   set(_autogen "")
   foreach(_cfg ${ARGN})
 
-    message("MSG: gencfg_cpp on:" ${_cfg})
-
     # Construct the path to the .cfg file
     set(_input ${PROJECT_SOURCE_DIR}/${_cfg})
     
