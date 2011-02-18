@@ -1,0 +1,11 @@
+- git: {local-name: cmake, uri: 'git@github.com:straszheim/ros-cmake.git', version: master}
+- git: {local-name: rosidl, uri: 'git://github.com/straszheim/rosidl.git', version: master}
+- svn: {local-name: ros, uri: 'https://code.ros.org/svn/ros/stacks/ros/tags/unstable'}
+- svn: {local-name: ros_comm, uri: 'https://code.ros.org/svn/ros/stacks/ros_comm/tags/unstable'}
+- svn: {local-name: common, uri: 'https://code.ros.org/svn/ros-pkg/stacks/common/tags/unstable'}
+- svn: {local-name: common_msgs, uri: 'https://code.ros.org/svn/ros-pkg/stacks/common_msgs/tags/unstable'}
+- hg: {local-name: geometry, uri: 'http://ros-geometry.googlecode.com/hg/', version: unstable}
+- svn: {local-name: driver_common, uri: 'https://code.ros.org/svn/ros-pkg/stacks/driver_common/tags/unstable'}
+- svn: {local-name: diagnostics, uri: 'https://code.ros.org/svn/ros-pkg/stacks/diagnostics/tags/unstable'}
+- svn: {local-name: rx, uri: 'https://code.ros.org/svn/ros/stacks/rx/tags/unstable'}
+

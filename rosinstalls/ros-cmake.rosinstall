@@ -1,10 +1,12 @@
 - git:
     uri: git://github.com/straszheim/ros-cmake.git
     local-name: cmake
+    version: master
 
 - git:
     uri: git://github.com/straszheim/rosidl.git
     local-name: rosidl
+    version: master
 
 - svn:
     uri: https://code.ros.org/svn/ros/stacks/ros/tags/unstable
