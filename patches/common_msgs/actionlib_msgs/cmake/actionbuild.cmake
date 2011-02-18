@@ -53,7 +53,7 @@ macro(rosbuild_actions OUTPUT_VAR)
       ${_base_output_action_result} ${_base_output_feedback} ${_base_output_action_feedback})
     list(APPEND ${OUTPUT_VAR} "${_output_action};${_output_goal};${_output_action_goal};${_output_result};${_output_action_result};${_output_feedback};${_output_action_feedback}")
 
-    message(STATUS ${_autogen_msg_list})
+    # message(STATUS ${_autogen_msg_list})
 
   endforeach(_action)
 
