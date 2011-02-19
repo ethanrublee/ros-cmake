@@ -167,19 +167,19 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 #  COMPONENT @PROJECT
 #  )
 
-#configure_file(${CMAKE_SOURCE_DIR}/cmake/templates/Findpackage-viaexports.cmake.in
-#  ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_FILES_DIRECTORY}/Find@(PROJECT).cmake
-#  @@ONLY)
-#install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_FILES_DIRECTORY}/Find@(PROJECT).cmake
-#  DESTINATION share/cmake
-#  )
+configure_file(${CMAKE_SOURCE_DIR}/cmake/Findpackage.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_FILES_DIRECTORY}/Find@(PROJECT).cmake
+  @@ONLY)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_FILES_DIRECTORY}/Find@(PROJECT).cmake
+  DESTINATION share/cmake
+  )
 
-#configure_file(${CMAKE_CURRENT_BINARY_DIR}/@(PROJECT)-config.cmake.in
-#  ${CMAKE_CURRENT_BINARY_DIR}/@(PROJECT)-config.cmake
-#  @@ONLY)
-#install(FILES ${CMAKE_CURRENT_BINARY_DIR}/@(PROJECT)-config.cmake
-#  DESTINATION share/cmake/@(PROJECT)
-#  )
+configure_file(${CMAKE_CURRENT_BINARY_DIR}/@(PROJECT)-config.cmake.in
+  ${CMAKE_CURRENT_BINARY_DIR}/@(PROJECT)-config.cmake
+  @@ONLY)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/@(PROJECT)-config.cmake
+  DESTINATION share/cmake/@(PROJECT)
+  )
 
 configure_file(${CMAKE_CURRENT_BINARY_DIR}/@(PROJECT).pc.in
   ${CMAKE_CURRENT_BINARY_DIR}/@(PROJECT).pc

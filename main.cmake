@@ -26,8 +26,7 @@ endif()
 execute_process(COMMAND
   ${CMAKE_SOURCE_DIR}/cmake/generate.py ${ROS_PACKAGE_PATH}
   ${CMAKE_SOURCE_DIR}/cmake
-  ${CMAKE_BINARY_DIR}
-  ${ROS_OVERLAY})
+  ${CMAKE_BINARY_DIR})
 
 if (CMAKE_CROSSCOMPILING)
   message("********* cross-compiling for ${CMAKE_SYSTEM_NAME} **********")
