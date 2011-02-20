@@ -64,7 +64,7 @@ rm -f $BUILD/CMakeCache.txt
 
 #./cmake/generate.py $ROS_PACKAGE_PATH ./cmake ./build
 echo "#!/bin/sh" > run_cmake.sh
-echo "cmake -DCMAKE_INSTALL_PREFIX=$INSTALL $WORK/ $$*" >> run_cmake.sh
+echo "cmake -DCMAKE_INSTALL_PREFIX=$INSTALL $WORK/ \$*" >> run_cmake.sh
 chmod 755 run_cmake.sh
 
 echo "now run 'run_cmake.sh' in the build directory of your choice"
