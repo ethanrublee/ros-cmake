@@ -12,7 +12,7 @@ macro(rosbuild_cfgs)
     # Construct the path to the .cfg file
     set(_input ${PROJECT_SOURCE_DIR}/${_cfg})
     
-    rosbuild_gendeps(${PROJECT_NAME} ${_cfg})
+    # rosbuild_gendeps(${PROJECT_NAME} ${_cfg})
 
     # The .cfg file is its own generator.
     set(gencfg_build_files 
@@ -20,10 +20,9 @@ macro(rosbuild_cfgs)
       ${dynamic_reconfigure_PACKAGE_PATH}/templates/ConfigType.h
       ${dynamic_reconfigure_PACKAGE_PATH}/src/dynamic_reconfigure/parameter_generator.py)
 
-    string(REPLACE ".cfg" "" _cfg_bare ${_cfg})
-
-    set(_output_cpp ${PROJECT_BINARY_DIR}/gen/cpp/${PROJECT_NAME}/${_cfg_bare}Config.h)
-    set(_output_py ${PROJECT_BINARY_DIR}/gen/py/${PROJECT_NAME}/cfg/${_cfg_bare}Config.py)
+    get_filename_component(_cfgonly ${_cfg} NAME_WE)
+    set(_output_cpp ${CMAKE_BINARY_DIR}/gen/cpp/${PROJECT_NAME}/${_cfgonly}Config.h)
+    set(_output_py ${CMAKE_BINARY_DIR}/gen/py/${PROJECT_NAME}/cfg/${_cfgonly}Config.py)
 
     #set(_output_dox ${PROJECT_BINARY_DIR}/docs/${_cfg_bare}Config.dox)
     #set(_output_wikidoc ${PROJECT_BINARY_DIR}/docs/${_cfg_bare}Config.wikidoc)
@@ -48,13 +47,12 @@ macro(rosbuild_cfgs)
       ${PROJECT_BINARY_DIR}
       ${ROSBUILD_GEN_DIR}/cpp/${PROJECT_NAME}
       ${ROSBUILD_GEN_DIR}/py/${PROJECT_NAME}
-      DEPENDS ${_input} ${ROS_MANIFEST_LIST} ${gencfg_build_files} ${gencfg_extra_deps} ${${_input}_AUTODEPS}
-      COMMENT Generating dynamic reconfigure stuff from ${_cfg}
+      DEPENDS ${_input} ${gencfg_build_files} 
+      COMMENT "Generating dynamic reconfigure stuff from ${_cfg}: ${_output_cpp} ${_output_py}"
       )
 
     list(APPEND ${PROJECT_NAME}_generated 
-      ${_output_cpp} ${_output_py} ${_output_msg} ${_output_getsrv} ${_output_setsrv} 
-      # ${_output_dox} ${_output_usage} 
+      ${_output_cpp} ${_output_py}
       )
 
   endforeach(_cfg)
@@ -70,8 +68,5 @@ macro(rosbuild_cfgs)
   #add_dependencies(rospack_gencfg_real rospack_gencfg)
   #include_directories(${PROJECT_SOURCE_DIR}/cfg/cpp)
 
-
-
-  
 endmacro()
 
