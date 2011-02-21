@@ -16,6 +16,10 @@ if(CLANG)
   message("You're using clang")
 endif()
 
+if (ROS_3RDPARTY_PATH)
+  message("ROS_3RDPARTY_PATH=${ROS_3RDPARTY_PATH}")
+endif()
+
 #
 # this shouldn't really be here
 #
