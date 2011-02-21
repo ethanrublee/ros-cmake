@@ -206,9 +206,12 @@ def setup_env(node, machine, master_uri):
     
     genpath = ""
     if 'ROS_BUILD' in os.environ:
-        genpath = os.path.join(os.environ['ROS_BUILD'], 'gen', 'py') + ":"
+        if os.environ['ROS_BUILD'] != os.environ['ROS_ROOT']:
+            genpath = os.path.join(os.environ['ROS_BUILD'], 'gen', 'py')
+        else:
+            genpath = os.path.join(os.environ['ROS_ROOT'], 'python')
 
-    d['PYTHONPATH'] = genpath + os.path.join(d[roslib.rosenv.ROS_ROOT],'core','roslib', 'src')
+    d['PYTHONPATH'] = genpath + ":" + os.path.join(d[roslib.rosenv.ROS_ROOT],'core','roslib', 'src')
 
     # load in machine env_args. Node env args have precedence
     for name, value in machine.env_args:
