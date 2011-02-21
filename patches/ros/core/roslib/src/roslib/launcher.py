@@ -68,6 +68,8 @@ def load_manifest(package_name, bootstrap_version="0.7"):
         return
     prefix = []
     if 'ROS_BUILD' in os.environ:
+        if os.environ['ROS_BUILD'] == os.environ['ROS_ROOT']:
+            return
         prefix = [os.path.join(os.environ['ROS_BUILD'], 'gen', 'py'),
                   os.path.join(os.environ['ROS_BUILD'], '..', 'rosidl', 'src')]
     sys.path = prefix + _generate_python_path(package_name, [], os.environ) + sys.path

@@ -147,15 +147,16 @@ include_directories(
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
   DESTINATION share
   COMPONENT @PROJECT
-  FILES_MATCHING 
-  PATTERN "*.xml" 
-  PATTERN "*.launch" 
-  PATTERN "*.msg" 
-  PATTERN "*.srv" 
-  PATTERN "*.action" 
-  PATTERN "*.cmake" 
-  PATTERN "*.dox" 
-  PATTERN "*.yaml" 
+  #   FILES_MATCHING 
+  #   PATTERN "*.xml" 
+  #   PATTERN "*.launch" 
+  #   PATTERN "*.msg" 
+  #   PATTERN "*.srv" 
+  #   PATTERN "*.action" 
+  #   PATTERN "*.cmake" 
+  #   PATTERN "*.dox" 
+  #   PATTERN "*.yaml" 
+  USE_SOURCE_PERMISSIONS
   PATTERN ".svn" EXCLUDE
   PATTERN "include" EXCLUDE
   )

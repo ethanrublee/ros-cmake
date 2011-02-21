@@ -56,6 +56,7 @@ def generate(index):
         mv('cfgs')
         mv('actions')
         mv('depend')
+        mv('pythondirs')
 
         data['description'] = v.get('description', na)
         if data['description'] == None:
