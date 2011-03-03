@@ -151,8 +151,10 @@ def sanitize(index):
         os.chdir(v['srcdir'])
 
         otxt = sanitize_one(v['srcdir'] + '/CMakeLists.txt', k[0])
-        oslistfile = open(v['srcdir'] + '/rosbuild.cmake', 'w')
-        print >>oslistfile, otxt
+        oslistfilename = v['srcdir'] + '/rosbuild.cmake'
+        if not os.path.isfile(oslistfilename):
+            oslistfile = open(oslistfilename, 'w')
+            print >>oslistfile, otxt
         add_rosbuild_header(v['srcdir'] + '/CMakeLists.txt')
 
 

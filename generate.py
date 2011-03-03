@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import os, os.path, sys, pprint, pickle, glob, em, yaml
+import os, os.path, sys, pprint, pickle, glob, em, yaml, rosbuild2
 
 print "\nGenerating cmakelists in", sys.argv[1]
 
@@ -15,7 +15,10 @@ def get_package_dirs(p):
     def visit(arg, dirname, names):
         if MANIFEST in names:
             names[:] = [] # stop recursion
-            arg += [dirname]
+            if dirname not in rosbuild2.thirdparty_projects + rosbuild2.broken_projects:
+                arg += [dirname]
+            else:
+                print "Skipping", dirname
 
     os.path.walk(p, visit, pkgs)
     return pkgs

@@ -8,6 +8,10 @@ IFS=" "
 for i in ${PATHS[@]}
 do
     echo $i
+    if [ $(basename $i) = "cmake" ] ; then
+        echo "skipping revert of cmake"
+        continue
+    fi
     if [ -d "$i/.hg" ] 
     then
         echo "hg: $i"
@@ -26,6 +30,15 @@ do
 	for j in `svn status | awk 'BEGIN {ORS=" ";} /^\?/ { print $2 }'` ; do
 	    rm -r $j
 	done
+        popd
+    fi
+    if [ -d "$i/.git" ]
+    then
+        echo "git: $i"
+        read FOO
+        pushd $i
+        git clean -fd
+        git reset --hard HEAD
         popd
     fi
 done

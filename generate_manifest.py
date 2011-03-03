@@ -44,8 +44,6 @@ def generate(index):
                 data[key] = v[key]
         data = {}
 
-        pprint(k)
-        pprint(v)
         na = 'not available'
         mv('url')
         mv('author')
@@ -88,6 +86,6 @@ parser.add_option('-i', '--index', dest='index',
 (options, args) = parser.parse_args(sys.argv)
 
 if options.index:
-    print "Sanitizing cmakelists from index", options.index
+    print "generate_manifest from index", options.index
     index = pickle.load(open(options.index))
     generate(index)
