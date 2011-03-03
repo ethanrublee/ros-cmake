@@ -126,15 +126,18 @@ def sanitize_one(inlists, pkgname):
 
     return oslist
 
+rosbuild_header = "if(ROSBUILD)\n  include(rosbuild.cmake)\n  return()\nendif()"
+
 def add_rosbuild_header(fname):
     """
     add rosbuild prefix
     """
     txt = open(fname).read()
-    ofile = open(fname, 'w')
-    print >>ofile, "if(ROSBUILD)\n  include(rosbuild.cmake)\n  return()\nendif()"
-    print >>ofile, txt,
-    ofile.close()
+    if not txt.startswith(rosbuild_header):
+        ofile = open(fname, 'w')
+        print >>ofile, rosbuild_header
+        print >>ofile, txt,
+        ofile.close()
 
 def sanitize(index):
     for k, v in index.iteritems():
