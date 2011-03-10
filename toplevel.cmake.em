@@ -54,6 +54,10 @@ macro(rosbuild_gentargets)
 endmacro()
 
 @[for pkg in topo_pkgs]
+configure_file(${@(pkg)_PACKAGE_DIR}/manifest.xml
+  ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/stamps/@(pkg).stamp
+  )
+
 if(EXISTS @(packages[pkg].attrib['srcdir'])/CMakeLists.txt)
   add_subdirectory(@(packages[pkg].attrib['srcdir']) @(pkg))
 endif()

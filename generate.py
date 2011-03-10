@@ -13,7 +13,7 @@ if len(sys.argv) == 1:
     print "usage: %s <ros_package_path>"
     sys.exit(1)
 
-okaypkgs = ['xmlrpcpp', 'cpp_common', 'rostime', 'roscpp_traits', 'roscpp_serialization']
+okaypkgs = ['xmlrpcpp', 'cpp_common', 'rostime', 'roscpp_traits', 'roscpp_serialization', 'rosconsole']
 
 
 def get_package_dirs(p):
@@ -56,11 +56,15 @@ def get_recursive_depends(index, pkgname, stack=[]):
     print pkgname
     rdep = set([])
     for dep in v.findall('depend'):
-        print pkgname, ">>>", dep
-        _ = dep.attrib['package']
-        #print ">!>!", _
-        rdep.add(_)
-        rdep.update(get_recursive_depends(index, _, stack + [pkgname]))
+        if 'package' not in dep.attrib:
+            continue
+        else:
+            print pkgname, ">>>", dep
+            _ = dep.attrib['package']
+            #print ">!>!", _
+            rdep.add(_)
+            rdep.update(get_recursive_depends(index, _, stack + [pkgname]))
+
     #print pkgname, "rdep=", rdep
     return rdep
 
@@ -110,14 +114,18 @@ def write_project_cmake(name, d, index=index):
 
     pkgdict['DEPENDED_PACKAGE_PATHS'] = [index[pkgname].attrib['srcdir']
                                          for pkgname in 
-                                         [x.attrib['package'] for x in d.findall('depend')]]
+                                         [x.attrib['package'] 
+                                          for x in d.findall('depend') 
+                                          if 'package' in x.attrib]]
 
     pkgdict['GENERATED_ACTIONS'] = d.get('actions', [])
     
     pkgdict['msgs'] = d.get('msgs', [])
     pkgdict['srvs'] = d.get('srvs', [])
     pkgdict['cfgs'] = d.get('cfgs', [])
-    pkgdict['thirdparty'] = d['3rdparty'] if '3rdparty' in d else []
+    pkgdict['thirdparty'] = [x.attrib['thirdparty']
+                             for x in d.findall('depend')
+                             if 'thirdparty' in x.attrib]
     pkgdict['srcdir'] = d.attrib['srcdir']
 
     pkgdict['exported_include_dirs'] = [x.text for x in 
