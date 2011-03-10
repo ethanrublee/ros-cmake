@@ -13,7 +13,8 @@ if len(sys.argv) == 1:
     print "usage: %s <ros_package_path>"
     sys.exit(1)
 
-okaypkgs = ['xmlrpcpp', 'cpp_common', 'rostime', 'roscpp_traits', 'roscpp_serialization', 'rosconsole']
+okaypkgs = ['xmlrpcpp', 'cpp_common', 'rostime', 
+            'roscpp_traits', 'roscpp_serialization', 'rosconsole']
 
 
 def get_package_dirs(p):
@@ -21,10 +22,7 @@ def get_package_dirs(p):
     def visit(arg, dirname, names):
         if MANIFEST in names:
             names[:] = [] # stop recursion
-            if os.path.basename(dirname) in okaypkgs:
-                arg += [dirname]
-            else:
-                print "Skipping", dirname
+            arg += [dirname]
 
     os.path.walk(p, visit, pkgs)
     return pkgs

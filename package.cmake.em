@@ -13,17 +13,18 @@ project(@PROJECT)
 
 # third party
 @[for tool in thirdparty]
-find_package(#tool
+find_package(@tool
   PATHS 
   ${ROS_3RDPARTY_PATH}/share/cmake
   /opt/ros/unstable/3rdparty/share/cmake
+  ${CMAKE_SOURCE_DIR}/cmake/3rdparty
   )
 
-include_directories(${#(tool.upper())_INCLUDE_DIRS})
-add_definitions(${#(tool.upper())_DEFINITIONS})
-set(3RDPARTY_LIBRARIES ${3RDPARTY_LIBRARIES} ${#(tool.upper())_LIBRARIES})
-if (NOT #(tool.upper())_FOUND)
-  message(FATAL_ERROR "Error, 3rdparty #(tool) not found")
+include_directories(${@(tool.upper())_INCLUDE_DIRS})
+add_definitions(${@(tool.upper())_DEFINITIONS})
+set(3RDPARTY_LIBRARIES ${3RDPARTY_LIBRARIES} ${@(tool.upper())_LIBRARIES})
+if (NOT @(tool.upper())_FOUND)
+  message(FATAL_ERROR "Error, 3rdparty @(tool) not found")
 endif()
 @[end for]
 
