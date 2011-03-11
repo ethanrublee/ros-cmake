@@ -1,5 +1,7 @@
 message(STATUS "--- main.cmake ---")
 
+add_custom_target(test)
+
 configure_file(cmake/generate.py 
   ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/generate.stamp
   )
@@ -236,3 +238,5 @@ install(DIRECTORY ${CMAKE_SOURCE_DIR}/ros/bin/
 install(DIRECTORY ros/config/
   DESTINATION config/
   )
+
+
