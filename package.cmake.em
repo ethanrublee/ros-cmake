@@ -11,6 +11,13 @@ def asitems(x, transform=lambda x: x):
 }
 project(@PROJECT)
 
+#
+# this will trigger makefile regen if manifest.xml changes
+#
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/manifest.xml
+  ${CMAKE_CURRENT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/manifest.xml.stamp
+  @@ONLY)
+
 # third party
 @[for tool in thirdparty]
 find_package(@tool
@@ -113,11 +120,13 @@ add_definitions(
 @[end if]
 
 # recursive_depends
-##[if len(recursive_depends) > 0]
-#add_dependencies(@(PROJECT)_gen_cpp 
-#  #asitems([x + "_gen_cpp" for x in recursive_depends])
-#  )
-##[end if]
+# @depend
+
+@[if len(depend) > 0]
+add_dependencies(@(PROJECT)_gen_cpp 
+  @asitems([x + "_gen_cpp" for x in depend])
+  )
+@[end if]
 
 # 
 # #[for pydir in pythondirs]

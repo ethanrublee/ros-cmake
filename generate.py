@@ -137,8 +137,9 @@ def write_project_cmake(name, d, index=index):
     pkgdict['config_libraries'] = d.get('export', {}).get('libs', [])
     pkgdict['config_definitions'] = d.get('export', {}).get('defines', [])
 
-    pkgdict['depend'] = d.get('depend', [])
-    #print ">>", d.attrib
+    pkgdict['depend'] = [x.attrib['package'] for x in d.findall('depend') 
+                         if 'package' in x.attrib]
+
     assert 'recursive_depends' in d.attrib
     print "RECDEPS:", name, "->", d.attrib['recursive_depends']
     for pkgname in d.attrib['recursive_depends']:
