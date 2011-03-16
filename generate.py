@@ -48,13 +48,13 @@ def get_recursive_depends(index, pkgname, stack=[]):
     if pkgname not in index:
         raise Exception("Uh oh, can't find %s in index to calculate dependencies.  stack=%s" % (pkgname, stack))
     v = index[pkgname]
-    print pkgname
+    # print pkgname
     rdep = set([])
     for dep in v.findall('depend'):
         if 'package' not in dep.attrib:
             continue
         else:
-            print pkgname, ">>>", dep
+            # print pkgname, ">>>", dep
             _ = dep.attrib['package']
             #print ">!>!", _
             rdep.add(_)
@@ -65,7 +65,7 @@ def get_recursive_depends(index, pkgname, stack=[]):
 
 for k in index:
     rdep = get_recursive_depends(index, k)
-    print "rd=", rdep
+    # print "rd=", rdep
     index[k].attrib['recursive_depends'] = rdep
     #print "ttr:", k, index[k].attrib['recursive_depends']
 langs = {}
@@ -141,7 +141,7 @@ def write_project_cmake(name, d, index=index):
                          if 'package' in x.attrib]
 
     assert 'recursive_depends' in d.attrib
-    print "RECDEPS:", name, "->", d.attrib['recursive_depends']
+    # print "RECDEPS:", name, "->", d.attrib['recursive_depends']
     for pkgname in d.attrib['recursive_depends']:
         #print "CHECKDEP", pkgname
         pkg = index[pkgname]
@@ -173,11 +173,6 @@ def write_project_cmake(name, d, index=index):
     topo_pkgs += [name]
 
     pkgdict['pythondirs'] = d.get('pythondirs', [])
-
-
-    if name == "rostime":
-        print "PKGDICT:"
-        pprint.pprint(pkgdict)
 
     ofile = open(bindir + '/package.cmake', 'w')
     print >>ofile, em.expand(package_em, pkgdict)
