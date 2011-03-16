@@ -115,10 +115,9 @@ def write_project_cmake(name, d, index=index):
 
     pkgdict['GENERATED_ACTIONS'] = d.get('actions', [])
     
-    pkgdict['msgs'] = d.get('msgs', [])
+    msgs = d.find('msgs')
+    pkgdict['msgs'] = msgs.text if msgs != None else ''
     srvs = d.find('srvs')
-    if name == 'roscpp':
-        print "SRVS:", srvs.text
     pkgdict['srvs'] = srvs.text if srvs != None else ''
     pkgdict['cfgs'] = d.get('cfgs', [])
     pkgdict['thirdparty'] = [x.attrib['thirdparty']
