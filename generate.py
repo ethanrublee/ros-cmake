@@ -13,10 +13,6 @@ if len(sys.argv) == 1:
     print "usage: %s <ros_package_path>"
     sys.exit(1)
 
-okaypkgs = ['xmlrpcpp', 'cpp_common', 'rostime', 
-            'roscpp_traits', 'roscpp_serialization', 'rosconsole']
-
-
 def get_package_dirs(p):
     pkgs = []
     def visit(arg, dirname, names):
@@ -37,6 +33,7 @@ for path in pkgpath:
 
 index = {}
 for pkgdir in pkgdirs:
+    print ">>", pkgdir
     txt = open(pkgdir + "/" + MANIFEST).read()
     d = xml.etree.ElementTree.fromstring(txt)
     rb2 = d.find('rosbuild2')
@@ -119,7 +116,10 @@ def write_project_cmake(name, d, index=index):
     pkgdict['GENERATED_ACTIONS'] = d.get('actions', [])
     
     pkgdict['msgs'] = d.get('msgs', [])
-    pkgdict['srvs'] = d.get('srvs', [])
+    srvs = d.find('srvs')
+    if name == 'roscpp':
+        print "SRVS:", srvs.text
+    pkgdict['srvs'] = srvs.text if srvs != None else ''
     pkgdict['cfgs'] = d.get('cfgs', [])
     pkgdict['thirdparty'] = [x.attrib['thirdparty']
                              for x in d.findall('depend')

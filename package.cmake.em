@@ -60,7 +60,7 @@ set(DEPENDED_PACKAGE_PATHS "@aslist(DEPENDED_PACKAGE_PATHS)")
 # rosbuild_msgs(GENERATED ${GENERATED_ACTIONS})
 
 rosbuild_msgs(STATIC "@aslist(msgs)")
-rosbuild_srvs(STATIC "@aslist(srvs)")
+rosbuild_srvs(STATIC @srvs)
 
 # rosbuild_cfgs("#aslist(cfgs)")
 

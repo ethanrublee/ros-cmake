@@ -4,7 +4,15 @@ add_custom_target(test)
 
 configure_file(cmake/generate.py 
   ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/generate.stamp
-  )
+  @ONLY)
+
+configure_file(cmake/package.cmake.em
+  ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/package.cmake.stamp
+  @ONLY)
+
+configure_file(cmake/toplevel.cmake.em
+  ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/toplevel.cmake.stamp
+  @ONLY)
 
 if (ROS_PACKAGE_PATH)
   set(ROS_PACKAGE_PATH ${ROS_PACKAGE_PATH} CACHE STRING "ros pkg path")
