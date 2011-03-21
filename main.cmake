@@ -102,8 +102,8 @@ include_directories(${ROSBUILD_GEN_DIR}/cpp)
 #
 # FIXME: hack
 #
-if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/common_msgs/actionlib_msgs/cmake/actionbuild.cmake)
-  include(${CMAKE_CURRENT_SOURCE_DIR}/common_msgs/actionlib_msgs/cmake/actionbuild.cmake)
+if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/common_msgs/actionlib_msgs/cmake/rosbuild2.cmake)
+  include(${CMAKE_CURRENT_SOURCE_DIR}/common_msgs/actionlib_msgs/cmake/rosbuild2.cmake)
 else()
   macro(rosbuild_actions)
     message("WARNING:  project ${PROJECT_NAME} contains actions but actionlib is not in the workspace")

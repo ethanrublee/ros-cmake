@@ -61,10 +61,10 @@ endif()
 set(DEPENDED_PACKAGE_PATHS "@aslist(DEPENDED_PACKAGE_PATHS)")
 
 #
-# GENERATED_ACTIONS = #GENERATED_ACTIONS
+# actions
 #
-# rosbuild_actions(GENERATED_ACTIONS "#aslist(GENERATED_ACTIONS)")
-# rosbuild_msgs(GENERATED ${GENERATED_ACTIONS})
+rosbuild_actions(GENERATED_ACTIONS @(actions))
+rosbuild_msgs(GENERATED ${GENERATED_ACTIONS})
 
 rosbuild_msgs(STATIC @msgs)
 rosbuild_srvs(STATIC @srvs)

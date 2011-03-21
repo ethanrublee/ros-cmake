@@ -15,8 +15,6 @@ def get(d, default, args):
         return default
 }
 @[for pkgname, d in packages.iteritems()]
-set(@(pkgname)_PACKAGE_DIR @(d.attrib['srcdir']) CACHE FILEPATH "this should be SOURCE_DIR")
-mark_as_advanced(@(pkgname)_PACKAGE_DIR)
 set(@(pkgname)_SOURCE_DIR @(d.attrib['srcdir']) CACHE FILEPATH "this should be SOURCE_DIR")
 mark_as_advanced(@(pkgname)_SOURCE_DIR)
 set(@(pkgname)_SWIG_FLAGS "@(get(d, default="", args=('export', 'swig', 'flags')))" CACHE STRING "swig flags")

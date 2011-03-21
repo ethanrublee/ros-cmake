@@ -113,7 +113,8 @@ def write_project_cmake(name, d, index=index):
                                           for x in d.findall('depend') 
                                           if 'package' in x.attrib]]
 
-    pkgdict['GENERATED_ACTIONS'] = d.get('actions', [])
+    actions = d.find('actions')
+    pkgdict['actions'] = actions.text if actions != None else ''
     
     msgs = d.find('msgs')
     pkgdict['msgs'] = msgs.text if msgs != None else ''
