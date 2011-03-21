@@ -69,14 +69,13 @@ set(DEPENDED_PACKAGE_PATHS "@aslist(DEPENDED_PACKAGE_PATHS)")
 rosbuild_msgs(STATIC @msgs)
 rosbuild_srvs(STATIC @srvs)
 
-# rosbuild_cfgs("#aslist(cfgs)")
+rosbuild_cfgs(@cfgs)
 
 # message("#(PROJECT)_generated: ${#(PROJECT)_generated}")
 
 rosbuild_gentargets()
 
-#
-# exported include_dir
+# exported_include_dirs
 #
 @[for d in exported_include_dirs]
 include_directories(@(d))

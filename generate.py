@@ -117,9 +117,13 @@ def write_project_cmake(name, d, index=index):
     
     msgs = d.find('msgs')
     pkgdict['msgs'] = msgs.text if msgs != None else ''
+
     srvs = d.find('srvs')
     pkgdict['srvs'] = srvs.text if srvs != None else ''
-    pkgdict['cfgs'] = d.get('cfgs', [])
+
+    cfgs = d.find('cfgs')
+    pkgdict['cfgs'] = cfgs.text if cfgs != None else ''
+
     pkgdict['thirdparty'] = [x.attrib['thirdparty']
                              for x in d.findall('depend')
                              if 'thirdparty' in x.attrib]

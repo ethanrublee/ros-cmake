@@ -44,7 +44,11 @@ endif()
 execute_process(COMMAND
   ${CMAKE_SOURCE_DIR}/cmake/generate.py ${ROS_PACKAGE_PATH}
   ${CMAKE_SOURCE_DIR}/cmake
-  ${CMAKE_BINARY_DIR})
+  ${CMAKE_BINARY_DIR}
+  RESULT_VARIABLE GENERATE_RESULT)
+if (GENERATE_RESULT)
+  message(FATAL_ERROR "Something was bad while generating")
+endif()
 
 if (CMAKE_CROSSCOMPILING)
   message("********* cross-compiling for ${CMAKE_SYSTEM_NAME} **********")
@@ -109,8 +113,8 @@ endif()
 #
 # FIXME: hack
 #
-if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/driver_common/dynamic_reconfigure/cmake/cfgbuild.cmake)
-  include(${CMAKE_CURRENT_SOURCE_DIR}/driver_common/dynamic_reconfigure/cmake/cfgbuild.cmake)
+if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/driver_common/dynamic_reconfigure/cmake/rosbuild2.cmake)
+  include(${CMAKE_CURRENT_SOURCE_DIR}/driver_common/dynamic_reconfigure/cmake/rosbuild2.cmake)
 else()
   macro(rosbuild_cfgs)
     message("WARNING:  project ${PROJECT_NAME} contains dynamic reconfigure specs but dynamic_reconfigure is not in the workspace")
