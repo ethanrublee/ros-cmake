@@ -23,7 +23,7 @@ Setup build environment
 
 * Pull down the rosinstall file::
 
-    wget --no-check-certificate  https://github.com/straszheim/ros-cmake/raw/master/ros-cmake.rosinstall
+    wget --no-check-certificate  https://github.com/straszheim/ros-cmake/raw/master/rosinstalls/ros-cmake.rosinstall
 
 * Pick a directory to work in.  I'll assume this is called
   ``work``. We will need to refer to our work directory, let's set
@@ -48,6 +48,10 @@ Setup build environment
 
     cmake_minimum_required(VERSION 2.8)
     include(cmake/main.cmake)
+
+  If you like you can copy the one from the cmake project::
+
+    cp cmake/CMakeLists.txt .
 
 Modify buildspace
 -----------------
