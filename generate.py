@@ -5,12 +5,14 @@ from StringIO import StringIO
 from xml.etree import *
 import xml.etree.ElementTree
 
-print "\nGenerating cmakelists in", sys.argv[1]
+print "\nGenerating cmake\n"
+print sys.argv
 
 MANIFEST="manifest.xml"
 
+
 if len(sys.argv) == 1:
-    print "usage: %s <ros_package_path>"
+    print "usage: %s <ros_package_path> <cmake_source_dir> <CMAKE_BINARY_DIR>"
     sys.exit(1)
 
 def get_package_dirs(p):
@@ -33,16 +35,17 @@ for path in pkgpath:
 
 index = {}
 for pkgdir in pkgdirs:
-    print ">>", pkgdir
     txt = open(pkgdir + "/" + MANIFEST).read()
     d = xml.etree.ElementTree.fromstring(txt)
     rb2 = d.find('rosbuild2')
+    bn = os.path.basename(pkgdir)
     if rb2:
         rb2.set('srcdir', pkgdir)
-        bn = os.path.basename(pkgdir)
         index[bn] = rb2
-        #print bn, "RB2=", rb2
-
+        print "+ ", bn
+    else:
+        print "- ", bn
+        
 # generate 'recursive' dependencies 
 def get_recursive_depends(index, pkgname, stack=[]):
     if pkgname not in index:
@@ -239,7 +242,7 @@ d = dict(packages=index,
          src_pythonpath=src_pythonpath,
          topo_pkgs=topo_pkgs)
 
-print "Writing toplevel...."
+print "Writing toplevel for %d packages...." % len(d['packages'])
 # pprint.pprint(d)
 
 toplevel_out.write(em.expand(toplevel_em, d))
