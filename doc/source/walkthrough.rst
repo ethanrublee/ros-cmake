@@ -36,166 +36,52 @@ Setup build environment
 
     rosinstall -n $WORK ros-cmake.rosinstall
 
-* cd in there::
+* load the setup.sh file::
 
-    cd $WORK
+    . $WORK/setup.zsh   # or bash, as appropriate.
 
-* At this point your environment should be clean... no rosness, no
-  ``ROS_ROOT``.  
+* make a build directory::
 
-* Create a stub toplevel ``CMakeLists.txt`` that includes
-  ``cmake/main.cmake``.  It should contain only::
+    mkdir build
 
-    cmake_minimum_required(VERSION 2.8)
-    include(cmake/main.cmake)
+* cd in there and run cmake::
 
-  If you like you can copy the one from the cmake project::
+    cd build
+    cmake ../work
 
-    cp cmake/CMakeLists.txt .
+  you should see lots of output::
 
-Modify buildspace
------------------
-
-* Remove some stuff that hasn't been converted yet.  This is to 'hide'
-  it from ros-cmake::
-
-    rm ros_comm/clients/roslisp/manifest.xml
-    rm -rf ros/core/rosbuild
-    rm -rf ros/core/mk
-
-* Now apply a bunch of patches to the build tree.  They are stored in
-  a subdirectory ``patches`` of cmake::
-
-    rsync -a ./cmake/patches/ $WORK/
-
-  **watch your slashes there**, if that command isn't executed
-  verbatim it will do something that is probably not what we want.
-
-* Now the (black) magic starts.  First we'll need to extract the
-  ``ROS_PACKAGE_PATH`` from the rosinstall-generated ``setup.sh``
-  (bash syntax), **and append the ros stack**::
-
-    # set ROS_PACKAGE_PATH in your environment
-    `grep ROS_PACKAGE_PATH setup.sh`  
-
-    # append to it
-    ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:$WORK/ros
-
-    echo $ROS_PACKAGE_PATH 
-    /tmp/work/driver_common:/tmp/work/diagnostics:/tmp/work/rx:/tmp/work/common_tutorials:/tmp/work/ros_tutorials:/tmp/work/geometry:/tmp/work/common_msgs:/tmp/work/common:/tmp/work/ros_comm:/tmp/work/rosidl:/tmp/work/cmake:/tmp/work/ros
-  
-* Now run ``build_index.py`` to create an "index" (just a pickled
-  python dictionary) of what is in the buildspace.  The first argument
-  is the name of the file to create, which we will refer to later::
-
-    $ ./cmake/build_index.py index.pkl $ROS_PACKAGE_PATH
-    Building index of packages in /tmp/work/driver_common:/tmp/work/diagnostics:/tmp/work/rx:/tmp/work/common_tutorials:/tmp/work/ros_tutorials:/tmp/work/geometry:/tmp/work/common_msgs:/tmp/work/common:/tmp/work/ros_comm:/tmp/work/rosidl:/tmp/work/cmake:/tmp/work/ros
-
-  You can have a quick look at what is in there::
-
-    $ ./cmake/show_index.py index.pkl | less
-
-    Index@ sys.argv[1]:
-    
-    {('actionlib', None): {'actions': ['action/TwoInts.action',
-                                       'action/Test.action'],
-                           'author': 'Eitan Marder-Eppstein, Vijay Pradeep',
-                           'brief': 'Provides a standardized interface for a task',
-                           'cfgs': [],
-                           'depend': ['roscpp',
-                                      'rospy',
-                                      'rostest',
-                                      'actionlib_msgs'],
-    (etc etc)
-
-  at this point it has not been 'sanitized' yet... it is not in a form
-  consumable by the rest of the procedure.  One way to think about
-  what has happened here is that 'rospack' has been run with all
-  possible arguments on all available projects, and the results have
-  been stored in an index.
-
-* Sanitize the ``manifest.xml`` bits::
-
-    $ ./cmake/sanitize_manifest.py index.pkl
-    * Expanding backticks
-    * removing ${prefix}
-    * parsing and reorganizing compiler flags
-    Generating full recursive dependencies
-    >>>                    test_rxdeps
-           
-  Now there are new fields in the index.pkl containing e.g. expanded
-  backticks and replaced ${prefix} variables.
-
-* Sanitize the assorted CMakeLists.txt.  This modifies the source
-  tree; at some point this will have to go away, presumably after
-  we've decided what the new CMakeLists.txt will actually look like::
-
-    $ ./cmake/sanitize_cmakelists.py -i index.pkl
-    Sanitizing cmakelists from index index.pkl
-
-  Among other things, this script has removed
-  ``set(EXECUTABLE_OUTPUT_PATH ...)``, ``rosbuild_init()``, and
-  various other incantations found in every cmakelistss that are no
-  longer necessary.
-
-* Now you'll see those CMakeLists.txt modifications::
-
-    $ cd ros
-    $ svn status
-    M       test/test_rosmake/CMakeLists.txt
-    M       test/test_rospack/CMakeLists.txt
-    M       test/test_roscreate/CMakeLists.txt
-    M       test/test_roslib/CMakeLists.txt
-    M       test/test_rosdep/CMakeLists.txt
-    ?       tools/rosbash/CMakeLists.txt
-    M       tools/rosmake/CMakeLists.txt
-    M       tools/rospack/CMakeLists.txt
-    M       tools/rosunit/CMakeLists.txt
-    M       tools/rosclean/CMakeLists.txt
-    M       tools/roscreate/CMakeLists.txt
-    ?       tools/rosboost_cfg/CMakeLists.txt
-    ?       tools/rosdep/CMakeLists.txt
-    ?       tools/rosemacs/CMakeLists.txt
-    !       core/rosbuild
-    ?       core/roslang/CMakeLists.txt
-    !       core/mk
-    M       core/roslib/CMakeLists.txt
-    
-  Some new files have been created, some modified, a couple others
-  were deleted earlier.
-
-* In this last step we clobbered a few CMakeLists.txt that we rsynced
-  onto the build tree earlier.  Do it again::
-
-    $ cd $WORK  # $WORK == the directory created by rosinstall
-    $ rsync -a ./cmake/patches/ $WORK/
-
-Generate CMakeLists.txt and run cmake
--------------------------------------
-
-* Make a build directory and generate a ton of cmake stuff::
-
-    $ mkdir build
-    $ ./cmake/generate_cmakelists.py index.pkl build ./cmake
-
-    Index@ sys.argv[1]:
-
-    LANGS= {'rospy': '/tmp/work/ros_comm/clients/rospy/cmake/rospy.cmake', 'roscpp': '/tmp/work/ros_comm/clients/cpp/roscpp/cmake/roscpp.cmake'}
-    >>> tf_conversions                     
-
-  in ``build/`` you will now see a file ``toplevel.cmake``, which sets
-  a bunch of variables and, importantly, controls the order with which
-  cmake will traverse package directories.  There are also
-  subdirectories, one per package, each containing a file
-  ``package.cmake`` which contains cmake code generated from
-  ``manifest.xml`` files, among other things.
-
-* Run cmake (see warning box in output below)::
-
-    $ cd build
-    $ cmake -DCMAKE_INSTALL_PREFIX=/tmp/installdir ..
-
+    % cmake ../work
+    -- The C compiler identification is GNU
+    -- The CXX compiler identification is GNU
+    -- Check for working C compiler: /home/troy/bin/gcc
+    -- Check for working C compiler: /home/troy/bin/gcc -- works
+    -- Detecting C compiler ABI info
+    -- Detecting C compiler ABI info - done
+    -- Check for working CXX compiler: /home/troy/bin/c++
+    -- Check for working CXX compiler: /home/troy/bin/c++ -- works
+    -- Detecting CXX compiler ABI info
+    -- Detecting CXX compiler ABI info - done
     -- --- main.cmake ---
+    
+    Generating cmake
+    
+    -  convex_decomposition
+    -  robot_state_publisher
+    -  colladadom
+    -  ivcon
+
+  in this section, lines starting with a dash are projects that have
+  not been converted (i.e. do not contain a 'rosbuild2' section in
+  their manifests).
+
+  ::
+
+    -  rosemacs
+    +  rospack
+    -  rosboost_cfg
+    
+    Writing toplevel for 34 packages....
     -- Boost version: 1.40.0
     -- Found the following Boost libraries:
     --   date_time
@@ -215,86 +101,70 @@ Generate CMakeLists.txt and run cmake
     --   unit_test_framework
     --   wave
     --   wserialization
-    --  * rospy
-    --  * roscpp
-      ROSBUILD_LANGS = rospy;roscpp
-    *
-    *
-    * building eigen
-    *
-    *
-    --2011-01-12 06:28:19--  http://pr.willowgarage.com/downloads/eigen2-2.0.15.tar.bz2
-    Resolving pr.willowgarage.com... 157.22.19.18
-    Connecting to pr.willowgarage.com|157.22.19.18|:80... connected.
+    -- Looking for include files CMAKE_HAVE_PTHREAD_H
+    -- Looking for include files CMAKE_HAVE_PTHREAD_H - found
+    -- Looking for pthread_create in pthreads
+    -- Looking for pthread_create in pthreads - not found
+    -- Looking for pthread_create in pthread
+    -- Looking for pthread_create in pthread - found
+    -- Found Threads: TRUE 
+    -- Performing Test HAS_SSE3_EXTENSIONS
+    -- Performing Test HAS_SSE3_EXTENSIONS - Success
+    -- Performing Test HAS_SSE2_EXTENSIONS
+    -- Performing Test HAS_SSE2_EXTENSIONS - Success
+    -- Performing Test HAS_SSE_EXTENSIONS
+    -- Performing Test HAS_SSE_EXTENSIONS - Success
+    -- Found SSE3 extensions, using flags: -msse3 -mfpmath=sse
+    --  Language: rospy enabled.
+    --  Language: roscpp enabled.
+    --  + rosconsole
+    --  + rospack
+    --  + stereo_msgs
+    --  + actionlib_msgs
+    --  + trajectory_msgs
+    --  + nav_msgs
+    --  + roscpp
+    -- Looking for include files HAVE_IFADDRS_H
+    -- Looking for include files HAVE_IFADDRS_H - found
+    -- Looking for trunc
+    -- Looking for trunc - not found
+    --  + actionlib
+    --  + roslib
+    --  + roscpp_serialization
+    --  + roscpp_traits
+    --  + topic_tools
+    --  + rostest
+    --  + visualization_msgs
+    --  + cpp_common
+    -- Looking for execinfo.h
+    -- Looking for execinfo.h - found
+    -- Performing Test HAVE_CXXABI_H
+    -- Performing Test HAVE_CXXABI_H - Failed
+    -- Looking for backtrace
+    -- Looking for backtrace - found
+    --  + dynamic_reconfigure
+    --  + message_filters
+    --  + rostime
+    --  + sensor_msgs
+    --  + roswtf
+    --  + rosservice
+    --  + rospy
+    --  + roscpp_tutorials
+    --  + std_msgs
+    --  + diagnostic_msgs
+    --  + rosgraph_msgs
+    --  + test_roscpp
+    --  + std_srvs
+    --  + xmlrpcpp
+    --  + geometry_msgs
+    --  + turtlesim
+    -- Found wxWidgets: TRUE 
+    --  + rosbag
+    *** fixme, install of ros/bin/
+    -- Configuring done
+    -- Generating done
+    -- Build files have been written to: /home/glom/build
     
-  .. warning::
-
-     You'll see a *lot* of stuff happen here, mostly
-     the building of 3rdparty dependencies: eigen, smclib, bullet,
-     orocos-kdl, wxswig.  It won't stay this way.  
-
-  At the end you'll see the traversal of the ROS packages...
-
-  ::
-
-    -- 3rdparty kdl bootstrap returned 0.  Good.
-     --  + test_rostest
-     --  + topic_tools
-     --  + rosbag
-     --  + test_roscpp
-     --  + test_rosnode
-     --  + test_rosbag
-     --  + rosmsg
-     --  + rosbagmigration
-     --  + rosrecord
-     --  + rxbag
-     --  + roscore_migration_rules
-     --  + geometry_msgs
-     --  + tf_core
-     --  + diagnostic_msgs
-     --  + runtime_monitor
-     --  + rostopic
-     --  + visualization_msgs
-     --  + rosservice
-     --  + test_rosmsg
-     --  + test_rostopic
-     --  + diagnostic_analysis
-     --  + test_rospy
-     --  + test_rosservice
-     --  + tf_cpp
-     --  + nav_msgs
-     --  + diagnostic_aggregator
-     --  + sensor_msgs
-     --  + test_diagnostic_aggregator
-     --  + roswtf
-     --  + dynamic_reconfigure
-     MSG: gencfg_cpp on:cfg/Test.cfg
-     --  + rxgraph
-     --  + test_topic_tools
-     tf /tmp/work/geometry/tf /tmp/work/build/tf
-     --  + tf
-     -- Performing Test HAS_SSE3_EXTENSIONS
-     -- Performing Test HAS_SSE3_EXTENSIONS - Success
-     -- Performing Test HAS_SSE2_EXTENSIONS
-     -- Performing Test HAS_SSE2_EXTENSIONS - Success
-     -- Performing Test HAS_SSE_EXTENSIONS
-     -- Performing Test HAS_SSE_EXTENSIONS - Success
-     -- [rosbuild] Found SSE3 extensions, using flags: -msse3 -mfpmath=sse
-     --  + diagnostic_updater
-     --  + robot_monitor
-     --  + self_test
-     --  + eigen_conversions
-     --  + driver_base
-     --  + test_common_msgs
-     --  + test_roswtf
-     --  + tf_conversions
-     *** fixme, install of ros/bin/
-     -- Configuring done
-     -- Generating done
-     -- Build files have been written to: /tmp/work/build
-   
-  If you see the last line, ``Build files have been written to: ...``,
-  you may briefly rejoice.
 
 Build
 -----
@@ -303,21 +173,29 @@ Now you can build.  Optionally use ``-jN`` where N is one greater than
 the number of cores you have on the machine.  ``ROS_PARALLEL_JOBS`` is
 ignored. ::
 
-  $ make -j9
-  Scanning dependencies of target xmlrpcpp_gen_cpp
-  [  0%] Built target xmlrpcpp_gen_cpp
-  Scanning dependencies of target XmlRpc
-  [  0%] Building CXX object xmlrpcpp/CMakeFiles/XmlRpc.dir/src/XmlRpcClient.cpp.o
-  [  0%] Building CXX object xmlrpcpp/CMakeFiles/XmlRpc.dir/src/XmlRpcDispatch.cpp.o
+    % make
+    Scanning dependencies of target cpp_common_gen_cpp
+    [  0%] Built target cpp_common_gen_cpp
+    Scanning dependencies of target cpp_common
+    [  0%] Building CXX object cpp_common/CMakeFiles/cpp_common.dir/src/debug.cpp.o
+    Linking CXX shared library ../lib/libcpp_common.so
+    [  0%] Built target cpp_common
+    Scanning dependencies of target rostime_gen_cpp
+    [  0%] Built target rostime_gen_cpp
+    Scanning dependencies of target rostime
+    [  0%] Building CXX object rostime/CMakeFiles/rostime.dir/src/time.cpp.o
+    [  0%] Building CXX object rostime/CMakeFiles/rostime.dir/src/rate.cpp.o
+    [  1%] Building CXX object rostime/CMakeFiles/rostime.dir/src/duration.cpp.o
+    
+Once the build is finished, type make again and behold the speed with
+which it tells you that there is nothing to do.::
 
-  ... lots of stuff ...
+    % /usr/bin/time make -j8
+    <lots of output>
+    5.24user 0.79system 0:00.41elapsed 1442%CPU (0avgtext+0avgdata 19280maxresident)k
+    0inputs+672outputs (0major+333398minor)pagefaults 0swaps
 
-  [100%] Built target run_selftest
-  [100%] Built target selftest_example
-  [100%] Built target selftest_rostest
-
-Output will be jumbled due to the -j.  Now type make again and behold
-the speed with which it tells you that there is nothing to do.
+0.4 seconds elapsed.
 
 All build artifacts are in the build directory.  Generated code is
 under ``gen/<LANG>``.  Notice the generated ``__init__.py`` scripts
@@ -389,6 +267,13 @@ Open another terminal, source the env.sh, run the talker demo::
   [ INFO] [1295486800.793485151]: hello world 1
   [ INFO] [1295486800.893499308]: hello world 2
   ...
+
+In another, run the listener..::
+
+  % ./bin/listener
+  [ INFO] [1300849344.814661724]: I heard: [hello world 3]
+  [ INFO] [1300849344.914395490]: I heard: [hello world 4]
+  [ INFO] [1300849345.014413543]: I heard: [hello world 5]
 
 Install
 -------
