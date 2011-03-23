@@ -6,7 +6,6 @@ from xml.etree import *
 import xml.etree.ElementTree
 
 print "\nGenerating cmake\n"
-print sys.argv
 
 MANIFEST="manifest.xml"
 
