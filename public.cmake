@@ -14,9 +14,6 @@ include(AddFileDependencies)
 # Used to check if a function exists
 include(CheckFunctionExists)
 
-macro(rosbuild_find_ros_package)
-endmacro()
-
 macro(rosbuild_assert_file_exists FNAME)
   if(NOT EXISTS ${FNAME})
     message(FATAL_ERROR "File ${FNAME} doesn't exist")
@@ -97,309 +94,6 @@ macro(rosbuild_invoke_rospack pkgname _prefix _varname)
     set(${_varname} ${${_prefix}_${_varname}})
   endif()
 endmacro()
-
-###############################################################################
-# This is the user's main entry point.  A *lot* of work gets done here.  It
-# should probably be split up into multiple macros.
-macro(rosbuild_init)
-
-  message(FATAL_ERROR "You shouldn't be calling rosbuild_init")
-  # Record that we've been called
-  set(ROSBUILD_init_called 1)
-
-  include(${CMAKE_CURRENT_BINARY_DIR}/project.cmake OPTIONAL)
-
-  file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/rostest.list 
-    "#\n# automatically generated test file for project ${PROJECT_NAME}\n#\n")
-
-  # Infer package name from directory name.
-  # get_filename_component(_project ${CMAKE_CURRENT_SOURCE_DIR} NAME)
-  # message("-- + ${_project}")
-
-  # project(${_project})
-
-  set(PROJECT_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/bin)
-  # Must call include(rosconfig) after project, because rosconfig uses
-  # PROJECT_SOURCE_DIR
-  include($ENV{ROS_ROOT}/core/rosbuild/rosconfig.cmake)
-
-  # Check that PYTHONPATH includes roslib
-  # _rosbuild_check_pythonpath()
-
-  # Check that manifest.xml is valid
-  _rosbuild_check_manifest()
-
-  # Check that the package directory is correct
-  # _rosbuild_check_package_location()
-
-  # Add ROS_PACKAGE_NAME define
-  add_definitions(-DROS_PACKAGE_NAME='\"${PROJECT_NAME}\"')
-
-  # ROS_BUILD_TYPE is set by rosconfig
-  # RelWithAsserts is our own type, not supported by CMake
-  if("${ROS_BUILD_TYPE}" STREQUAL "RelWithAsserts")
-    set(CMAKE_BUILD_TYPE "")
-    set(ROS_COMPILE_FLAGS "-O3 ${ROS_COMPILE_FLAGS}")
-  else()
-    set(CMAKE_BUILD_TYPE ${ROS_BUILD_TYPE})
-  endif()
-
-  # Set default output directories
-  set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR}/bin)
-  set(LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_BINARY_DIR}/lib)
-
-  # By default, look in the local include dir
-  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
-
-  set(_prefix ${PROJECT_NAME})
-  set(${_prefix}_INCLUDEDIR "" CACHE INTERNAL "")
-
-  # Get the full paths to the manifests for all packages on which 
-  # we depend
-  # rosbuild_invoke_rospack(${PROJECT_NAME} _rospack deps_manifests_invoke_result deps-manifests)
-  # rosbuild_invoke_rospack(${PROJECT_NAME} _rospack msgsrv_gen_invoke_result deps-msgsrv)
-  set(ROS_MANIFEST_LIST "${PROJECT_SOURCE_DIR}/manifest.xml ${_rospack_deps_manifests_invoke_result} ${_rospack_msgsrv_gen_invoke_result}")
-  # convert whitespace-separated string to ;-separated list
-  separate_arguments(ROS_MANIFEST_LIST)
-
-  # Check the time at which we last cached flags against the latest
-  # modification time for all manifests that we depend on.  If our cache
-  # time is smaller, then we need to rebuild our cached values by calling
-  # out to rospack to get flags.  This is an optimization in the service of
-  # speeding up the build, #2109.
-  # _rosbuild_compare_manifests(_rebuild_cache "${_rosbuild_cached_flag_time}" "${${_prefix}_cached_manifest_list}" "${ROS_MANIFEST_LIST}")
-  if(FALSE)#_rebuild_cache)
-    # Explicitly unset all cached variables, to avoid possible accumulation
-    # across builds, #2389.
-    set(${_prefix}_INCLUDE_DIRS "" CACHE INTERNAL "")
-    set(${_prefix}_CFLAGS_OTHER "" CACHE INTERNAL "")
-    set(${_prefix}_LIBRARY_DIRS "" CACHE INTERNAL "")
-    set(${_prefix}_LIBRARIES "" CACHE INTERNAL "")
-    set(${_prefix}_LDFLAGS_OTHER "" CACHE INTERNAL "")
-    set(${_prefix}_cached_manifest_list "" CACHE INTERNAL "")
-
-    message("Cached build flags older than manifests; calling rospack to get flags")
-    # Get the include dirs
-    rosbuild_invoke_rospack(${PROJECT_NAME} ${_prefix} INCLUDE_DIRS cflags-only-I --deps-only)
-    #message("${pkgname} include dirs: ${${_prefix}_INCLUDE_DIRS}")
-    set(${_prefix}_INCLUDE_DIRS ${${_prefix}_INCLUDE_DIRS} CACHE INTERNAL "")
-  
-    # Get the other cflags
-    rosbuild_invoke_rospack(${PROJECT_NAME} ${_prefix} temp cflags-only-other --deps-only)
-    _rosbuild_list_to_string(${_prefix}_CFLAGS_OTHER "${${_prefix}_temp}")
-    #message("${pkgname} other cflags: ${${_prefix}_CFLAGS_OTHER}")
-    set(${_prefix}_CFLAGS_OTHER ${${_prefix}_CFLAGS_OTHER} CACHE INTERNAL "")
-  
-    # Get the lib dirs
-    rosbuild_invoke_rospack(${PROJECT_NAME} ${_prefix} LIBRARY_DIRS libs-only-L --deps-only)
-    #message("${pkgname} library dirs: ${${_prefix}_LIBRARY_DIRS}")
-    set(${_prefix}_LIBRARY_DIRS ${${_prefix}_LIBRARY_DIRS} CACHE INTERNAL "")
-  
-    # Get the libs
-    rosbuild_invoke_rospack(${PROJECT_NAME} ${_prefix} LIBRARIES libs-only-l --deps-only)
-    #
-    # The following code removes duplicate libraries from the link line,
-    # saving only the last one.
-    #
-    list(REVERSE ${_prefix}_LIBRARIES)
-    #list(REMOVE_DUPLICATES ${_prefix}_LIBRARIES)
-    _rosbuild_list_remove_duplicates("${${_prefix}_LIBRARIES}" _tmplist)
-    set(${_prefix}_LIBRARIES ${_tmplist})
-    list(REVERSE ${_prefix}_LIBRARIES)
-  
-    # Also throw in the libs that we want to link everything against (only
-    # use case for this so far is -lgcov when building with code coverage
-    # support).
-    list(APPEND ${_prefix}_LIBRARIES "${ROS_LINK_LIBS}")
-    set(${_prefix}_LIBRARIES ${${_prefix}_LIBRARIES} CACHE INTERNAL "")
-  
-    # Get the other lflags
-    rosbuild_invoke_rospack(${PROJECT_NAME} ${_prefix} temp libs-only-other --deps-only)
-    _rosbuild_list_to_string(${_prefix}_LDFLAGS_OTHER "${${_prefix}_temp}")
-    #message("${pkgname} other ldflags: ${${_prefix}_LDFLAGS_OTHER}")
-    set(${_prefix}_LDFLAGS_OTHER ${${_prefix}_LDFLAGS_OTHER} CACHE INTERNAL "")
-
-    # Record the time at which we cached those values
-    _rosbuild_get_clock(_time)
-    set(_rosbuild_cached_flag_time ${_time} CACHE INTERNAL "")
-    set(${_prefix}_cached_manifest_list ${ROS_MANIFEST_LIST} CACHE INTERNAL "")
-  endif()#_rebuild_cache)
-
-  # Use the (possibly cached) values returned by rospack.
-  include_directories(${${_prefix}_INCLUDE_DIRS})
-  link_directories(${${_prefix}_LIBRARY_DIRS})
-
-  #
-  # Catch absolute pathnames to archive libraries and bracket them with
-  # linker args necessary to force extraction of the entire archive.
-  #
-  # The OS X linker doesn't accept the -whole-archive and -no-whole-archive
-  # arguments.
-  #
-  if(NOT APPLE)
-    foreach(_lib ${${_prefix}_LIBRARIES})
-      if(_lib MATCHES "/[^ ]*\\.a")
-        set(_bracket_str "-Wl,-whole-archive ${_lib} -Wl,-no-whole-archive")
-        list(APPEND ${_prefix}_LDFLAGS_OTHER "${_bracket_str}")
-      endif()
-    endforeach(_lib)
-  endif()
-
-  # Set up the test targets.  Subsequent calls to rosbuild_add_gtest and
-  # friends add targets and dependencies from these targets.
-  #
-  set(rostest_path ${ROS_ROOT}/test/rostest)
-  
-  # Record where we're going to put test results (#2003)
-  execute_process(COMMAND ${ROSBUILD_SUBSHELL} ${rostest_path}/bin/test-results-dir
-                  OUTPUT_VARIABLE rosbuild_test_results_dir
-                  RESULT_VARIABLE _test_results_dir_failed
-                  ERROR_VARIABLE _test_results_dir_err
-                  OUTPUT_STRIP_TRAILING_WHITESPACE)
-  if(_test_results_dir_failed)
-    message(FATAL_ERROR "Failed to invoke rostest/bin/test-results-dir: ${_test_results_dir_err}")
-  endif()
-
-  # The 'tests' target builds the test program
-  add_custom_target(tests)
-  # The 'test' target runs all but the future tests
-  add_custom_target(test)
-  # We need to build tests before running them.  Addition of this
-  # dependency also ensures that old test results get cleaned prior to a
-  # new test run.
-  # but not if rosbuild_test_nobuild is set, #3008
-  if(NOT rosbuild_test_nobuild)
-    add_dependencies(test tests)
-  endif()
-  
-  # Clean out previous test results before running tests.  Use bash
-  # conditional to ignore failures (most often happens when a stale NFS
-  # handle lingers in the test results directory), because CMake doesn't
-  # seem to be able to do it.
-  add_custom_target(clean-test-results
-                    if ! rm -rf ${rosbuild_test_results_dir}/${PROJECT_NAME}\; then echo "WARNING: failed to remove test-results directory"\; fi)
-  # Make the tests target depend on clean-test-results, which will ensure
-  # that test results are deleted before we try to build tests, and thus
-  # before we try to run tests.
-  add_dependencies(tests clean-test-results)
-  # The 'test-future' target runs the future tests
-
-  add_custom_target(test-results-run)
-  add_custom_target(test-results
-                    COMMAND ${rostest_path}/bin/rostest-results --nodeps ${PROJECT_NAME})
-  add_dependencies(test-results test-results-run)
-  # Do we want coverage reporting (only matters for Python, because
-  # Bullseye already collects everything into a single file).
-  if("$ENV{ROS_TEST_COVERAGE}" STREQUAL "1")
-    add_custom_target(test-results-coverage
-                      COMMAND ${rostest_path}/bin/coverage-html
-                      WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
-    # Make tests run before collecting coverage results
-    add_dependencies(test-results-coverage test-results-run)
-    # Make coverage collection happen
-    add_dependencies(test-results test-results-coverage)
-  endif()
-
-  # Figure out which languages we're building for.  "rospack langs" will
-  # return a list of packages that:
-  #   - depend directly on roslang
-  #   - are not in the env var ROS_LANG_DISABLE
-  # rosbuild_invoke_rospack("" _roslang LANGS langs)
-  # separate_arguments(_roslang_LANGS)
-  # message("roslang_LANGS=${_roslang_LANGS}")
-
-  # Create targets for client libs attach their message-generation output to
-  #add_custom_target(rospack_genmsg)
-  #add_custom_target(rospack_gensrv)
-
-  # Add a target that will fire before doing message or service generation.
-  # This is used by packages that do automatic generation of message and
-  # service files.
-  #add_custom_target(rosbuild_premsgsrvgen)
-
-  # Add a target that will fire before compiling anything.  This is used by
-  # message and service generation, as well as things outside of ros, like
-  # dynamic_reconfigure.
-  #add_custom_target(rosbuild_precompile)
-
-  # The rospack_genmsg_libexe target is defined for backward compatibility,
-  # and will eventually be removed.
-  #add_custom_target(rospack_genmsg_libexe)
-  #add_dependencies(rosbuild_precompile rospack_genmsg_libexe)
-  
-  # Also collect cmake fragments exported by packages that depend on
-  # rosbuild.  This behavior is deprecated, in favor of using
-  # rosbuild_include() to explicitly include cmake code from other packages.
-  rosbuild_invoke_rospack(
-    rosbuild _rosbuild EXPORTS plugins --attrib=cmake --top=${PROJECT_NAME})
-  list(LENGTH _rosbuild_EXPORTS _rosbuild_EXPORTS_length)
-
-  # rospack plugins outputs the list as:
-  # <package name> <attribute value>
-  # Here we remove <package name> in all cases by:
-  # 1) Remove the first element of the returned list
-  # 2) Search for all instances of <newline><string><semicolon>, replacing them with just a semicolon
-
-  # 1) Remove the first package name if the list has at least one element
-  if (${_rosbuild_EXPORTS_length} GREATER 0)
-    list(REMOVE_AT _rosbuild_EXPORTS 0)
-  endif()
-
-  # 2) Remove the rest of the package names
-  string(REGEX REPLACE "\n[^;]*;" ";" _rosbuild_EXPORTS_stripped "${_rosbuild_EXPORTS}")
-
-  set(_rosbuild_EXPORTS "" CACHE INTERNAL "")
-
-  foreach(_f ${_rosbuild_EXPORTS_stripped})
-    list(APPEND _cmake_fragments ${_f})
-    message("\nWARNING: the file ${_f} is being included automatically.  This behavior is deprecated.  The package containing that file should instead export the directory containing the file, and you should use rosbuild_include() to include the file explicitly.\n")
-  endforeach(_f)
-
-  # Now include them all
-  foreach(_f ${_cmake_fragments})
-    if(NOT EXISTS ${_f})
-      message(FATAL_ERROR "Cannot include non-existent exported cmake file ${_f}")
-    endif()
-    # Include this cmake fragment; presumably it will do /
-    # provide something useful.  Only include each file once (a file
-    # might be multiply referenced because of package dependencies
-    # dependencies).
-    if(NOT ${_f}_INCLUDED)
-      message("Including ${_f}")
-      include(${_f})
-      set(${_f}_INCLUDED Y)
-    endif()
-  endforeach(_f)
-
-
-  #
-  # Gather the gtest build flags, for use when building unit tests.  We
-  # don't require the user to declare a dependency on gtest.
-  #
-  #rosbuild_invoke_rospack(gtest _gtest PACKAGE_PATH find)
-  #include_directories(${_gtest_PACKAGE_PATH}/gtest/include)
-  #link_directories(${_gtest_PACKAGE_PATH}/gtest/lib)
-  #set(_gtest_LIBRARIES -lgtest)
-  #set(_gtest_CFLAGS_OTHER "")
-  #set(_gtest_LDFLAGS_OTHER "-Wl,-rpath,${_gtest_PACKAGE_PATH}/gtest/lib")
-  
-  #
-  # The following code removes duplicate libraries from the link line,
-  # saving only the last one.
-  #
-  #list(REVERSE _gtest_LIBRARIES)
-  #list(REMOVE_DUPLICATES _gtest_LIBRARIES)
-  #_rosbuild_list_remove_duplicates(${_gtest_LIBRARIES} _tmplist)
-  #set(_gtest_LIBRARIES ${_tmplist})
-  #list(REVERSE _gtest_LIBRARIES)
-
-  # This will set STACK_NAME
-  set(ROS_PACKAGE_INSTALL_PREFIX ${ROS_INSTALL_PREFIX}/lib/ros/${STACK_NAME}/${PROJECT_NAME})
-
-  install(FILES manifest.xml DESTINATION ${ROS_PACKAGE_INSTALL_PREFIX})
-
-endmacro(rosbuild_init)
-###############################################################################
 
 
 
@@ -756,7 +450,7 @@ macro(rosbuild_download_test_data _url _filename)
   # Create a legal target name, in case the target name has slashes in it
   string(REPLACE "/" "_" _testname download_data_${_filename})
   add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/${_filename} 
-                     COMMAND $ENV{ROS_ROOT}/core/rosbuild/bin/download_checkmd5.py ${_url} ${PROJECT_SOURCE_DIR}/${_filename} ${ARGN}
+                     COMMAND ${CMAKE_SOURCE_DIR}/cmake/bin/download_checkmd5.py ${_url} ${PROJECT_SOURCE_DIR}/${_filename} ${ARGN}
                      VERBATIM
 		     COMMENT "Downloading ${_filename}")
   add_custom_target(${_testname} DEPENDS ${PROJECT_SOURCE_DIR}/${_filename})
@@ -797,7 +491,7 @@ macro(rosbuild_download_data _url _filename)
   # Create a legal target name, in case the target name has slashes in it
   string(REPLACE "/" "_" _testname download_data_${_filename})
   add_custom_command(OUTPUT ${PROJECT_SOURCE_DIR}/${_filename}
-    COMMAND $ENV{ROS_ROOT}/core/rosbuild/bin/download_checkmd5.py ${_url} 
+    COMMAND ${CMAKE_SOURCE_DIR}/cmake/bin/download_checkmd5.py ${_url} 
     ${PROJECT_SOURCE_DIR}/${_filename} ${ARGN} VERBATIM)
   add_custom_target(${_testname} ALL DEPENDS ${PROJECT_SOURCE_DIR}/${_filename})
 endmacro(rosbuild_download_data)
@@ -892,7 +586,7 @@ endmacro(rosbuild_make_distribution)
 # Python to do the work (UNIX only)
 macro(rosbuild_count_cores num)
   execute_process(COMMAND ${ROSBUILD_SUBSHELL}
-    ${ROS_ROOT}/core/rosbuild/tests/count_cores.py
+    ${CMAKE_SOURCE_DIR}/cmake/bin/count_cores.py
     OUTPUT_VARIABLE _cores_out
     ERROR_VARIABLE _cores_error
     RESULT_VARIABLE _cores_result
