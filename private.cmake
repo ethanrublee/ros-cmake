@@ -1,6 +1,12 @@
 ###############################################################################
 # Internal macros below
 
+# TDS: fixme
+if (NOT rostest_SOURCE_DIR)
+  set(rostest_SOURCE_DIR ${CMAKE_SOURCE_DIR}/ros_comm/tools/rostest/)
+endif()
+set(ROSTEST_EXE ${rostest_SOURCE_DIR}/bin/rostest)
+
 macro(_rosbuild_warn)
   message("[rosbuild] WARNING: " ${ARGV})
 endmacro(_rosbuild_warn)
@@ -126,10 +132,10 @@ endmacro(_rosbuild_check_package_location)
 
 # helper function to register check that results were generated (#580)
 macro(_rosbuild_check_rostest_xml_result test_name test_file)
-  add_custom_target(${test_name}_result
-                    COMMAND ${rostest_path}/bin/rostest-check-results ${test_file}
-		    VERBATIM)
-  add_dependencies(test-results-run ${test_name}_result)	 
+  # add_custom_target(${test_name}_result
+  # COMMAND ${rostest_SOURCE_DIR}/ros_comm/bin/rostest-check-results ${test_file}
+  # VERBATIM)
+  # add_dependencies(test-results-run ${test_name}_result)
 endmacro(_rosbuild_check_rostest_xml_result test_name)
 
 macro(_rosbuild_add_gtest exe)
@@ -157,7 +163,7 @@ macro(_rosbuild_add_gtest exe)
 
 
   add_custom_target(test_${_testname}
-    COMMAND ${ROSBUILD_SUBSHELL} rostest --bare --bare-name=${_testname} --bare-limit=${_gtest_TIMEOUT} ${PROJECT_BINARY_DIR}/bin/test/${exe}
+    COMMAND ${ROSBUILD_SUBSHELL} ${ROSTEST_EXE} --bare --bare-name=${_testname} --bare-limit=${_gtest_TIMEOUT} ${PROJECT_BINARY_DIR}/bin/test/${exe}
     DEPENDS ${exe}
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
     VERBATIM)
@@ -189,7 +195,7 @@ endmacro(_rosbuild_add_gtest)
 # arguments as cmake doesn't know the name of the output file
 macro(_rosbuild_check_rostest_result test_name test_pkg test_file)
   add_custom_target(${test_name}_result
-                    COMMAND ${rostest_path}/bin/rostest-check-results --rostest ${test_pkg} ${test_file}
+                    COMMAND ${ROSTEST_EXE}/bin/rostest-check-results --rostest ${test_pkg} ${test_file}
                     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
 		    VERBATIM)
 
@@ -212,7 +218,7 @@ macro(_rosbuild_add_rostest file)
 
   # Create target for this test
   add_custom_target(rostest_${_testname}
-    COMMAND ${ARGN} rostest ${file}
+    COMMAND ${ROSBUILD_SUBSHELL} ${ARGN} ${ROSTEST_EXE} ${file}
     DEPENDS ${file}
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
     VERBATIM)
@@ -264,7 +270,7 @@ macro(_rosbuild_add_pyunit file)
   # Create target for this test
   # We use rostest to call the executable to get process control, #1629
   add_custom_target(pyunit_${_testname}
-    COMMAND rostest --bare --bare-name=${_testname} --bare-limit=${_pyunit_TIMEOUT} -- python ${file} ${_covarg}
+    COMMAND ${ROSBUILD_SUBSHELL} ${ROSTEST_EXE} --bare --bare-name=${_testname} --bare-limit=${_pyunit_TIMEOUT} -- python ${file} ${_covarg}
     DEPENDS ${file}
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
     VERBATIM)
@@ -286,14 +292,12 @@ macro(_rosbuild_add_roslaunch_check file)
     message(FATAL_ERROR "Can't find roslaunch file or directory \"${file}\"")
   endif(NOT _file_name)
 
-  # Find rostest
-  rosbuild_invoke_rospack("" rostest path find rostest)
   # Create a legal target name, in case the target name has slashes it
   string(REPLACE "/" "_" _testname ${file})
   
   # Create target for this test
   add_custom_target(roslaunch_check_${_testname}
-                    COMMAND ${rostest_path}/bin/roslaunch-check.py ${file} ${ARGN}
+                    COMMAND ${rostest_SOURCE_DIR}/bin/roslaunch-check.py ${file} ${ARGN}
                     DEPENDS ${file}
                     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
                     VERBATIM)
