@@ -14,6 +14,10 @@ configure_file(cmake/toplevel.cmake.em
   ${CMAKE_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/toplevel.cmake.stamp
   @ONLY)
 
+set(ROS_BUILD_LIBRARY_TYPE SHARED 
+  CACHE STRING 
+  "type of libraries to build, either SHARED or STATIC")
+
 if (ROS_PACKAGE_PATH)
   set(ROS_PACKAGE_PATH ${ROS_PACKAGE_PATH} CACHE STRING "ros pkg path")
 else()
