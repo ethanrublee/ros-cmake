@@ -22,12 +22,14 @@ else()
     )
 endif()
 
-try_run(CLANG CLANG_COMPRESULT
-  ${CMAKE_BINARY_DIR}
-  ${CMAKE_SOURCE_DIR}/cmake/platform/clang.c
-  )
-if(CLANG)
-  message("You're using clang")
+if(NOT CMAKE_CROSSCOMPILING)
+  try_run(CLANG CLANG_COMPRESULT
+    ${CMAKE_BINARY_DIR}
+    ${CMAKE_SOURCE_DIR}/cmake/platform/clang.c
+    )
+  if(CLANG)
+    message("You're using clang")
+  endif()
 endif()
 
 if (ROS_3RDPARTY_PATH)
@@ -146,6 +148,14 @@ cmake_policy(SET CMP0002 OLD)
 
 include(cmake/FindPkgConfig.cmake)
 
+set(Boost_ADDITIONAL_VERSIONS "1.45.0")
+if (CMAKE_CROSSCOMPILING)
+  set(BOOST_ROOT ${TOOLCHAIN_SYSROOT})
+  set(Boost_DETAILED_FAILURE_MSG TRUE)
+  set(Boost_THREADAPI "win32")
+  set(Boost_DEBUG TRUE)
+endif()
+
 find_package(Boost 
   COMPONENTS 
   date_time 
@@ -156,15 +166,17 @@ find_package(Boost
   math_tr1 
   prg_exec_monitor
   program_options
-  python 
   regex
   serialization 
   signals 
   system 
-  thread 
   unit_test_framework 
   wave 
   wserialization)
+
+if (CMAKE_CROSSCOMPILING)
+  set(Boost_LIBRARIES ${TOOLCHAIN_SYSROOT}/lib/libboost_thread-win32-mt.a;${BOOST_LIBRARIES})
+endif()
 
 set(CMAKE_THREAD_PREFER_PTHREAD TRUE CACHE BOOL "prefer pthread")
 
